@@ -4,7 +4,7 @@ using UnityEngine;
 /// X-BOXコントローラーの各ボタンに対応するレーンの色
 /// Blue: X, Yellow: Y, Green: A, Red: B
 /// </summary>
-public enum LaneColors
+public enum LaneColor
 {
     Blue,   // Xボタン
     Yellow, // Yボタン

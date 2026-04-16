@@ -7,6 +7,10 @@ public class LaneSegment : MonoBehaviour
     [Header("設定")]
     public LaneColor laneColor;
 
+
+    [Header("接続ポイント (2つアサインしてください)")]
+    public Transform[] connectionPoints;
+
     //実行時にManagerから割り当てられる接続情報
     [HideInInspector] public LaneNode nodeA;// 端点1
     [HideInInspector] public LaneNode nodeB;// 端点2
@@ -29,7 +33,8 @@ public class LaneSegment : MonoBehaviour
     public void Reverse()
     {
         isReversed = !isReversed;
-    }
+        GetComponent<Renderer>().material.color = isReversed ? Color.black : Color.white;　//←この1行はデバック用
+　　}
 
     ///<summary>
     ///この辺(segment)を通過した後、次の辺が繋がっているか探す関数
