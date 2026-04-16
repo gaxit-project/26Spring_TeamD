@@ -1,13 +1,13 @@
-//レーンの色を定義する列挙型と、接合点となるNodeクラス
+using UnityEngine;
 
-public enum LaneColor { Blue,Yellow,Green,Red} //X,Y,A,Bに対応
-
-public class LaneNode : MonoBehaivour
+/// <summary>
+/// X-BOXコントローラーの各ボタンに対応するレーンの色
+/// Blue: X, Yellow: Y, Green: A, Red: B
+/// </summary>
+public enum LaneColors
 {
-    //このnodeに接続されている全segment
-    public List<LaneSegment> connectedSegments = new List<LaneSegment>();
-
-    public Vector3 Position => transform.position;
-
-    //nodeが重なった際の処理はeditor拡張などで行う予定
+    Blue,   // Xボタン
+    Yellow, // Yボタン
+    Green,  // Aボタン
+    Red     // Bボタン
 }
