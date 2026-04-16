@@ -7,52 +7,55 @@ public class LaneSegment : MonoBehaviour
     [Header("設定")]
     public LaneColor laneColor;
 
-
-    [Header("接続ポイント (2つアサインしてください)")]
-    public Transform[] connectionPoints;
-
-    //実行時にManagerから割り当てられる接続情報
-    [HideInInspector] public LaneNode nodeA;// 端点1
-    [HideInInspector] public LaneNode nodeB;// 端点2
+    // 実行時にNetworkによって「代表」として選ばれたNodeが割り当てられる
+    [HideInInspector] public LaneNode nodeA;
+    [HideInInspector] public LaneNode nodeB;
 
     public bool isReversed = false;
 
-    /// <summary>
-    /// 現在の進行方向における「出口」のNodeを返す(反転しているならA地点(B→A)を、反転していないならB地点(A→B)を『出口』として採用する)関数
-    /// </summary>
+    // runtimeのNodeを参照するように変更
     public LaneNode GetExitNode() => isReversed ? nodeA : nodeB;
-
-    /// <summary>
-    /// 現在の進行方向における「入口」のNodeを返す(反転しているならB地点(B→A)を、反転していないならA地点(A→B)を『入り口』として採用する)関数
-    /// </summary>
     public LaneNode GetEntryNode() => isReversed ? nodeB : nodeA;
-   
-    ///<summary>
-    ///Managerから呼ばれたら進行方向を反転させる関数
-    /// </summary>
+
     public void Reverse()
     {
         isReversed = !isReversed;
-        GetComponent<Renderer>().material.color = isReversed ? Color.black : Color.white;　//←この1行はデバック用
-　　}
+        var renderer = GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.material.color = isReversed ? Color.black : Color.white;
+        }
+    }
 
-    ///<summary>
-    ///この辺(segment)を通過した後、次の辺が繋がっているか探す関数
-    /// </summary>
     public LaneSegment GetNextSegment()
     {
-        LaneNode exitNode = GetExitNode();//出口nodeをローカル変数で記憶
+        LaneNode exitNode = GetExitNode();
         if (exitNode == null) return null;
 
-        foreach(var segment in exitNode.connectedSegments) //自分と繋がっている全てのnodeを
+        foreach (var segment in exitNode.connectedSegments)
         {
-            if (segment == this) continue; //自分自身を除外
-
-            if (segment.GetEntryNode() == exitNode)
-            {
-                return segment;
-            }
+            if (segment == this) continue;
+            // そのセグメントにとって、今の出口が「入口」になっているかを確認
+            if (segment.GetEntryNode() == exitNode) return segment;
         }
         return null;
+    }
+
+    private void OnDrawGizmos()
+    {
+        // runtimeNodeが割り当てられていない時（エディタ時）は子オブジェクトの座標を使用
+        // 子に2つLaneNodeがある想定
+        LaneNode[] childNodes = GetComponentsInChildren<LaneNode>();
+        if (childNodes.Length < 2) return;
+
+        Vector3 posA = childNodes[0].Position;
+        Vector3 posB = childNodes[1].Position;
+
+        Gizmos.color = isReversed ? Color.black : Color.white;
+        Gizmos.DrawLine(posA, posB);
+
+        // 出口側に球体
+        Vector3 exitPos = isReversed ? posA : posB;
+        Gizmos.DrawSphere(exitPos, 0.15f);
     }
 }
