@@ -1,0 +1,94 @@
+{
+    "name": "Player",
+    "maps": [
+        {
+            "name": "GamePlay",
+            "id": "738535e8-d9b7-4272-aa87-913e1985c178",
+            "actions": [
+                {
+                    "name": "LaneBlue",
+                    "type": "Button",
+                    "id": "7299092b-65af-4389-8aac-600d61060dfa",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LaneYellow",
+                    "type": "Button",
+                    "id": "f9d6437b-5ce3-4367-bce7-30cc8e23a695",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LaneGreen",
+                    "type": "Button",
+                    "id": "43dc4461-e32b-4c78-a9f7-de075933ad66",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LaneRed",
+                    "type": "Button",
+                    "id": "6be399c8-69a5-4b33-ba28-2500ca185bb5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "9d6751d5-52de-4224-a254-dae5c9d7582b",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LaneBlue",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a91ce7fe-f9af-46c1-9db1-690096e7619f",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LaneYellow",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "25243493-db62-4c5e-8654-5a99bd66a95b",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LaneGreen",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f8f26fed-678b-4dfa-b7f6-5fa4d6fcfe4e",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LaneRed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
