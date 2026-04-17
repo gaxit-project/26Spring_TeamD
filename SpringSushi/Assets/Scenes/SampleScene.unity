@@ -950,7 +950,7 @@ GameObject:
   - component: {fileID: 872382543}
   - component: {fileID: 872382542}
   m_Layer: 0
-  m_Name: SegmentA
+  m_Name: Segment_Blue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1000,7 +1000,7 @@ GameObject:
   - component: {fileID: 960778820}
   - component: {fileID: 960778819}
   m_Layer: 0
-  m_Name: SegmentC
+  m_Name: SegmentGreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1050,7 +1050,7 @@ GameObject:
   - component: {fileID: 993230880}
   - component: {fileID: 993230879}
   m_Layer: 0
-  m_Name: SegmentB
+  m_Name: SegmentYellow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

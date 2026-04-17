@@ -80,8 +80,11 @@ public class SushiSpawner : MonoBehaviour
 
     private LaneSegment FindOutgoingSegment()
     {
+        // 今の myNode に繋がっているセグメントを調べる
         foreach (var seg in myNode.connectedSegments)
         {
+            // ヒエラルキー上に存在する「本物」のセグメントか確認
+            // (もしプレハブを参照していたら、シーン上の本物に差し替える)
             if (seg.GetEntryNode() == myNode) return seg;
         }
         return null;
