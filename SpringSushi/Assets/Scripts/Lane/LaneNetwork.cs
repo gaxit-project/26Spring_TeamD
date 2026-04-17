@@ -67,16 +67,23 @@ public class LaneNetwork : MonoBehaviour
             if (!seg.nodeB.connectedSegments.Contains(seg)) seg.nodeB.connectedSegments.Add(seg);
         }
 
-        // 3. 【重要】独立したSpawnerなどにあるLaneNodeも「代表」を参照するように上書き
-        // これをしないと、Spawnerが持っているmyNodeが孤立したままになります
-        foreach (var node in allNodesInScene)
+        // 3. シーン内の全ての SushiSpawner を探し、その myNode を代表に差し替える
+        SushiSpawner[] spawners = FindObjectsByType<SushiSpawner>(FindObjectsSortMode.None);
+        foreach (var spawner in spawners)
         {
-            // すでに自分が代表でない場合、中身を代表の接続リストと同期させる
-            LaneNode master = GetOrCreateMasterNode(node, masterNodeMap);
-            if (node != master)
+            // スポナーの現在位置にある代表ノードを masterNodeMap から探して割り当てる
+            Vector3 key = new Vector3(
+                Mathf.Round(spawner.transform.position.x * 100f) / 100f,
+                Mathf.Round(spawner.transform.position.y * 100f) / 100f,
+                Mathf.Round(spawner.transform.position.z * 100f) / 100f
+            );
+
+            if (masterNodeMap.ContainsKey(key))
             {
-                // 独立したNodeの参照リストを、統合された代表Nodeのリストと共有させる
-                node.connectedSegments = master.connectedSegments;
+                // 外部から myNode を書き換えられるように SushiSpawner 側で public にするか
+                // 反射等を使う必要がありますが、一番簡単なのは Spawner 側で Awake で登録しておくことです
+                // 今回は Spawner 側の変数を更新するメソッドを呼ぶ形を想定します
+                spawner.SetMasterNode(masterNodeMap[key]);
             }
         }
 
