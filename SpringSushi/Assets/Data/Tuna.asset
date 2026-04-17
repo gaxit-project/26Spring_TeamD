@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1817f70a7afcfcb46a2831a504c05e1c, type: 3}
+  m_Script: {fileID: 11500000, guid: 6d22de5a9cfb4eb4da10a9d330149cfa, type: 3}
   m_Name: Tuna
   m_EditorClassIdentifier: 
   sushiName: Tuna
   price: 500
-  modelPrefab: {fileID: 0}
+  sushiModel: {fileID: 2447119893935742129, guid: 5ac405d6d7cc23241800ef5314493b98,
+    type: 3}
