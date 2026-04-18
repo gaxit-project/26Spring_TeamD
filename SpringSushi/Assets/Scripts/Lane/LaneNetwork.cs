@@ -35,18 +35,8 @@ public class LaneNetwork : MonoBehaviour
         {
             if (seg.laneColor == color)
             {
+                // レーンの状態を変えるだけで、寿司は勝手に引き返し始めます
                 seg.SetReversed(newState);
-
-                SushiMovement[] allSushi = Object.FindObjectsByType<SushiMovement>(FindObjectsSortMode.None);
-                foreach (var sushi in allSushi)
-                {
-                    if (sushi.currentSegment == seg)
-                    {
-                        // ★ ここにログを追加
-                        Debug.Log($"<color=yellow>[Network]</color> {sushi.name} に反転命令を出します (Seg: {seg.name})");
-                        sushi.ToggleDirection();
-                    }
-                }
             }
         }
     }

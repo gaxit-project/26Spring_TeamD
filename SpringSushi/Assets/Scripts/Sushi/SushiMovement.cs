@@ -9,19 +9,15 @@ public class SushiMovement : MonoBehaviour
     public float moveSpeed = 1.0f;
 
     public LaneSegment currentSegment;
-    private LaneNode startNode;
-    private LaneNode targetNode;
-
-    private float progress = 0f;
-    private int lastReverseFrame = -1; // ★多重反転防止用
+    private float progress = 0f; // 0.0(nodeA) ～ 1.0(nodeB)
 
     public void Initialize(SushiData data, LaneSegment seg, LaneNode spawnNode)
     {
         this.data = data;
         currentSegment = seg;
-        startNode = spawnNode;
-        targetNode = (spawnNode == seg.nodeA) ? seg.nodeB : seg.nodeA;
-        progress = 0f;
+
+        // ★ スポーンしたノードがAなら0から、Bなら1から開始
+        progress = (spawnNode == seg.nodeA) ? 0f : 1f;
 
         if (data?.sushiModel != null)
         {
@@ -33,56 +29,47 @@ public class SushiMovement : MonoBehaviour
 
     private void Update()
     {
-        if (currentSegment == null || startNode == null || targetNode == null) return;
+        if (currentSegment == null) return;
 
         Move();
 
-        if (progress >= 1.0f)
+        // ★ 判定もシンプル：0を下回るか、1を上回ったら次のセグメントへ
+        if (progress > 1.0f || progress < 0.0f)
         {
             SwitchToNextSegment();
         }
     }
 
-    private void Move()
+    public void Move()
     {
-        float totalDist = Vector3.Distance(startNode.Position, targetNode.Position);
+        float totalDist = Vector3.Distance(currentSegment.nodeA.Position, currentSegment.nodeB.Position);
+        if (totalDist <= 0.001f) return;
 
-        if (totalDist > 0.001f)
-        {
-            progress += (moveSpeed / totalDist) * Time.deltaTime;
-        }
+        // ★ レーンの向きに従って増やすか減らすか決める（これだけで反転に対応）
+        float moveDir = currentSegment.isReversed ? -1f : 1f;
+        progress += (moveSpeed / totalDist) * Time.deltaTime * moveDir;
 
+        // 描画用のt（0-1にクランプ）
         float t = Mathf.Clamp01(progress);
 
-        // 位置の更新
-        transform.position = Vector3.Lerp(startNode.Position, targetNode.Position, t);
+        // 位置の更新（常にAとBの間を補間）
+        transform.position = Vector3.Lerp(currentSegment.nodeA.Position, currentSegment.nodeB.Position, t);
 
         // 向きの更新
-        Vector3 dir = targetNode.Position - startNode.Position;
-        if (dir != Vector3.zero) transform.forward = dir;
+        Vector3 forwardVec = currentSegment.nodeB.Position - currentSegment.nodeA.Position;
+        if (forwardVec != Vector3.zero)
+        {
+            transform.forward = forwardVec * moveDir;
+        }
     }
 
-    public void ToggleDirection()
-    {
-        // ★ 同じフレームで2回以上呼ばれたら無視する（反転の打ち消し防止）
-        if (Time.frameCount == lastReverseFrame) return;
-        lastReverseFrame = Time.frameCount;
-
-        if (startNode == null || targetNode == null) return;
-
-        // ノードの入れ替え
-        LaneNode temp = startNode;
-        startNode = targetNode;
-        targetNode = temp;
-
-        progress = 1.0f - progress;
-
-        Debug.Log($"<color=orange>[Reverse]</color> {gameObject.name} : 方向転換完了 (Frame: {Time.frameCount})");
-    }
+    // ★ 中身は不要になりました（Update内のMoveが自動でisReversedを見るため）
+    public void SyncDirectionWithSegment() { }
 
     private void SwitchToNextSegment()
     {
-        LaneNode arrivalNode = targetNode;
+        // どちらの端に到達したか
+        LaneNode arrivalNode = (progress >= 0.5f) ? currentSegment.nodeB : currentSegment.nodeA;
         LaneSegment next = null;
 
         foreach (var seg in arrivalNode.connectedSegments)
@@ -95,17 +82,8 @@ public class SushiMovement : MonoBehaviour
         if (next != null)
         {
             currentSegment = next;
-            startNode = arrivalNode;
-
-            // 次のレーンの設定に従って目的地を決定
-            targetNode = next.isReversed ? next.GetEntryNode() : next.GetExitNode();
-
-            if (targetNode == startNode)
-            {
-                targetNode = (next.nodeA == startNode) ? next.nodeB : next.nodeA;
-            }
-
-            progress = 0f;
+            // ★ 次のセグメントのどちらのノードに入ったかでProgressをリセット
+            progress = (arrivalNode == next.nodeA) ? 0f : 1f;
         }
         else
         {
@@ -119,7 +97,6 @@ public class SushiMovement : MonoBehaviour
     {
         if (other.CompareTag("Sushi"))
         {
-            Debug.Log($"<color=red>衝突消滅!</color> {data?.sushiName} が衝突");
             SushiDestroy();
         }
     }

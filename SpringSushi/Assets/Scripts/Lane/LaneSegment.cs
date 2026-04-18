@@ -15,13 +15,16 @@ public class LaneSegment : MonoBehaviour
     public LaneNode GetExitNode() => isReversed ? nodeA : nodeB;
     public LaneNode GetEntryNode() => isReversed ? nodeB : nodeA;
 
+    public string FlowDirectionName => isReversed ? $"{nodeB.name} → {nodeA.name}" : $"{nodeA.name} → {nodeB.name}";
     // ★ 追加：状態を直接セット
     public void SetReversed(bool value)
     {
         isReversed = value;
 
-        Debug.Log($"{gameObject.name} の isReversed が {isReversed} になりました！", gameObject);
+        // ★ ここで「レーン自体がどちらに動いているか」をログ出力
+        Debug.Log($"<color=white>【Lane Update】</color> {gameObject.name} の流れ: <b>{FlowDirectionName}</b>");
 
+        // 見た目の更新
         var renderer = GetComponent<Renderer>();
         if (renderer != null)
         {
@@ -56,16 +59,16 @@ public class LaneSegment : MonoBehaviour
     */
     private void OnDrawGizmos()
     {
-        LaneNode[] childNodes = GetComponentsInChildren<LaneNode>();
-        if (childNodes.Length < 2) return;
+        if (nodeA == null || nodeB == null) return;
 
-        Vector3 posA = childNodes[0].Position;
-        Vector3 posB = childNodes[1].Position;
+        Vector3 from = isReversed ? nodeB.Position : nodeA.Position;
+        Vector3 to = isReversed ? nodeA.Position : nodeB.Position;
 
-        Gizmos.color = isReversed ? Color.black : Color.white;
-        Gizmos.DrawLine(posA, posB);
+        Gizmos.color = isReversed ? Color.red : Color.cyan;
 
-        Vector3 exitPos = isReversed ? posA : posB;
-        Gizmos.DrawSphere(exitPos, 0.15f);
+        // 流れの方向に線を引く
+        Gizmos.DrawLine(from, to);
+        // 流れの終点に球を表示
+        Gizmos.DrawSphere(to, 0.1f);
     }
 }
