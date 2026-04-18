@@ -27,22 +27,20 @@ public class LaneNetwork : MonoBehaviour
 
     public void ToggleLanes(LaneColor color)
     {
-        // ★ 初期化
-        if (!laneStates.ContainsKey(color))
-            laneStates[color] = false;
+        // もし間違って NoColor が送られてきても、絶対に反応させない
+        if (color == LaneColor.NoColor) return;
 
-        // ★ 状態反転
-        laneStates[color] = !laneStates[color];
-        bool newState = laneStates[color];
+        LaneSegment[] liveSegments = FindObjectsByType<LaneSegment>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
-        Debug.Log($"<color=cyan>[Network]</color> {color} → isReversed = {newState}");
-
-        // ★ 既に取得済みのallSegmentsを使う（高速＆安全）
-        foreach (var seg in allSegments)
+        foreach (var seg in liveSegments)
         {
+            // NoColor のレーンは、ボタンの色と一致することがないので
+            // 基本的にこの if 文を通りませんが、明示的に安全策をとるなら:
+            if (seg.laneColor == LaneColor.NoColor) continue;
+
             if (seg.laneColor == color)
             {
-                seg.SetReversed(newState);
+                seg.Reverse();
             }
         }
     }

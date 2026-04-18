@@ -9,5 +9,6 @@ public enum LaneColor
     Blue,   // Xボタン
     Yellow, // Yボタン
     Green,  // Aボタン
-    Red     // Bボタン
+    Red,     // Bボタン
+    NoColor  //操作できない
 }
