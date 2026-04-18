@@ -20,7 +20,7 @@ public class SushiSpawner : MonoBehaviour
 
     private void Start()
     {
-        // 万が一Networkから呼ばれなかった時のためのバックアップ
+        // バックアップ
         if (myNode == null) myNode = GetComponent<LaneNode>();
 
         StartCoroutine(SafeStart());
@@ -28,7 +28,6 @@ public class SushiSpawner : MonoBehaviour
 
     private IEnumerator SafeStart()
     {
-        // 1フレーム待機してNetworkの初期化(InitializeGraph)完了を待つ
         yield return null;
 
         if (myNode != null)
@@ -52,35 +51,37 @@ public class SushiSpawner : MonoBehaviour
 
     private void SpawnSushi()
     {
-        // ...既存のNullチェック等はそのまま...
+        if (sushiBasePrefab == null || sushiDataList.Count == 0 || myNode == null)
+        {
+            Debug.LogWarning($"{name}: 生成条件不足");
+            return;
+        }
 
         LaneSegment targetSegment = FindOutgoingSegment();
-        if (targetSegment != null)
+        if (targetSegment == null)
         {
-            // 【修正ポイント】
-            // transform.position ではなく、送り出すレーンの EntryNode の座標を取得する
-            Vector3 spawnPosition = targetSegment.GetEntryNode().Position;
-
-            // 生成位置を EntryNode に指定する
-            GameObject sushiObj = Instantiate(sushiBasePrefab, spawnPosition, Quaternion.identity);
-
-            SushiMovement movement = sushiObj.GetComponent<SushiMovement>();
-            SushiData randomData = sushiDataList[Random.Range(0, sushiDataList.Count)];
-
-            // Progress 0 から開始
-            movement.Initialize(randomData, targetSegment);
+            Debug.LogWarning($"{name}: 有効な接続セグメントが見つからない");
+            return;
         }
-        // ...省略...
+
+        // ★ 修正①：スポーン位置は常に myNode
+        Vector3 spawnPosition = myNode.Position;
+
+        GameObject sushiObj = Instantiate(sushiBasePrefab, spawnPosition, Quaternion.identity);
+
+        SushiMovement movement = sushiObj.GetComponent<SushiMovement>();
+        SushiData randomData = sushiDataList[Random.Range(0, sushiDataList.Count)];
+
+        // ★ 修正②：spawnNode を渡す（これが最重要）
+        movement.Initialize(randomData, targetSegment, myNode);
     }
 
     private LaneSegment FindOutgoingSegment()
     {
-        // 今の myNode に繋がっているセグメントを調べる
         foreach (var seg in myNode.connectedSegments)
         {
-            // ヒエラルキー上に存在する「本物」のセグメントか確認
-            // (もしプレハブを参照していたら、シーン上の本物に差し替える)
-            if (seg.GetEntryNode() == myNode) return seg;
+            // ★ ここはシンプルに「繋がってるものを返す」でOK
+            return seg;
         }
         return null;
     }

@@ -5,20 +5,23 @@ public class SushiMovement : MonoBehaviour
     [Header("Data")]
     public SushiData data;
 
-    [Header("Movement")]
+    [Header("Settings")]
     public float moveSpeed = 1.0f;
+
     public LaneSegment currentSegment;
-    [Range(0, 1)] public float progress = 0f;
+    private LaneNode startNode;
+    private LaneNode targetNode;
 
-    private bool lastReversedState;
+    private float progress = 0f;
+    private int lastReverseFrame = -1; // ★多重反転防止用
 
-    public void Initialize(SushiData newData, LaneSegment startSegment)
+    public void Initialize(SushiData data, LaneSegment seg, LaneNode spawnNode)
     {
-        data = newData;
-        currentSegment = startSegment;
+        this.data = data;
+        currentSegment = seg;
+        startNode = spawnNode;
+        targetNode = (spawnNode == seg.nodeA) ? seg.nodeB : seg.nodeA;
         progress = 0f;
-
-        if (currentSegment != null) lastReversedState = currentSegment.isReversed;
 
         if (data?.sushiModel != null)
         {
@@ -30,59 +33,93 @@ public class SushiMovement : MonoBehaviour
 
     private void Update()
     {
-        if (currentSegment == null) return;
+        if (currentSegment == null || startNode == null || targetNode == null) return;
 
-        // 1. 反転検知
-        if (currentSegment.isReversed != lastReversedState)
-        {
-            progress = 1.0f - progress;
-            lastReversedState = currentSegment.isReversed;
-            // 【追加ログ】どのセグメントが反転したか表示
-            Debug.Log($"<color=orange>[Sushi Movement]</color> {currentSegment.name} の反転を検知！ 逆走を開始します。");
-        }
+        Move();
 
-        // --- (2.移動, 3.座標更新 はそのまま) ---
-        float distance = Vector3.Distance(currentSegment.nodeA.Position, currentSegment.nodeB.Position);
-        if (distance > 0.001f) progress += (moveSpeed / distance) * Time.deltaTime;
-        UpdatePosition();
-
-        // 4. 遷移
         if (progress >= 1.0f)
         {
-            currentSegment = currentSegment.GetNextSegment();
-            progress = 0f;
-            if (currentSegment == null) SushiDestroy();
-            else
-            {
-                lastReversedState = currentSegment.isReversed;
-                // 【追加ログ】
-                Debug.Log($"<color=white>[Sushi]</color> {currentSegment.name} に進入しました。");
-            }
+            SwitchToNextSegment();
         }
     }
 
-    private void UpdatePosition()
+    private void Move()
     {
-        // GetEntry/ExitNodeがisReversedを見てA/Bを出し分けているので、これだけで逆走する
-        Vector3 start = currentSegment.GetEntryNode().Position;
-        Vector3 end = currentSegment.GetExitNode().Position;
+        float totalDist = Vector3.Distance(startNode.Position, targetNode.Position);
 
-        transform.position = Vector3.Lerp(start, end, progress);
+        if (totalDist > 0.001f)
+        {
+            progress += (moveSpeed / totalDist) * Time.deltaTime;
+        }
 
-        Vector3 dir = end - start;
+        float t = Mathf.Clamp01(progress);
+
+        // 位置の更新
+        transform.position = Vector3.Lerp(startNode.Position, targetNode.Position, t);
+
+        // 向きの更新
+        Vector3 dir = targetNode.Position - startNode.Position;
         if (dir != Vector3.zero) transform.forward = dir;
     }
 
-    public void SushiDestroy()
+    public void ToggleDirection()
     {
-        Destroy(gameObject);
+        // ★ 同じフレームで2回以上呼ばれたら無視する（反転の打ち消し防止）
+        if (Time.frameCount == lastReverseFrame) return;
+        lastReverseFrame = Time.frameCount;
+
+        if (startNode == null || targetNode == null) return;
+
+        // ノードの入れ替え
+        LaneNode temp = startNode;
+        startNode = targetNode;
+        targetNode = temp;
+
+        progress = 1.0f - progress;
+
+        Debug.Log($"<color=orange>[Reverse]</color> {gameObject.name} : 方向転換完了 (Frame: {Time.frameCount})");
     }
+
+    private void SwitchToNextSegment()
+    {
+        LaneNode arrivalNode = targetNode;
+        LaneSegment next = null;
+
+        foreach (var seg in arrivalNode.connectedSegments)
+        {
+            if (seg == currentSegment) continue;
+            next = seg;
+            break;
+        }
+
+        if (next != null)
+        {
+            currentSegment = next;
+            startNode = arrivalNode;
+
+            // 次のレーンの設定に従って目的地を決定
+            targetNode = next.isReversed ? next.GetEntryNode() : next.GetExitNode();
+
+            if (targetNode == startNode)
+            {
+                targetNode = (next.nodeA == startNode) ? next.nodeB : next.nodeA;
+            }
+
+            progress = 0f;
+        }
+        else
+        {
+            SushiDestroy();
+        }
+    }
+
+    public void SushiDestroy() => Destroy(gameObject);
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Sushi"))
         {
-            Debug.Log($"<color=red>衝突消滅!</color> {data?.sushiName} が衝突しました。");
+            Debug.Log($"<color=red>衝突消滅!</color> {data?.sushiName} が衝突");
             SushiDestroy();
         }
     }

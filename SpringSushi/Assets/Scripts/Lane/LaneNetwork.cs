@@ -27,26 +27,29 @@ public class LaneNetwork : MonoBehaviour
 
     public void ToggleLanes(LaneColor color)
     {
-        // ★ 初期化
-        if (!laneStates.ContainsKey(color))
-            laneStates[color] = false;
-
-        // ★ 状態反転
+        if (!laneStates.ContainsKey(color)) laneStates[color] = false;
         laneStates[color] = !laneStates[color];
         bool newState = laneStates[color];
 
-        Debug.Log($"<color=cyan>[Network]</color> {color} → isReversed = {newState}");
-
-        // ★ 既に取得済みのallSegmentsを使う（高速＆安全）
         foreach (var seg in allSegments)
         {
             if (seg.laneColor == color)
             {
                 seg.SetReversed(newState);
+
+                SushiMovement[] allSushi = Object.FindObjectsByType<SushiMovement>(FindObjectsSortMode.None);
+                foreach (var sushi in allSushi)
+                {
+                    if (sushi.currentSegment == seg)
+                    {
+                        // ★ ここにログを追加
+                        Debug.Log($"<color=yellow>[Network]</color> {sushi.name} に反転命令を出します (Seg: {seg.name})");
+                        sushi.ToggleDirection();
+                    }
+                }
             }
         }
     }
-
     private void InitializeGraph()
     {
         allSegments = FindObjectsByType<LaneSegment>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).ToList();

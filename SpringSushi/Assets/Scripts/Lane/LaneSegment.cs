@@ -35,6 +35,7 @@ public class LaneSegment : MonoBehaviour
         SetReversed(!isReversed);
     }
 
+    /*
     public LaneSegment GetNextSegment()
     {
         LaneNode startNode = GetExitNode();
@@ -52,6 +53,7 @@ public class LaneSegment : MonoBehaviour
         }
         return null;
     }
+    */
     private void OnDrawGizmos()
     {
         LaneNode[] childNodes = GetComponentsInChildren<LaneNode>();
