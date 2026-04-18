@@ -6,4 +6,5 @@ public class SushiData : ScriptableObject
     public string sushiName;
     public int price;
     public GameObject sushiModel;
+    public Sprite sushiIcon;
 }

@@ -47,9 +47,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: e835477af019fbf4a9f1da1f3428cf0f, type: 2}
-  moveSpeed: 1
+  moveSpeed: 1.5
   currentSegment: {fileID: 0}
-  progress: 0
 --- !u!54 &7531779415742267278
 Rigidbody:
   m_ObjectHideFlags: 0

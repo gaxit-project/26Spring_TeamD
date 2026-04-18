@@ -9,10 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d22de5a9cfb4eb4da10a9d330149cfa, type: 3}
-  m_Name: Tuna
+  m_Script: {fileID: 11500000, guid: 205f441ca37bbbd46b94c3016305d7fe, type: 3}
+  m_Name: Customer
   m_EditorClassIdentifier: 
-  sushiName: Tuna
-  price: 500
-  sushiModel: {fileID: 2447119893935742129, guid: 5ac405d6d7cc23241800ef5314493b98,
+  customerType: normal
+  customerPrefab: {fileID: 2059982437110439301, guid: e5d2c44359d44e6408e2abaefb2087da,
     type: 3}
+  patienceTime: 15
+  eatTime: 3
+  scoreMultiplier: 1
