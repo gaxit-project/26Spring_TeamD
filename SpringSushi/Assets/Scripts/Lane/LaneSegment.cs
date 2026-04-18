@@ -37,17 +37,21 @@ public class LaneSegment : MonoBehaviour
 
     public LaneSegment GetNextSegment()
     {
-        LaneNode exitNode = GetExitNode();
-        if (exitNode == null) return null;
+        LaneNode startNode = GetExitNode();
+        if (startNode == null) return null;
 
-        foreach (var segment in exitNode.connectedSegments)
+        foreach (var segment in startNode.connectedSegments)
         {
             if (segment == this) continue;
-            if (segment.GetEntryNode() == exitNode) return segment;
+
+            // 【修正ポイント】
+            // 相手の Entry/Exit に関係なく、物理的に繋がっていれば一旦「次」として認める。
+            // 進むべき方向は SushiMovement 側が isReversed を見て自動で判断するため、
+            // ここでは「道がつながっているか」だけを返せばOKです。
+            return segment;
         }
         return null;
     }
-
     private void OnDrawGizmos()
     {
         LaneNode[] childNodes = GetComponentsInChildren<LaneNode>();

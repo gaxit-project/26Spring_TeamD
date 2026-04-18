@@ -483,7 +483,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ed64f15edbcf7641a6baa83c5e935fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laneColor: 4
+  laneColor: 0
   nodeA: {fileID: 0}
   nodeB: {fileID: 0}
   isReversed: 0

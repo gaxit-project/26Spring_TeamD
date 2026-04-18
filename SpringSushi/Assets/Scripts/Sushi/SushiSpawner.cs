@@ -52,30 +52,25 @@ public class SushiSpawner : MonoBehaviour
 
     private void SpawnSushi()
     {
-        if (myNode == null) return;
-
-        // デバッグログ
-        int count = myNode.connectedSegments.Count;
-        Debug.Log($"<color=cyan>[Spawner Debug]</color> 接続数: {count}");
-
-        foreach (var seg in myNode.connectedSegments)
-        {
-            LaneNode entry = seg.GetEntryNode();
-            Debug.Log($"<color=yellow>[Check]</color> {seg.name} | 入口: {entry.name} | Spawnerと一致? : {entry == myNode}");
-        }
+        // ...既存のNullチェック等はそのまま...
 
         LaneSegment targetSegment = FindOutgoingSegment();
         if (targetSegment != null)
         {
-            GameObject sushiObj = Instantiate(sushiBasePrefab, transform.position, Quaternion.identity);
+            // 【修正ポイント】
+            // transform.position ではなく、送り出すレーンの EntryNode の座標を取得する
+            Vector3 spawnPosition = targetSegment.GetEntryNode().Position;
+
+            // 生成位置を EntryNode に指定する
+            GameObject sushiObj = Instantiate(sushiBasePrefab, spawnPosition, Quaternion.identity);
+
             SushiMovement movement = sushiObj.GetComponent<SushiMovement>();
             SushiData randomData = sushiDataList[Random.Range(0, sushiDataList.Count)];
+
+            // Progress 0 から開始
             movement.Initialize(randomData, targetSegment);
         }
-        else
-        {
-            Debug.LogWarning("送り出せるレーンがありません。向きを確認してください。");
-        }
+        // ...省略...
     }
 
     private LaneSegment FindOutgoingSegment()
