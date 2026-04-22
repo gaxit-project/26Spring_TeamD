@@ -10,13 +10,17 @@ public class SushiMovement : MonoBehaviour
 
     public LaneSegment currentSegment;
     private float progress = 0f; // 0.0(nodeA) ～ 1.0(nodeB)
+    private bool movingTowardsNodeB = true; // true: A->B(0->1), false: B->A(1->0)
 
     public void Initialize(SushiData data, LaneSegment seg, LaneNode spawnNode)
     {
         this.data = data;
         currentSegment = seg;
 
-        // ★ スポーンしたノードがAなら0から、Bなら1から開始
+        // 初期の進行方向をレーンの流れに合わせて決定
+        UpdateMovingDirection();
+
+        // スポーン位置：NodeAから入ったなら0、NodeBなら1
         progress = (spawnNode == seg.nodeA) ? 0f : 1f;
 
         if (data?.sushiModel != null)
@@ -33,8 +37,8 @@ public class SushiMovement : MonoBehaviour
 
         Move();
 
-        // ★ 判定もシンプル：0を下回るか、1を上回ったら次のセグメントへ
-        if (progress > 1.0f || progress < 0.0f)
+        // 判定：目的地(AかBか)に到達したか
+        if ((movingTowardsNodeB && progress >= 1.0f) || (!movingTowardsNodeB && progress <= 0.0f))
         {
             SwitchToNextSegment();
         }
@@ -45,48 +49,64 @@ public class SushiMovement : MonoBehaviour
         float totalDist = Vector3.Distance(currentSegment.nodeA.Position, currentSegment.nodeB.Position);
         if (totalDist <= 0.001f) return;
 
-        // ★ レーンの向きに従って増やすか減らすか決める（これだけで反転に対応）
-        float moveDir = currentSegment.isReversed ? -1f : 1f;
-        progress += (moveSpeed / totalDist) * Time.deltaTime * moveDir;
+        // 自分の目的地に従ってprogressを増減
+        float directionFactor = movingTowardsNodeB ? 1f : -1f;
+        progress += (moveSpeed / totalDist) * Time.deltaTime * directionFactor;
 
-        // 描画用のt（0-1にクランプ）
+        // 描画位置の計算
         float t = Mathf.Clamp01(progress);
-
-        // 位置の更新（常にAとBの間を補間）
         transform.position = Vector3.Lerp(currentSegment.nodeA.Position, currentSegment.nodeB.Position, t);
 
         // 向きの更新
         Vector3 forwardVec = currentSegment.nodeB.Position - currentSegment.nodeA.Position;
         if (forwardVec != Vector3.zero)
         {
-            transform.forward = forwardVec * moveDir;
+            transform.forward = forwardVec * directionFactor;
         }
     }
 
-    // ★ 中身は不要になりました（Update内のMoveが自動でisReversedを見るため）
-    public void SyncDirectionWithSegment() { }
+    /// <summary>
+    /// 今のレーンのisReversedを見て、自分がAとBどっちに向かうべきか更新する
+    /// </summary>
+    public void UpdateMovingDirection()
+    {
+        // isReversed=false(通常)ならB(1.0)へ、true(反転)ならA(0.0)へ
+        movingTowardsNodeB = !currentSegment.isReversed;
+    }
+
+    // LaneNetworkから呼ばれる反転同期用
+    // LaneNetworkから呼ばれる
+    public void SyncDirectionWithSegment()
+    {
+        // レーンが反転した瞬間に、自分がAとBどっちに向かうべきかを即座に書き換える
+        UpdateMovingDirection();
+
+        // デバッグログ（動いたら消してOK）
+        Debug.Log($"<color=yellow>[Reverse Sync]</color> {gameObject.name} の進行方向が反転しました。");
+    }
 
     private void SwitchToNextSegment()
     {
-        // どちらの端に到達したか判定
-        LaneNode arrivalNode = (progress >= 0.5f) ? currentSegment.nodeB : currentSegment.nodeA;
+        // 到着したノードを目的地フラグから特定
+        LaneNode arrivalNode = movingTowardsNodeB ? currentSegment.nodeB : currentSegment.nodeA;
 
-        // ★ 修正：Nodeに「次の道」を決定してもらう（ここで分岐ロジックが走る）
+        // Nodeに「次に行ける(逆走でない)道」を聞く
         LaneSegment next = arrivalNode.GetNextSegment(currentSegment);
 
         if (next != null)
         {
             currentSegment = next;
 
-            // ★ 次のセグメントのどちらから入ったか(AかBか)で進捗をリセット
-            // これにより、ループ構造でも逆方向から入っても正しく接続される
-            progress = (arrivalNode == next.nodeA) ? 0f : 1f;
+            // 新しいレーンの流れに自分の意志を合わせる
+            UpdateMovingDirection();
 
-            // デバッグログ：ループや分岐の確認用
-            // Debug.Log($"{gameObject.name} が {next.name} へ移動 (入口: {arrivalNode.name})");
+            // 進入位置のセット
+            progress = (arrivalNode == next.nodeA) ? 0f : 1f;
         }
         else
         {
+            // 行き先がない（行き止まり、または全ての接続先が逆流）
+            Debug.Log($"<color=red>[DeadEnd]</color> {gameObject.name} の行き先がありません。");
             SushiDestroy();
         }
     }

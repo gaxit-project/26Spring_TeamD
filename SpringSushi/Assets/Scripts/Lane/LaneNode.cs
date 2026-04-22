@@ -7,40 +7,59 @@ public class LaneNode : MonoBehaviour
     public List<LaneSegment> connectedSegments = new List<LaneSegment>();
 
     [Header("Branch Settings")]
-    [Tooltip("分岐点として機能させるか")]
+    [Tooltip("分岐点として機能させるか（交互切り替え）")]
     public bool isBranch = false;
     private int nextOptionIndex = 0;
 
     public Vector3 Position => transform.position;
 
     /// <summary>
-    /// 次に進むべきセグメントを選択する（分岐なら交互に）
+    /// 次に進むべきセグメントを選択する（逆流している道は除外する）
     /// </summary>
-    /// <param name="current">今いるセグメント</param>
     public LaneSegment GetNextSegment(LaneSegment current)
     {
-        // 接続されているセグメントから、今来た道を除外する
         List<LaneSegment> options = new List<LaneSegment>();
+
         foreach (var seg in connectedSegments)
         {
             if (seg == current) continue;
-            options.Add(seg);
+
+            // ★ 重要：その道が今「入口」として機能しているかチェック
+            if (IsEnterable(seg, this))
+            {
+                options.Add(seg);
+            }
         }
 
         if (options.Count == 0) return null;
 
-        // 分岐設定がない、または道が1つしかないなら最初の道へ
+        // 候補が1つならそれを、複数なら交互に返す
         if (!isBranch || options.Count == 1)
         {
             return options[0];
         }
 
-        // 分岐なら交互にインデックスを回す
         LaneSegment selected = options[nextOptionIndex % options.Count];
         nextOptionIndex++;
 
-        Debug.Log($"<color=orange>[Branch]</color> {name}: 次の進路を {selected.name} に切り替えました。");
+        Debug.Log($"<color=orange>[Branch]</color> {name}: {selected.name} へ分岐しました。");
         return selected;
+    }
+
+    /// <summary>
+    /// 指定したノードからそのセグメントに「順走」で進入できるか判定
+    /// </summary>
+    private bool IsEnterable(LaneSegment seg, LaneNode fromNode)
+    {
+        // 通常(false): Aから入りたい / 反転(true): Bから入りたい
+        if (!seg.isReversed)
+        {
+            return fromNode == seg.nodeA;
+        }
+        else
+        {
+            return fromNode == seg.nodeB;
+        }
     }
 
     private void OnDrawGizmos()
