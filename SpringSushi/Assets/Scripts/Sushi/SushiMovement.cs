@@ -68,22 +68,22 @@ public class SushiMovement : MonoBehaviour
 
     private void SwitchToNextSegment()
     {
-        // どちらの端に到達したか
+        // どちらの端に到達したか判定
         LaneNode arrivalNode = (progress >= 0.5f) ? currentSegment.nodeB : currentSegment.nodeA;
-        LaneSegment next = null;
 
-        foreach (var seg in arrivalNode.connectedSegments)
-        {
-            if (seg == currentSegment) continue;
-            next = seg;
-            break;
-        }
+        // ★ 修正：Nodeに「次の道」を決定してもらう（ここで分岐ロジックが走る）
+        LaneSegment next = arrivalNode.GetNextSegment(currentSegment);
 
         if (next != null)
         {
             currentSegment = next;
-            // ★ 次のセグメントのどちらのノードに入ったかでProgressをリセット
+
+            // ★ 次のセグメントのどちらから入ったか(AかBか)で進捗をリセット
+            // これにより、ループ構造でも逆方向から入っても正しく接続される
             progress = (arrivalNode == next.nodeA) ? 0f : 1f;
+
+            // デバッグログ：ループや分岐の確認用
+            // Debug.Log($"{gameObject.name} が {next.name} へ移動 (入口: {arrivalNode.name})");
         }
         else
         {

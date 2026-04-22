@@ -63,12 +63,17 @@ public class LaneSegment : MonoBehaviour
 
         Vector3 from = isReversed ? nodeB.Position : nodeA.Position;
         Vector3 to = isReversed ? nodeA.Position : nodeB.Position;
+        Vector3 dir = (to - from).normalized;
 
         Gizmos.color = isReversed ? Color.red : Color.cyan;
-
-        // 流れの方向に線を引く
         Gizmos.DrawLine(from, to);
-        // 流れの終点に球を表示
-        Gizmos.DrawSphere(to, 0.1f);
+
+        // 先端に小さな線を描いて矢印にする
+        float arrowHeadLength = 0.3f;
+        float arrowHeadAngle = 20f;
+        Vector3 right = Quaternion.LookRotation(dir) * Quaternion.Euler(0, 180 + arrowHeadAngle, 0) * Vector3.forward;
+        Vector3 left = Quaternion.LookRotation(dir) * Quaternion.Euler(0, 180 - arrowHeadAngle, 0) * Vector3.forward;
+        Gizmos.DrawRay(to, right * arrowHeadLength);
+        Gizmos.DrawRay(to, left * arrowHeadLength);
     }
 }

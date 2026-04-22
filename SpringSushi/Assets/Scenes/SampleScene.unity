@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028331, g: 0.2257133, b: 0.3069217, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -432,6 +432,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedSegments: []
+  isBranch: 0
 --- !u!1 &144482449
 GameObject:
   m_ObjectHideFlags: 0
@@ -508,6 +509,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedSegments: []
+  isBranch: 0
 --- !u!1 &270428884
 GameObject:
   m_ObjectHideFlags: 0
@@ -553,6 +555,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedSegments: []
+  isBranch: 0
 --- !u!1 &313614251
 GameObject:
   m_ObjectHideFlags: 0
@@ -599,8 +602,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1371783649}
   - {fileID: 1341168110}
+  - {fileID: 1371783649}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &314019188
@@ -648,6 +651,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedSegments: []
+  isBranch: 0
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -830,6 +834,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedSegments: []
+  isBranch: 0
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -1503,6 +1508,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedSegments: []
+  isBranch: 0
 --- !u!1 &993230878
 GameObject:
   m_ObjectHideFlags: 0
@@ -1599,6 +1605,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedSegments: []
+  isBranch: 0
 --- !u!114 &1155424637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1662,6 +1669,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedSegments: []
+  isBranch: 0
 --- !u!1 &1293950347
 GameObject:
   m_ObjectHideFlags: 0
@@ -1917,6 +1925,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedSegments: []
+  isBranch: 0
 --- !u!1 &1363662155
 GameObject:
   m_ObjectHideFlags: 0
@@ -1962,6 +1971,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedSegments: []
+  isBranch: 0
 --- !u!1 &1371783648
 GameObject:
   m_ObjectHideFlags: 0
@@ -2007,6 +2017,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedSegments: []
+  isBranch: 0
 --- !u!1 &1384748191
 GameObject:
   m_ObjectHideFlags: 0
@@ -2052,6 +2063,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedSegments: []
+  isBranch: 0
 --- !u!1 &1403986329
 GameObject:
   m_ObjectHideFlags: 0
@@ -2238,8 +2250,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1972033046}
   - {fileID: 1159570395}
+  - {fileID: 1972033046}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1960210500
@@ -2337,6 +2349,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedSegments: []
+  isBranch: 0
 --- !u!1 &1994297016
 GameObject:
   m_ObjectHideFlags: 0
@@ -2382,6 +2395,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectedSegments: []
+  isBranch: 0
 --- !u!1 &2042351019
 GameObject:
   m_ObjectHideFlags: 0
