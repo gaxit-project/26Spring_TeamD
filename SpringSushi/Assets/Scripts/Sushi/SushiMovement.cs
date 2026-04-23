@@ -12,8 +12,15 @@ public class SushiMovement : MonoBehaviour
     private float progress = 0f; // 0.0(nodeA) ～ 1.0(nodeB)
     private bool movingTowardsNodeB = true; // true: A->B(0->1), false: B->A(1->0)
 
+    // ★ 追記：Networkの参照を保持
+    private LaneNetwork network;
+
     public void Initialize(SushiData data, LaneSegment seg, LaneNode spawnNode)
     {
+        // ★ 追記：Networkの参照を取得してリストに自分を登録
+        network = Object.FindFirstObjectByType<LaneNetwork>();
+        if (network != null) network.RegisterSushi(this);
+
         this.data = data;
         currentSegment = seg;
 
@@ -41,6 +48,15 @@ public class SushiMovement : MonoBehaviour
         if ((movingTowardsNodeB && progress >= 1.0f) || (!movingTowardsNodeB && progress <= 0.0f))
         {
             SwitchToNextSegment();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // ★ 追記：破棄される時にリストから自分を外す
+        if (network != null)
+        {
+            network.UnregisterSushi(this);
         }
     }
 
@@ -74,8 +90,9 @@ public class SushiMovement : MonoBehaviour
         movingTowardsNodeB = !currentSegment.isReversed;
     }
 
-    // LaneNetworkから呼ばれる反転同期用
-    // LaneNetworkから呼ばれる
+    /// <summary>
+    /// LaneNetworkから呼ばれる反転同期用
+    /// </summary>
     public void SyncDirectionWithSegment()
     {
         // レーンが反転した瞬間に、自分がAとBどっちに向かうべきかを即座に書き換える

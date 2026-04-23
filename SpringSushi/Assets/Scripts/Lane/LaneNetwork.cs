@@ -5,9 +5,10 @@ using UnityEngine;
 public class LaneNetwork : MonoBehaviour
 {
     public List<LaneSegment> allSegments = new List<LaneSegment>();
+    private List<SushiMovement> activeSushiList = new List<SushiMovement>();
     [SerializeField] private float snapThreshold = 0.1f;
 
-    // ★ 追加：レーン状態管理
+    // レーン状態管理（Key: 色, Value: 反転しているか）
     private Dictionary<LaneColor, bool> laneStates = new Dictionary<LaneColor, bool>();
 
     private void Awake()
@@ -25,32 +26,53 @@ public class LaneNetwork : MonoBehaviour
         LaneInputManager.OnLaneButtonPressed -= ToggleLanes;
     }
 
+    // ★ 寿司が生成された時に呼ぶ
+    public void RegisterSushi(SushiMovement sushi)
+    {
+        if (!activeSushiList.Contains(sushi))
+            activeSushiList.Add(sushi);
+    }
+
+    // ★ 寿司が破棄された時に呼ぶ
+    public void UnregisterSushi(SushiMovement sushi)
+    {
+        if (activeSushiList.Contains(sushi))
+            activeSushiList.Remove(sushi);
+    }
+
     public void ToggleLanes(LaneColor color)
     {
+        // ★ 追記：状態の反転処理
         if (!laneStates.ContainsKey(color)) laneStates[color] = false;
         laneStates[color] = !laneStates[color];
+
         bool newState = laneStates[color];
 
         foreach (var seg in allSegments)
         {
             if (seg.laneColor == color)
             {
-                // 1. まずレーンの状態を更新
                 seg.SetReversed(newState);
 
-                // 2. ★ 画面上の全寿司に対して、自分がこのレーンに乗っているか確認させる
-                SushiMovement[] allSushi = Object.FindObjectsByType<SushiMovement>(FindObjectsSortMode.None);
-                foreach (var sushi in allSushi)
+                // ★ 高速化：FindObjectsByType を使わず、管理リストを逆順走査する
+                for (int i = activeSushiList.Count - 1; i >= 0; i--)
                 {
-                    if (sushi.currentSegment == seg)
+                    // 万が一、Destroy のタイミングで null になっている場合のガード
+                    if (activeSushiList[i] == null)
                     {
-                        // 寿司の目的地（AかBか）を即座に再計算させる
-                        sushi.SyncDirectionWithSegment();
+                        activeSushiList.RemoveAt(i);
+                        continue;
+                    }
+
+                    if (activeSushiList[i].currentSegment == seg)
+                    {
+                        activeSushiList[i].SyncDirectionWithSegment();
                     }
                 }
             }
         }
     }
+
     private void InitializeGraph()
     {
         allSegments = FindObjectsByType<LaneSegment>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).ToList();
