@@ -551,6 +551,7 @@ GameObject:
   m_Component:
   - component: {fileID: 313614253}
   - component: {fileID: 313614252}
+  - component: {fileID: 313614254}
   m_Layer: 0
   m_Name: Segment_Blue
   m_TagString: Untagged
@@ -573,7 +574,6 @@ MonoBehaviour:
   laneColor: 0
   nodeA: {fileID: 0}
   nodeB: {fileID: 0}
-  isReversed: 0
 --- !u!4 &313614253
 Transform:
   m_ObjectHideFlags: 0
@@ -591,6 +591,19 @@ Transform:
   - {fileID: 1371783649}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &313614254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 313614251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9869858f8798b57479cc643d0d5716e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  segment: {fileID: 313614252}
 --- !u!1 &314019188
 GameObject:
   m_ObjectHideFlags: 0
@@ -1244,6 +1257,7 @@ GameObject:
   m_Component:
   - component: {fileID: 777868101}
   - component: {fileID: 777868100}
+  - component: {fileID: 777868102}
   m_Layer: 0
   m_Name: Segment_Blue
   m_TagString: Untagged
@@ -1266,7 +1280,6 @@ MonoBehaviour:
   laneColor: 0
   nodeA: {fileID: 0}
   nodeB: {fileID: 0}
-  isReversed: 0
 --- !u!4 &777868101
 Transform:
   m_ObjectHideFlags: 0
@@ -1284,6 +1297,19 @@ Transform:
   - {fileID: 1994297017}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &777868102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777868099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9869858f8798b57479cc643d0d5716e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  segment: {fileID: 777868100}
 --- !u!1 &787772148
 GameObject:
   m_ObjectHideFlags: 0
@@ -1448,6 +1474,8 @@ GameObject:
   m_Component:
   - component: {fileID: 872382543}
   - component: {fileID: 872382542}
+  - component: {fileID: 872382545}
+  - component: {fileID: 872382544}
   m_Layer: 0
   m_Name: Segment_NoColor
   m_TagString: Untagged
@@ -1470,7 +1498,6 @@ MonoBehaviour:
   laneColor: 4
   nodeA: {fileID: 0}
   nodeB: {fileID: 0}
-  isReversed: 0
 --- !u!4 &872382543
 Transform:
   m_ObjectHideFlags: 0
@@ -1488,6 +1515,32 @@ Transform:
   - {fileID: 342607197}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &872382544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 872382541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9869858f8798b57479cc643d0d5716e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  segment: {fileID: 872382542}
+--- !u!114 &872382545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 872382541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9869858f8798b57479cc643d0d5716e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  segment: {fileID: 872382542}
 --- !u!1 &880364923
 GameObject:
   m_ObjectHideFlags: 0
@@ -1544,6 +1597,7 @@ GameObject:
   m_Component:
   - component: {fileID: 993230880}
   - component: {fileID: 993230879}
+  - component: {fileID: 993230881}
   m_Layer: 0
   m_Name: Segment_Blue
   m_TagString: Untagged
@@ -1566,7 +1620,6 @@ MonoBehaviour:
   laneColor: 0
   nodeA: {fileID: 0}
   nodeB: {fileID: 0}
-  isReversed: 0
 --- !u!4 &993230880
 Transform:
   m_ObjectHideFlags: 0
@@ -1584,6 +1637,19 @@ Transform:
   - {fileID: 1384748192}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &993230881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 993230878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9869858f8798b57479cc643d0d5716e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  segment: {fileID: 993230879}
 --- !u!1 &1155424634
 GameObject:
   m_ObjectHideFlags: 0
@@ -2152,6 +2218,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1454644140}
   - component: {fileID: 1454644139}
+  - component: {fileID: 1454644141}
   m_Layer: 0
   m_Name: Segment_Green
   m_TagString: Untagged
@@ -2174,7 +2241,6 @@ MonoBehaviour:
   laneColor: 2
   nodeA: {fileID: 0}
   nodeB: {fileID: 0}
-  isReversed: 0
 --- !u!4 &1454644140
 Transform:
   m_ObjectHideFlags: 0
@@ -2192,6 +2258,19 @@ Transform:
   - {fileID: 314019189}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1454644141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1454644138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9869858f8798b57479cc643d0d5716e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  segment: {fileID: 1454644139}
 --- !u!1 &1467870343
 GameObject:
   m_ObjectHideFlags: 0
@@ -2239,6 +2318,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1667930563}
   - component: {fileID: 1667930562}
+  - component: {fileID: 1667930564}
   m_Layer: 0
   m_Name: Segment_Blue
   m_TagString: Untagged
@@ -2261,7 +2341,6 @@ MonoBehaviour:
   laneColor: 0
   nodeA: {fileID: 0}
   nodeB: {fileID: 0}
-  isReversed: 0
 --- !u!4 &1667930563
 Transform:
   m_ObjectHideFlags: 0
@@ -2279,6 +2358,19 @@ Transform:
   - {fileID: 1972033046}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1667930564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1667930561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9869858f8798b57479cc643d0d5716e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  segment: {fileID: 1667930562}
 --- !u!1 &1960210500
 GameObject:
   m_ObjectHideFlags: 0
@@ -2289,6 +2381,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1960210502}
   - component: {fileID: 1960210501}
+  - component: {fileID: 1960210503}
   m_Layer: 0
   m_Name: Segment_Red
   m_TagString: Untagged
@@ -2311,7 +2404,6 @@ MonoBehaviour:
   laneColor: 3
   nodeA: {fileID: 0}
   nodeB: {fileID: 0}
-  isReversed: 0
 --- !u!4 &1960210502
 Transform:
   m_ObjectHideFlags: 0
@@ -2329,6 +2421,19 @@ Transform:
   - {fileID: 90145572}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1960210503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1960210500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9869858f8798b57479cc643d0d5716e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  segment: {fileID: 1960210501}
 --- !u!1 &1972033045
 GameObject:
   m_ObjectHideFlags: 0

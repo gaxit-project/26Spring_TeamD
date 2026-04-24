@@ -52,7 +52,7 @@ public class LaneNode : MonoBehaviour
     private bool IsEnterable(LaneSegment seg, LaneNode fromNode)
     {
         // ’Êí(false): A‚©‚ç“ü‚è‚½‚¢ / ”½“](true): B‚©‚ç“ü‚è‚½‚¢
-        if (!seg.isReversed)
+        if (!seg.IsReversed)
         {
             return fromNode == seg.nodeA;
         }

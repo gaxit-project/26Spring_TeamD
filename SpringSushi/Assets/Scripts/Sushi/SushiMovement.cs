@@ -71,7 +71,7 @@ public class SushiMovement : MonoBehaviour
 
     public void UpdateMovingDirection()
     {
-        movingTowardsNodeB = !currentSegment.isReversed;
+        movingTowardsNodeB = !currentSegment.IsReversed;
     }
 
     public void SyncDirectionWithSegment()
