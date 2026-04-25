@@ -22,17 +22,21 @@ public class SushiRegistry : MonoBehaviour
         for (int i = list.Count - 1; i >= 0; i--)
         {
             var s = list[i];
+            if (s == null) { list.RemoveAt(i); continue; }
+            if (s.currentSegment == seg) action(s);
+        }
+    }
 
-            if (s == null)
-            {
-                list.RemoveAt(i);
-                continue;
-            }
-
-            if (s.currentSegment == seg)
-            {
-                action(s);
-            }
+    /// <summary>
+    /// w’èNode‚Å’â‘Ø‚µ‚Ä‚¢‚éõi‚ÉÄo”­‚ğ‚İ‚³‚¹‚é
+    /// </summary>
+    public void TryExitStuckAtNode(LaneNode node)
+    {
+        for (int i = list.Count - 1; i >= 0; i--)
+        {
+            var s = list[i];
+            if (s == null) { list.RemoveAt(i); continue; }
+            s.TryExitStuck();
         }
     }
 }

@@ -6,12 +6,12 @@ public class LaneSegment : MonoBehaviour
     [Header("設定")]
     public LaneColor laneColor;
 
-    [HideInInspector] public LaneNode nodeA;
-    [HideInInspector] public LaneNode nodeB;
+    [Header("接続ノード")]
+    public LaneNode nodeA;
+    public LaneNode nodeB;
 
     public bool IsReversed { get; private set; }
 
-    // ★ 状態変更通知
     public event Action<bool> OnReversedChanged;
 
     public LaneNode GetExitNode() => IsReversed ? nodeA : nodeB;
@@ -23,12 +23,8 @@ public class LaneSegment : MonoBehaviour
     public void SetReversed(bool value)
     {
         if (IsReversed == value) return;
-
         IsReversed = value;
-
         Debug.Log($"<color=white>【Lane Update】</color> {gameObject.name} の流れ: <b>{FlowDirectionName}</b>");
-
-        // ★ ここで通知だけ
         OnReversedChanged?.Invoke(IsReversed);
     }
 

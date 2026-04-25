@@ -19,21 +19,16 @@ public class SushiSpawner : MonoBehaviour
     private void Start()
     {
         registry = FindFirstObjectByType<SushiRegistry>();
-
         if (myNode == null)
             myNode = GetComponent<LaneNode>();
-
         StartCoroutine(SafeStart());
     }
 
     private IEnumerator SafeStart()
     {
         yield return null;
-
         if (myNode != null)
-        {
             StartCoroutine(SpawnRoutine());
-        }
     }
 
     private IEnumerator SpawnRoutine()
@@ -47,17 +42,19 @@ public class SushiSpawner : MonoBehaviour
 
     private void SpawnSushi()
     {
-        if (sushiBasePrefab == null || sushiDataList.Count == 0 || myNode == null)
-            return;
+        if (sushiBasePrefab == null || sushiDataList.Count == 0 || myNode == null) return;
 
-        LaneSegment targetSegment = myNode.connectedSegments.Count > 0 ? myNode.connectedSegments[0] : null;
-        if (targetSegment == null) return;
+        // defaultExit（IsReversed=falseの出口）からスポーン
+        LaneSegment targetSegment = myNode.defaultExit;
+        if (targetSegment == null)
+        {
+            Debug.LogWarning($"[SushiSpawner] {myNode.name} のdefaultExitが未設定です。");
+            return;
+        }
 
         GameObject obj = Instantiate(sushiBasePrefab, myNode.Position, Quaternion.identity);
-
         SushiMovement move = obj.GetComponent<SushiMovement>();
         SushiData data = sushiDataList[Random.Range(0, sushiDataList.Count)];
-
         move.Initialize(data, targetSegment, myNode, registry);
     }
 }

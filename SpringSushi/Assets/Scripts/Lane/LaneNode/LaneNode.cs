@@ -1,57 +1,50 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class LaneNode : MonoBehaviour
 {
+    [Header("レーン設定")]
+    public LaneColor laneColor = LaneColor.NoColor;
+
+    [Header("出口設定")]
+    public LaneSegment defaultExit;   // IsReversed=false のとき
+    public LaneSegment reversedExit;  // IsReversed=true のとき
+
+    [Header("接続情報（自動収集・参照用）")]
     public List<LaneSegment> connectedSegments = new();
 
-    public bool isBranch = false;
+    public bool IsReversed { get; private set; }
 
-    private int strategyState = 0;
-    private IBranchStrategy branchStrategy;
+    public event Action<bool> OnReversedChanged;
 
-    // ★ これを必ず追加
     public Vector3 Position => transform.position;
 
-    private void Awake()
+    /// <summary>
+    /// 現在のIsReversed状態に基づいて出口Segmentを返す
+    /// </summary>
+    public LaneSegment GetExitSegment()
     {
-        branchStrategy = new AlternatingBranchStrategy();
+        return IsReversed ? reversedExit : defaultExit;
     }
 
-    public void SetStrategy(IBranchStrategy strategy)
+    /// <summary>
+    /// SushiMovementから呼ばれる。到着したSegmentを受け取り、次のSegmentを返す。
+    /// </summary>
+    public LaneSegment GetNextSegment(LaneSegment arrivedFrom)
     {
-        branchStrategy = strategy;
+        var exit = GetExitSegment();
+        if (exit == null) return null;
+        // 到着したSegmentと同じなら進めない（折り返し防止）
+        if (exit == arrivedFrom) return null;
+        return exit;
     }
 
-    public LaneSegment GetNextSegment(LaneSegment current)
+    public void SetReversed(bool value)
     {
-        List<LaneSegment> options = new();
-
-        foreach (var seg in connectedSegments)
-        {
-            if (seg == current) continue;
-
-            if (IsEnterable(seg, this))
-            {
-                options.Add(seg);
-            }
-        }
-
-        if (options.Count == 0) return null;
-
-        if (!isBranch || options.Count == 1)
-        {
-            return options[0];
-        }
-
-        return branchStrategy.Select(options, ref strategyState);
-    }
-
-    private bool IsEnterable(LaneSegment seg, LaneNode fromNode)
-    {
-        if (!seg.IsReversed)
-            return fromNode == seg.nodeA;
-        else
-            return fromNode == seg.nodeB;
+        if (IsReversed == value) return;
+        IsReversed = value;
+        Debug.Log($"<color=cyan>【Node Update】</color> {gameObject.name} の出口: <b>{(IsReversed ? (reversedExit != null ? reversedExit.name : "未設定") : (defaultExit != null ? defaultExit.name : "未設定"))}</b>");
+        OnReversedChanged?.Invoke(IsReversed);
     }
 }
