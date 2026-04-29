@@ -1764,7 +1764,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stageOrder:
-  - SampleScene
+  - Stage_01
   stageSprites:
   - {fileID: 0}
 --- !u!4 &1866519999
