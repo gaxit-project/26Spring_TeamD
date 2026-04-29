@@ -738,8 +738,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laneColor: 0
-  defaultExit: {fileID: 0}
-  reversedExit: {fileID: 0}
+  defaultExit: {fileID: 754748802}
+  reversedExit: {fileID: 1495017577}
   connectedSegments: []
 --- !u!1001 &175050500
 PrefabInstance:
@@ -885,8 +885,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laneColor: 0
-  defaultExit: {fileID: 0}
-  reversedExit: {fileID: 0}
+  defaultExit: {fileID: 1304626122}
+  reversedExit: {fileID: 1088165218}
   connectedSegments: []
 --- !u!1001 &315210447
 PrefabInstance:
@@ -1362,8 +1362,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laneColor: 4
-  defaultExit: {fileID: 0}
-  reversedExit: {fileID: 0}
+  defaultExit: {fileID: 1819786974}
+  reversedExit: {fileID: 1819786974}
   connectedSegments: []
 --- !u!1001 &394935993
 PrefabInstance:
@@ -2049,8 +2049,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laneColor: 0
-  defaultExit: {fileID: 0}
-  reversedExit: {fileID: 0}
+  defaultExit: {fileID: 1495017577}
+  reversedExit: {fileID: 426969578}
   connectedSegments: []
 --- !u!1001 &483078373
 PrefabInstance:
@@ -2190,8 +2190,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laneColor: 0
-  defaultExit: {fileID: 0}
-  reversedExit: {fileID: 0}
+  defaultExit: {fileID: 761100690}
+  reversedExit: {fileID: 1955148290}
   connectedSegments: []
 --- !u!1001 &530996232
 PrefabInstance:
@@ -3065,6 +3065,74 @@ Transform:
   - {fileID: 1464987535}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &734916076
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 734916079}
+  - component: {fileID: 734916078}
+  - component: {fileID: 734916077}
+  m_Layer: 0
+  m_Name: EventSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &734916077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 734916076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
+  m_HorizontalAxis: Horizontal
+  m_VerticalAxis: Vertical
+  m_SubmitButton: Submit
+  m_CancelButton: Cancel
+  m_InputActionsPerSecond: 10
+  m_RepeatDelay: 0.5
+  m_ForceModuleActive: 0
+--- !u!114 &734916078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 734916076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_FirstSelected: {fileID: 0}
+  m_sendNavigationEvents: 1
+  m_DragThreshold: 10
+--- !u!4 &734916079
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 734916076}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &741513178
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3618,7 +3686,7 @@ Transform:
   m_GameObject: {fileID: 759727116}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
-  m_LocalPosition: {x: -0.11, y: 10.45, z: -6.14}
+  m_LocalPosition: {x: -0.11, y: 12.52, z: -6.88}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3979,8 +4047,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laneColor: 0
-  defaultExit: {fileID: 0}
-  reversedExit: {fileID: 0}
+  defaultExit: {fileID: 365403824}
+  reversedExit: {fileID: 99052706}
   connectedSegments: []
 --- !u!1001 &840932891
 PrefabInstance:
@@ -4570,8 +4638,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laneColor: 0
-  defaultExit: {fileID: 0}
-  reversedExit: {fileID: 0}
+  defaultExit: {fileID: 426969578}
+  reversedExit: {fileID: 1464987541}
   connectedSegments: []
 --- !u!1001 &1038350516
 PrefabInstance:
@@ -6225,6 +6293,82 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1335754514}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1357584637
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1357584640}
+  - component: {fileID: 1357584639}
+  - component: {fileID: 1357584638}
+  m_Layer: 0
+  m_Name: InputManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1357584638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1357584637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: 11cb204215454fa49a18f1e2b8fc3060,
+    type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: GamePlay
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
+--- !u!114 &1357584639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1357584637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24ddb4fca4d614042a25cf98dfa8a2c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1357584640
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1357584637}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1433993794
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6937,8 +7081,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laneColor: 0
-  defaultExit: {fileID: 0}
-  reversedExit: {fileID: 0}
+  defaultExit: {fileID: 1464987541}
+  reversedExit: {fileID: 365403824}
   connectedSegments: []
 --- !u!1 &1553162745
 GameObject:
@@ -7004,8 +7148,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laneColor: 0
-  defaultExit: {fileID: 0}
-  reversedExit: {fileID: 0}
+  defaultExit: {fileID: 99052706}
+  reversedExit: {fileID: 1304626122}
   connectedSegments: []
 --- !u!1 &1574744029
 GameObject:
@@ -7071,9 +7215,95 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laneColor: 0
-  defaultExit: {fileID: 0}
-  reversedExit: {fileID: 0}
+  defaultExit: {fileID: 1955148290}
+  reversedExit: {fileID: 754748802}
   connectedSegments: []
+--- !u!1 &1584783801
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1584783806}
+  - component: {fileID: 1584783805}
+  - component: {fileID: 1584783804}
+  - component: {fileID: 1584783803}
+  - component: {fileID: 1584783802}
+  m_Layer: 0
+  m_Name: LaneSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1584783802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1584783801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eac1a7e5798b3b54f92b3205710d926c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1584783803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1584783801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bf0d3bb7115d404fbeaaa91faf4fa57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1584783804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1584783801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa77dbf4251ba4c41a68cc4ea9e244a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1584783805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1584783801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33fe8a52f8fa05641b550f050e4444f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  graphBuilder: {fileID: 1584783804}
+  stateController: {fileID: 1584783803}
+  sushiRegistry: {fileID: 1584783802}
+--- !u!4 &1584783806
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1584783801}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.818885, y: -4.055386, z: 4.6081533}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1591978861
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8769,3 +8999,6 @@ SceneRoots:
   - {fileID: 1238505671}
   - {fileID: 726665884}
   - {fileID: 66613438}
+  - {fileID: 1584783806}
+  - {fileID: 1357584640}
+  - {fileID: 734916079}
