@@ -22,12 +22,4 @@ public class PauseMenuUI : MonoBehaviour
         SceneController.Instance.LoadSceneAsync("Title");
         GameStateManager.Instance.ResumeGame();
     }
-
-    public void Reset()
-    {
-        GameStateManager.Instance.ResumeGame();
-        pauseUI.SetActive(false);
-
-        StageRuntimeManager.EnsureExists().ResetStage();
-    }
 }

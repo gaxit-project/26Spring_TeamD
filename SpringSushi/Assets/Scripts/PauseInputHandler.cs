@@ -3,24 +3,28 @@ using UnityEngine.InputSystem;
 
 public class PauseInputHandler : MonoBehaviour
 {
-    private InputSystem_Actions inputActions;
-    [SerializeField] private PauseMenuUI pauseMenuUI; // UI制御を担当するクラスを参照
+    // ここを Player に変更
+    private Player inputActions;
+    [SerializeField] private PauseMenuUI pauseMenuUI;
 
     private void Awake()
     {
-        inputActions = new InputSystem_Actions();
+        // ここを Player に変更
+        inputActions = new Player();
     }
 
     private void OnEnable()
     {
-        inputActions.Player.Enable();
-        inputActions.Player.Pause.performed += OnPausePerformed;
+        // inputActions.Player ではなく .GamePlay に変更
+        inputActions.GamePlay.Enable();
+        inputActions.GamePlay.Pause.performed += OnPausePerformed;
     }
 
     private void OnDisable()
     {
-        inputActions.Player.Pause.performed -= OnPausePerformed;
-        inputActions.Player.Disable();
+        // ここも .GamePlay に変更
+        inputActions.GamePlay.Pause.performed -= OnPausePerformed;
+        inputActions.GamePlay.Disable();
     }
 
     private void OnPausePerformed(InputAction.CallbackContext context)
