@@ -22,6 +22,10 @@ public class LaneTileBuilder : MonoBehaviour
     [Tooltip("タイルの親となるTransform。nullの場合このGameObject自身の子になる")]
     [SerializeField] private Transform tileRoot;
 
+    [Header("色設定")]
+    [Tooltip("タイル生成時に自動で色を適用するパレット。nullの場合は色適用をスキップする")]
+    [SerializeField] private LaneColorPalette colorPalette;
+
     [Header("生成情報（読み取り専用）")]
     [SerializeField, HideInInspector] private int lastGeneratedCount = 0;
 
@@ -76,6 +80,13 @@ public class LaneTileBuilder : MonoBehaviour
 
         lastGeneratedCount = count;
         Debug.Log($"[LaneTileBuilder] {gameObject.name}: {count}個のタイルを生成しました（距離 {distance:F2}）");
+
+        // 色を一括適用
+        if (colorPalette != null)
+            ApplyColorToAllTiles();
+        else
+            Debug.Log("[LaneTileBuilder] colorPaletteが未設定のため色適用をスキップしました。");
+
         EditorUtility.SetDirty(gameObject);
     }
 
@@ -94,6 +105,26 @@ public class LaneTileBuilder : MonoBehaviour
 
         lastGeneratedCount = 0;
         EditorUtility.SetDirty(gameObject);
+    }
+
+    /// <summary>
+    /// 生成済みの全タイルのApplyInEditor()を呼んで色を一括適用する。
+    /// </summary>
+    public void ApplyColorToAllTiles()
+    {
+        Transform root = tileRoot != null ? tileRoot : transform;
+        int applied = 0;
+        foreach (Transform child in root)
+        {
+            var applier = child.GetComponent<LaneTileColorApplier>();
+            if (applier == null) continue;
+            // paletteが未設定のタイルにはBuilderのpaletteを自動セット
+            if (applier.palette == null)
+                applier.palette = colorPalette;
+            applier.ApplyInEditor();
+            applied++;
+        }
+        Debug.Log($"[LaneTileBuilder] {gameObject.name}: {applied}個のタイルに色を適用しました。");
     }
 #endif
 }
@@ -129,8 +160,18 @@ public class LaneTileBuilderEditor : Editor
             GUI.backgroundColor = Color.white;
         }
 
+        EditorGUILayout.Space(4);
+        GUI.backgroundColor = new Color(0.4f, 0.75f, 1f);
+        if (GUILayout.Button("?? 色を一括適用", GUILayout.Height(28)))
+        {
+            Undo.RegisterFullObjectHierarchyUndo(builder.gameObject, "Apply Lane Colors");
+            builder.ApplyColorToAllTiles();
+        }
+        GUI.backgroundColor = Color.white;
+
         EditorGUILayout.HelpBox(
             "nodeA・nodeB間の距離を tileSize で割った数だけ Prefab を配置します。\n" +
+            "タイル生成時にcolorPaletteが設定されていれば色も自動適用されます。\n" +
             "Ctrl+Z でUndo可能です。",
             MessageType.Info
         );
