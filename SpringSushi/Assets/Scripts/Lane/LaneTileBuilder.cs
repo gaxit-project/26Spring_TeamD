@@ -60,12 +60,14 @@ public class LaneTileBuilder : MonoBehaviour
         float distance = Vector3.Distance(from, to);
         int count = Mathf.Max(1, Mathf.RoundToInt(distance / tileSize));
         Vector3 dir = (to - from).normalized;
-        Quaternion rot = Quaternion.LookRotation(dir, Vector3.up);
+        // PrefabがY軸-90度ずれているため補正
+        Quaternion rot = Quaternion.LookRotation(dir, Vector3.up) * Quaternion.Euler(0f, -90f, 0f);
+        Vector3 yOffset = new Vector3(0f, -0.7f, 0f);
 
         for (int i = 0; i < count; i++)
         {
             // 各タイルの中心位置：fromからtileSize*0.5オフセットしてi個分進む
-            Vector3 pos = from + dir * (i * tileSize + tileSize * 0.5f);
+            Vector3 pos = from + dir * (i * tileSize + tileSize * 0.5f) + yOffset;
             GameObject tile = (GameObject)PrefabUtility.InstantiatePrefab(tilePrefab, root);
             tile.transform.position = pos;
             tile.transform.rotation = rot;
