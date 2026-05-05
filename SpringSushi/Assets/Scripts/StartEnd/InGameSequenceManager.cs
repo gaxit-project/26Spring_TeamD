@@ -46,7 +46,7 @@ public class InGameSequenceManager : MonoBehaviour
     private IEnumerator PlayBusinessSequenceCoroutine()
     {
         // --- 1. 開店演出 (Start) ---
-        statusText.text = "START!!";
+        statusText.text = "開店!!";
         statusText.gameObject.SetActive(true);
 
         yield return doorAnim.Open();
@@ -63,7 +63,7 @@ public class InGameSequenceManager : MonoBehaviour
         // ゲームを止めてから「終了」を表示
         GameStateManager.Instance.PauseGame();
 
-        statusText.text = "Finish!!";
+        statusText.text = "閉店!!";
         statusText.gameObject.SetActive(true);
 
         // 扉を閉める
