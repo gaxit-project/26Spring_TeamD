@@ -29,7 +29,7 @@ public class LaneNetwork : MonoBehaviour
     {
         bool state = stateController.Toggle(color);
 
-        // Segment の方向切り替え
+        // Segmentの方向切り替え
         foreach (var seg in segments)
         {
             if (seg.laneColor != color) continue;
@@ -37,14 +37,14 @@ public class LaneNetwork : MonoBehaviour
             sushiRegistry.ForEachOnSegment(seg, s => s.SyncDirectionWithSegment());
         }
 
-        // Node の出口切り替え
+        // Nodeの出口を次のインデックスへ進める
         foreach (var node in nodes)
         {
             if (node.laneColor != color) continue;
-            node.SetReversed(state);
+            node.StepExit();
         }
 
-        // 停滞している寿司の再出発を試みる（全員に通知）
+        // 停滞している寿司の再出発を試みる
         sushiRegistry.TryExitStuckAtNode(null);
     }
 }

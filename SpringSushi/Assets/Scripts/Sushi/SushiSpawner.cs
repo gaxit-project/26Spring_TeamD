@@ -44,11 +44,16 @@ public class SushiSpawner : MonoBehaviour
     {
         if (sushiBasePrefab == null || sushiDataList.Count == 0 || myNode == null) return;
 
-        // defaultExit（IsReversed=falseの出口）からスポーン
-        LaneSegment targetSegment = myNode.defaultExit;
+        // exitSegments[0]（最初の出口）からスポーン
+        if (myNode.exitSegments == null || myNode.exitSegments.Count == 0)
+        {
+            Debug.LogWarning($"[SushiSpawner] {myNode.name} のexitSegmentsが未設定です。");
+            return;
+        }
+        LaneSegment targetSegment = myNode.exitSegments[0];
         if (targetSegment == null)
         {
-            Debug.LogWarning($"[SushiSpawner] {myNode.name} のdefaultExitが未設定です。");
+            Debug.LogWarning($"[SushiSpawner] {myNode.name} のexitSegments[0]がnullです。");
             return;
         }
 

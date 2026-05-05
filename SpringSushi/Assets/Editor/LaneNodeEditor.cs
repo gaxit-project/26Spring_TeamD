@@ -16,17 +16,12 @@ public class LaneNodeEditor : Editor
 
         EditorGUILayout.Space(8);
 
-        // --- 出口設定（ObjectField：ドラッグ＆ドロップ対応） ---
-        EditorGUILayout.LabelField("出口設定", EditorStyles.boldLabel);
-
+        // --- 出口設定（リスト：D&D対応） ---
+        EditorGUILayout.LabelField("出口設定（ボタンを押すたびに順番に切り替わる）", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(
-            serializedObject.FindProperty("defaultExit"),
-            new GUIContent("Default Exit（通常時）", "IsReversed = false のとき寿司が向かう Segment")
-        );
-
-        EditorGUILayout.PropertyField(
-            serializedObject.FindProperty("reversedExit"),
-            new GUIContent("Reversed Exit（反転時）", "IsReversed = true のとき寿司が向かう Segment")
+            serializedObject.FindProperty("exitSegments"),
+            new GUIContent("Exit Segments", "ボタンを押すたびにelement0→1→2→...→0と循環する"),
+            true
         );
 
         EditorGUILayout.Space(8);
@@ -48,15 +43,22 @@ public class LaneNodeEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-    // --- Gizmo 描画 ---
+    // --- Gizmo描画 ---
     private void OnSceneGUI()
     {
         var node = (LaneNode)target;
-        DrawExitArrow(node, node.defaultExit, Color.white, "Default");
-        DrawExitArrow(node, node.reversedExit, Color.yellow, "Reversed");
+        if (node.exitSegments == null) return;
+
+        // 全出口を色分けして表示
+        for (int i = 0; i < node.exitSegments.Count; i++)
+        {
+            // 現在選択中 → 白、それ以外 → グレー
+            Color col = (i == node.CurrentExitIndex) ? Color.white : new Color(0.6f, 0.6f, 0.6f, 0.5f);
+            DrawExitArrow(node, node.exitSegments[i], col, $"[{i}]");
+        }
     }
 
-    private void DrawExitArrow(LaneNode node, LaneSegment exit, Color color, string labelPrefix)
+    private void DrawExitArrow(LaneNode node, LaneSegment exit, Color color, string label)
     {
         if (exit == null) return;
 
@@ -73,10 +75,9 @@ public class LaneNodeEditor : Editor
         Handles.color = color;
         Handles.DrawLine(from, to, 3f);
 
-        Vector3 arrowTip = Vector3.Lerp(from, to, 0.7f);
         Handles.ArrowHandleCap(
             0,
-            arrowTip,
+            Vector3.Lerp(from, to, 0.7f),
             Quaternion.LookRotation(dir.normalized),
             dist * 0.15f,
             EventType.Repaint
@@ -84,7 +85,7 @@ public class LaneNodeEditor : Editor
 
         Handles.Label(
             Vector3.Lerp(from, to, 0.5f) + Vector3.up * 0.3f,
-            $"{labelPrefix}: {exit.gameObject.name}",
+            $"{label}: {exit.gameObject.name}",
             new GUIStyle { normal = { textColor = color }, fontSize = 11 }
         );
     }

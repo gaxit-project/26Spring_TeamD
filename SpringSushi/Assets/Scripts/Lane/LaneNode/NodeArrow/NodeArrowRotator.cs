@@ -1,22 +1,8 @@
 using UnityEngine;
 
-/// <summary>
-/// LaneNodeのIsReversed変化を受けて、
-/// ArrowをdefaultExit/reversedExitの方向に向かせる。
-/// ArrowのローカルZ+が先端方向。
-///
-/// 【Hierarchy構成】
-/// LaneNode
-///   └─ NodeArrow (NodeArrowRotator.cs) ← ここにアタッチ
-///        ├─ NodeBase
-///        ├─ Node
-///        └─ Arrow ← Z+が先端。出口方向に向く
-/// </summary>
 public class NodeArrowRotator : MonoBehaviour
 {
     [SerializeField] private LaneNode node;
-
-    [Tooltip("回転させるArrowオブジェクト。nullの場合'Arrow'という名前の子を自動検索する")]
     [SerializeField] private Transform arrowTransform;
 
     private void Awake()
@@ -35,30 +21,29 @@ public class NodeArrowRotator : MonoBehaviour
 
         if (arrowTransform == null)
         {
-            Debug.LogWarning($"[NodeArrowRotator] {gameObject.name}: 'Arrow'という名前の子が見つかりません。");
+            Debug.LogWarning($"[NodeArrowRotator] {gameObject.name}: 'Arrow'が見つかりません。");
             return;
         }
 
-        node.OnReversedChanged += OnReversedChanged;
-        ApplyDirection(node.IsReversed);
+        node.OnExitIndexChanged += OnExitIndexChanged;
+        ApplyDirection();
     }
 
-    private void OnReversedChanged(bool isReversed)
+    private void OnExitIndexChanged(int index)
     {
-        ApplyDirection(isReversed);
+        ApplyDirection();
     }
 
-    private void ApplyDirection(bool isReversed)
+    private void ApplyDirection()
     {
         if (arrowTransform == null || node == null) return;
 
-        LaneSegment exitSeg = isReversed ? node.reversedExit : node.defaultExit;
+        LaneSegment exitSeg = node.GetExitSegment();
         if (exitSeg == null) return;
 
         Vector3 dir = GetExitDirection(exitSeg);
         if (dir == Vector3.zero) return;
 
-        // ArrowのZ+を出口方向に向ける
         arrowTransform.rotation = Quaternion.LookRotation(dir, Vector3.up);
     }
 
@@ -66,13 +51,11 @@ public class NodeArrowRotator : MonoBehaviour
     {
         if (seg.nodeA == null || seg.nodeB == null) return Vector3.zero;
 
-        // このNodeから出口Segmentへ進む方向を計算
         if (seg.nodeA == node)
             return (seg.nodeB.Position - seg.nodeA.Position).normalized;
         else if (seg.nodeB == node)
             return (seg.nodeA.Position - seg.nodeB.Position).normalized;
 
-        // このNodeがSegmentの端点でない場合（中継など）はSegmentの中心方向で代替
         Vector3 segCenter = (seg.nodeA.Position + seg.nodeB.Position) * 0.5f;
         return (segCenter - node.Position).normalized;
     }
@@ -91,6 +74,6 @@ public class NodeArrowRotator : MonoBehaviour
     private void OnDestroy()
     {
         if (node != null)
-            node.OnReversedChanged -= OnReversedChanged;
+            node.OnExitIndexChanged -= OnExitIndexChanged;
     }
 }
