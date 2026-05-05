@@ -65,10 +65,29 @@ public class SeatBuilder : MonoBehaviour
 
     public void ClearSeats()
     {
-        if (customerManager == null) return;
-        customerManager.entryPoints.Clear();
-        EditorUtility.SetDirty(customerManager);
-        Debug.Log("[SeatBuilder] EntryPointsをクリアしました。");
+        // SeatAnchorタグのオブジェクト配下にある椅子を全削除
+        var anchors = GameObject.FindGameObjectsWithTag("SeatAnchor");
+        int removed = 0;
+        foreach (var anchor in anchors)
+        {
+            var children = new System.Collections.Generic.List<GameObject>();
+            foreach (Transform child in anchor.transform)
+                children.Add(child.gameObject);
+            foreach (var child in children)
+            {
+                Undo.DestroyObjectImmediate(child);
+                removed++;
+            }
+        }
+
+        // EntryPointsリストもクリア
+        if (customerManager != null)
+        {
+            customerManager.entryPoints.Clear();
+            EditorUtility.SetDirty(customerManager);
+        }
+
+        Debug.Log($"[SeatBuilder] {removed}個の椅子を削除しました。");
     }
 #endif
 }

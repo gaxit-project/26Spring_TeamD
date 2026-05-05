@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Sushi
   - Customer
+  - SeatAnchor
   layers:
   - Default
   - TransparentFX
