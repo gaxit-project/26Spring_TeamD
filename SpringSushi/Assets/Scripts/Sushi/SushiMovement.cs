@@ -167,6 +167,18 @@ public class SushiMovement : MonoBehaviour
         if (other.CompareTag("Sushi"))
         {
             SushiDestroy();
+            return;
+        }
+
+        if (other.CompareTag("Customer"))
+        {
+            var customer = other.GetComponent<CustomerAI>();
+            if (customer != null && customer.TryDeliver(data))
+            {
+                // ‰¿ŠiUI‚ð•\Ž¦
+                //PricePopupManager.Instance?.ShowPopup(data.price, transform.position);
+                SushiDestroy();
+            }
         }
     }
 }
