@@ -71,6 +71,15 @@ public partial class @Player: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""StartAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""0b72a2c0-7d5c-41cc-84c3-6834fad2f885"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -172,6 +181,50 @@ public partial class @Player: IInputActionCollection2, IDisposable
                     ""action"": ""Pause"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""38e2ad25-0967-4d46-af54-607fbb098861"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""StartAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7fbc071d-ebaf-4ffa-ab19-8e3789c72eaf"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""StartAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0e4c3ba5-6094-4162-8bfa-457861c53f3d"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""StartAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d5e7b866-0aac-4e24-8b43-8c2f8734598c"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""StartAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -185,6 +238,7 @@ public partial class @Player: IInputActionCollection2, IDisposable
         m_GamePlay_LaneGreen = m_GamePlay.FindAction("LaneGreen", throwIfNotFound: true);
         m_GamePlay_LaneRed = m_GamePlay.FindAction("LaneRed", throwIfNotFound: true);
         m_GamePlay_Pause = m_GamePlay.FindAction("Pause", throwIfNotFound: true);
+        m_GamePlay_StartAction = m_GamePlay.FindAction("StartAction", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -251,6 +305,7 @@ public partial class @Player: IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_LaneGreen;
     private readonly InputAction m_GamePlay_LaneRed;
     private readonly InputAction m_GamePlay_Pause;
+    private readonly InputAction m_GamePlay_StartAction;
     public struct GamePlayActions
     {
         private @Player m_Wrapper;
@@ -260,6 +315,7 @@ public partial class @Player: IInputActionCollection2, IDisposable
         public InputAction @LaneGreen => m_Wrapper.m_GamePlay_LaneGreen;
         public InputAction @LaneRed => m_Wrapper.m_GamePlay_LaneRed;
         public InputAction @Pause => m_Wrapper.m_GamePlay_Pause;
+        public InputAction @StartAction => m_Wrapper.m_GamePlay_StartAction;
         public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -284,6 +340,9 @@ public partial class @Player: IInputActionCollection2, IDisposable
             @Pause.started += instance.OnPause;
             @Pause.performed += instance.OnPause;
             @Pause.canceled += instance.OnPause;
+            @StartAction.started += instance.OnStartAction;
+            @StartAction.performed += instance.OnStartAction;
+            @StartAction.canceled += instance.OnStartAction;
         }
 
         private void UnregisterCallbacks(IGamePlayActions instance)
@@ -303,6 +362,9 @@ public partial class @Player: IInputActionCollection2, IDisposable
             @Pause.started -= instance.OnPause;
             @Pause.performed -= instance.OnPause;
             @Pause.canceled -= instance.OnPause;
+            @StartAction.started -= instance.OnStartAction;
+            @StartAction.performed -= instance.OnStartAction;
+            @StartAction.canceled -= instance.OnStartAction;
         }
 
         public void RemoveCallbacks(IGamePlayActions instance)
@@ -327,5 +389,6 @@ public partial class @Player: IInputActionCollection2, IDisposable
         void OnLaneGreen(InputAction.CallbackContext context);
         void OnLaneRed(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
+        void OnStartAction(InputAction.CallbackContext context);
     }
 }
