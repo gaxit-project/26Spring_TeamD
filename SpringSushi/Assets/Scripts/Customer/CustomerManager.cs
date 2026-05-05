@@ -2,13 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// お客さんのスポーンと椅子（EntryPoint）管理を担当する。
+///
+/// 生成フロー：
+/// CustomerSpawnPoint → (NavMesh移動) → EntryPoint（椅子）→ 注文開始
+/// </summary>
 public class CustomerManager : MonoBehaviour
 {
-    [Header("生成設定")]
+    [Header("Prefab")]
     public GameObject customerPrefab;
-    public List<CustomerData> customerVariationList;
-    public List<Transform> entryPoints = new List<Transform>();
+
+    [Header("スポーン設定")]
+    public List<Transform> customerSpawnPoints = new();
+    public List<Transform> entryPoints = new();         // 椅子の位置
     public float spawnInterval = 5f;
+
+    [Header("お客さんのバリエーション")]
+    public List<CustomerData> customerVariationList = new();
+
+    [Header("HUD")]
+    [SerializeField] private CustomerHUD customerHUD;
+
+    [Header("注文候補")]
+    public List<SushiData> availableSushiList = new();
 
     private void Start()
     {
@@ -21,61 +38,72 @@ public class CustomerManager : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(spawnInterval);
-            CustomerEntry();
+            TrySpawnCustomer();
         }
     }
 
-    public void CustomerEntry()
+    private void TrySpawnCustomer()
     {
-        if (customerPrefab == null || entryPoints.Count == 0) return;
-
-        // 1. 空いている席を探す（ここが重要！）
-        Transform targetSeat = GetEmptySeat();
-
-        // 2. 空いている席がある時だけ、クローンを生成する
-        if (targetSeat != null)
+        Transform seat = GetEmptySeat();
+        if (seat == null)
         {
-            CustomerData randomData = customerVariationList[Random.Range(0, customerVariationList.Count)];
-            GameObject obj = Instantiate(customerPrefab, targetSeat.position, targetSeat.rotation);
+            Debug.Log("<color=yellow>[Manager]</color> 満席のためスキップ。");
+            return;
+        }
 
-            CustomerAI ai = obj.GetComponent<CustomerAI>();
-            if (ai != null)
-            {
-                ai.Initialize(randomData);
-            }
-            Debug.Log($"<color=lime>[Manager]</color> {targetSeat.name} に客を生成しました。");
-        }
-        else
-        {
-            // 空席がない場合は何もしない（クローンも作らない）
-            Debug.Log("<color=yellow>[Manager]</color> 満席のため、生成をスキップしました。");
-        }
+        Transform spawnPoint = GetRandomSpawnPoint();
+        if (spawnPoint == null) return;
+
+        CustomerData data = customerVariationList[Random.Range(0, customerVariationList.Count)];
+
+        GameObject obj = Instantiate(customerPrefab, spawnPoint.position, spawnPoint.rotation);
+        CustomerAI ai = obj.GetComponent<CustomerAI>();
+        if (ai == null) return;
+
+        // 注文リストを生成
+        List<SushiData> orders = GenerateOrders(data);
+        ai.Initialize(data, seat, orders);
+
+        // HUDに登録
+        customerHUD?.RegisterCustomer(ai);
+
+        Debug.Log($"<color=lime>[Manager]</color> {seat.name} に客を生成しました。");
+    }
+
+    /// <summary>
+    /// CustomerDataを元に注文リストを生成する。
+    /// </summary>
+    private List<SushiData> GenerateOrders(CustomerData data)
+    {
+        var orders = new List<SushiData>();
+        int count = Random.Range(1, data.maxTotalOrders + 1);
+        for (int i = 0; i < count; i++)
+            orders.Add(availableSushiList[Random.Range(0, availableSushiList.Count)]);
+        return orders;
     }
 
     private Transform GetEmptySeat()
     {
-        // 全ての登録された席（entryPoints）を一つずつチェック
         foreach (var seat in entryPoints)
         {
-            // 席の座標を中心に半径 0.5m の球体内にコライダーがあるか調べる
             Collider[] colliders = Physics.OverlapSphere(seat.position, 0.5f);
-            bool isOccupied = false;
-
+            bool occupied = false;
             foreach (var col in colliders)
             {
-                // 「Customer」タグが付いているオブジェクトが一人でもいたら、その席は「埋まっている」
-                if (col.CompareTag("Customer"))
-                {
-                    isOccupied = true;
-                    break;
-                }
+                if (col.CompareTag("Customer")) { occupied = true; break; }
             }
-
-            // この席に誰もいなければ、この席を返す
-            if (!isOccupied) return seat;
+            if (!occupied) return seat;
         }
-
-        // 全ての席を回った結果、空きがなければ null（なし）を返す
         return null;
     }
+
+    private Transform GetRandomSpawnPoint()
+    {
+        if (customerSpawnPoints.Count == 0) return null;
+        return customerSpawnPoints[Random.Range(0, customerSpawnPoints.Count)];
+    }
+
+#if UNITY_EDITOR
+    public void AddEntryPoint(Transform t) => entryPoints.Add(t);
+#endif
 }
