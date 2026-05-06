@@ -166,6 +166,14 @@ public class SushiMovement : MonoBehaviour
     {
         if (other.CompareTag("Sushi"))
         {
+            // 衝突した寿司の合計金額を減算
+            var otherSushi = other.GetComponent<SushiMovement>();
+            int lossAmount = data.price + (otherSushi != null ? otherSushi.data.price : 0);
+            ScoreManager.Instance?.SubtractScore(lossAmount);
+            PricePopupManager.Instance?.ShowPopup(-lossAmount, transform.position);
+
+            // 両方をDestroy（相手側のOnTriggerEnterが二重発火しないようにnullチェック）
+            if (otherSushi != null) otherSushi.SushiDestroy();
             SushiDestroy();
             return;
         }
@@ -175,8 +183,9 @@ public class SushiMovement : MonoBehaviour
             var customer = other.GetComponent<CustomerAI>();
             if (customer != null && customer.TryDeliver(data))
             {
-                // 価格UIを表示
-                //PricePopupManager.Instance?.ShowPopup(data.price, transform.position);
+                // 加算＋価格UIを表示
+                ScoreManager.Instance?.AddScore(data.price);
+                PricePopupManager.Instance?.ShowPopup(data.price, transform.position);
                 SushiDestroy();
             }
         }

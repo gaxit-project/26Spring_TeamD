@@ -4,7 +4,9 @@ using UnityEngine.AI;
 
 /// <summary>
 /// お客さんのState管理とNavMesh移動を担当する。
-/// State遷移：Spawned → Walking → Seated → Ordering → Eating → Leaving
+///
+/// State遷移：
+/// Spawned → Walking → Seated → Ordering → Eating → Leaving
 /// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
 public class CustomerAI : MonoBehaviour
@@ -29,11 +31,13 @@ public class CustomerAI : MonoBehaviour
 
     // --- 内部状態 ---
     private CustomerState state = CustomerState.Spawned;
-    private CustomerData data; // ここにScriptableObjectが保持される
+    private CustomerData data;
     private NavMeshAgent agent;
     private Transform targetSeat;
 
     private CustomerOrderQueue orderQueue = new();
+    private float basePatienceTime;
+    private float patienceDecayRate;
     private float currentPatience;
     private float maxPatience;
     private int batchCount = 0;
@@ -67,16 +71,12 @@ public class CustomerAI : MonoBehaviour
         // CustomerDataのパラメータを反映
         maxOrderBatches = data.maxOrderBatches;
         batchSize = data.batchSize;
-
-        // --- 修正箇所: CustomerDataのPatience設定を使用 ---
-        // basePatienceTime や patienceDecayRate は変数を宣言せず、
-        // 計算時に data.basePatienceTime / data.patienceDecayRate を直接参照します。
+        basePatienceTime = data.basePatienceTime;
+        patienceDecayRate = data.patienceDecayRate;
 
         // 注文キューを初期化
         orderQueue.Initialize(orders);
-
-        // 初回の忍耐度設定
-        maxPatience = data.basePatienceTime;
+        maxPatience = basePatienceTime;
         currentPatience = maxPatience;
 
         Debug.Log($"<color=lime>[Entry]</color> {data.customerType} が来店（全{orders.Count}注文）");
@@ -131,9 +131,8 @@ public class CustomerAI : MonoBehaviour
         var batch = orderQueue.PullNextBatch(batchSize);
         batchCount++;
 
-        // --- 修正箇所: CustomerDataの値を直接計算に使用 ---
-        // 注文が届くたびに、Dataに設定された減衰率を適用
-        maxPatience = data.basePatienceTime * Mathf.Pow(data.patienceDecayRate, batchCount - 1);
+        // Patienceを更新（注文が届くたびに短くなる）
+        maxPatience = basePatienceTime * Mathf.Pow(patienceDecayRate, batchCount - 1);
         currentPatience = maxPatience;
 
         SetState(CustomerState.Ordering);
