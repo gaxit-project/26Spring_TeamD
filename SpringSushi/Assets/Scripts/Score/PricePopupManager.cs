@@ -1,14 +1,11 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Pool; // Unity標準のプール機能を使用
 
 /// <summary>
-/// 寿司が届いたときに+price のUIをHUD_Canvas上でフェードイン→上へフェードアウトさせる。
-///
-/// 【セットアップ】
-/// HUD_Canvas上の空GameObjectに本スクリプトをアタッチ。
-/// popupPrefab には TextMeshProUGUI がついたPrefabをアサイン。
+/// 寿司が届いたときのポップアップUIを管理する。
+/// オブジェクトプールを使用してメモリ負荷（GC）を抑える。
 /// </summary>
 public class PricePopupManager : MonoBehaviour
 {
@@ -19,16 +16,23 @@ public class PricePopupManager : MonoBehaviour
     [SerializeField] private Camera mainCamera;
 
     [Header("Popup Prefab")]
-    [Tooltip("TextMeshProUGUIがついたPrefab。テキストに価格が入る")]
+    [Tooltip("TextMeshProUGUIとCanvasGroupがついたPrefab")]
     [SerializeField] private GameObject popupPrefab;
 
     [Header("アニメーション設定")]
-    [SerializeField] private float fadeInDuration = 0.2f;
-    [SerializeField] private float holdDuration = 0.6f;
-    [SerializeField] private float fadeOutDuration = 0.5f;
-    [SerializeField] private float riseDistance = 60f;
+    [SerializeField] private float fadeInDuration = 0.15f;
+    [SerializeField] private float holdDuration = 0.5f;
+    [SerializeField] private float fadeOutDuration = 0.4f;
+    [SerializeField] private float riseDistance = 50f;
     [SerializeField] private Color positiveColor = Color.yellow;
     [SerializeField] private Color negativeColor = Color.red;
+
+    // オブジェクトプールの定義
+    private IObjectPool<GameObject> _pool;
+
+    [Header("プール設定")]
+    [SerializeField] private int defaultCapacity = 10;
+    [SerializeField] private int maxSize = 30;
 
     private void Awake()
     {
@@ -36,23 +40,56 @@ public class PricePopupManager : MonoBehaviour
         Instance = this;
 
         if (mainCamera == null) mainCamera = Camera.main;
+
+        // プールの初期化
+        _pool = new ObjectPool<GameObject>(
+            createFunc: CreatePooledItem,      // 新しく作る時
+            actionOnGet: OnTakeFromPool,      // プールから出す時
+            actionOnRelease: OnReturnedToPool, // プールに戻す時
+            actionOnDestroy: OnDestroyPoolObject, // 最大サイズを超えて破棄される時
+            collectionCheck: true,
+            defaultCapacity: defaultCapacity,
+            maxSize: maxSize
+        );
     }
 
+    #region プール用コールバック
+    private GameObject CreatePooledItem()
+    {
+        return Instantiate(popupPrefab, hudCanvas.transform);
+    }
+
+    private void OnTakeFromPool(GameObject obj)
+    {
+        obj.SetActive(true);
+    }
+
+    private void OnReturnedToPool(GameObject obj)
+    {
+        obj.SetActive(false);
+    }
+
+    private void OnDestroyPoolObject(GameObject obj)
+    {
+        Destroy(obj);
+    }
+    #endregion
+
     /// <summary>
-    /// worldPosition（寿司のワールド座標）の位置にポップアップを表示する。
+    /// 指定のワールド座標に価格ポップアップを表示する
     /// </summary>
     public void ShowPopup(int price, Vector3 worldPosition)
     {
         if (popupPrefab == null || hudCanvas == null) return;
 
-        // WorldPos → Screen → HUDLocal
+        // 3D座標 -> スクリーン座標 -> UIローカル座標
         Vector3 screenPos = mainCamera.WorldToScreenPoint(worldPosition);
-        if (screenPos.z < 0f) return; // カメラ後方は非表示
+        if (screenPos.z < 0f) return;
 
-        GameObject obj = Instantiate(popupPrefab, hudCanvas.transform);
+        // プールから取得
+        GameObject obj = _pool.Get();
         RectTransform rect = obj.GetComponent<RectTransform>();
 
-        // 座標変換
         Vector2 localPoint;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             hudCanvas.transform as RectTransform,
@@ -62,7 +99,7 @@ public class PricePopupManager : MonoBehaviour
         );
         rect.localPosition = localPoint;
 
-        // テキスト設定
+        // テキストと色の設定
         var tmp = obj.GetComponent<TextMeshProUGUI>();
         if (tmp != null)
         {
@@ -70,39 +107,45 @@ public class PricePopupManager : MonoBehaviour
             tmp.color = price >= 0 ? positiveColor : negativeColor;
         }
 
-        StartCoroutine(AnimatePopup(obj, rect, tmp));
+        // アニメーション開始
+        StartCoroutine(AnimatePopup(obj, rect));
     }
 
-    private IEnumerator AnimatePopup(GameObject obj, RectTransform rect, TextMeshProUGUI tmp)
+    private IEnumerator AnimatePopup(GameObject obj, RectTransform rect)
     {
-        Vector2 startPos = rect.localPosition;
-        Color baseColor = tmp != null ? tmp.color : Color.white;
-
-        // フェードイン
-        float t = 0f;
-        while (t < fadeInDuration)
+        // CanvasGroupを使って一括フェードさせる
+        if (!obj.TryGetComponent<CanvasGroup>(out var canvasGroup))
         {
-            t += Time.deltaTime;
-            float alpha = Mathf.Clamp01(t / fadeInDuration);
-            if (tmp != null) tmp.color = new Color(baseColor.r, baseColor.g, baseColor.b, alpha);
-            yield return null;
+            canvasGroup = obj.AddComponent<CanvasGroup>();
         }
 
-        // ホールド
+        Vector2 startPos = rect.localPosition;
+        float elapsed = 0f;
+
+        // 1. フェードイン
+        while (elapsed < fadeInDuration)
+        {
+            elapsed += Time.deltaTime;
+            canvasGroup.alpha = elapsed / fadeInDuration;
+            yield return null;
+        }
+        canvasGroup.alpha = 1f;
+
+        // 2. 維持
         yield return new WaitForSeconds(holdDuration);
 
-        // フェードアウト（上へ移動しながら）
-        t = 0f;
-        while (t < fadeOutDuration)
+        // 3. フェードアウト + 上昇
+        elapsed = 0f;
+        while (elapsed < fadeOutDuration)
         {
-            t += Time.deltaTime;
-            float ratio = Mathf.Clamp01(t / fadeOutDuration);
-            float alpha = 1f - ratio;
-            if (tmp != null) tmp.color = new Color(baseColor.r, baseColor.g, baseColor.b, alpha);
-            rect.localPosition = startPos + Vector2.up * (riseDistance * ratio);
+            elapsed += Time.deltaTime;
+            float t = elapsed / fadeOutDuration;
+            canvasGroup.alpha = 1f - t;
+            rect.localPosition = startPos + Vector2.up * (riseDistance * t);
             yield return null;
         }
 
-        Destroy(obj);
+        // 終了後にプールへ戻す
+        _pool.Release(obj);
     }
 }
