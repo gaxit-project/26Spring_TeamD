@@ -47,12 +47,15 @@ public class SeatBuilder : MonoBehaviour
             return;
         }
 
+        // シーン内の全LaneSegmentを収集（検索用）
+        var allSegments = Object.FindObjectsByType<LaneSegment>(FindObjectsSortMode.None);
+
         foreach (var anchor in anchors)
         {
             var seat = (GameObject)PrefabUtility.InstantiatePrefab(seatPrefab);
             Undo.RegisterCreatedObjectUndo(seat, "Generate Seat");
             seat.transform.position = anchor.transform.position;
-            seat.transform.rotation = anchor.transform.rotation;
+            seat.transform.rotation = CalcSeatRotation(anchor.transform.position, allSegments);
             seat.transform.SetParent(anchor.transform);
             seat.name = $"Seat_{anchor.name}";
 
@@ -61,6 +64,40 @@ public class SeatBuilder : MonoBehaviour
         }
 
         Debug.Log($"[SeatBuilder] {anchors.Length}個の椅子を生成しました。");
+    }
+
+    /// <summary>
+    /// SeatAnchor位置に最も近いLaneSegmentのA→B方向へ
+    /// 椅子のZ+を向ける回転を計算する。
+    /// </summary>
+    private Quaternion CalcSeatRotation(Vector3 anchorPos, LaneSegment[] segments)
+    {
+        if (segments == null || segments.Length == 0)
+            return Quaternion.identity;
+
+        // 最も近いSegmentを検索
+        LaneSegment nearest = null;
+        float minDist = float.MaxValue;
+        foreach (var seg in segments)
+        {
+            if (seg.nodeA == null || seg.nodeB == null) continue;
+            // Segmentの中点との距離で比較
+            Vector3 mid = (seg.nodeA.Position + seg.nodeB.Position) * 0.5f;
+            float dist = Vector3.Distance(anchorPos, mid);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                nearest = seg;
+            }
+        }
+
+        if (nearest == null) return Quaternion.identity;
+
+        // A→B方向をSegmentの進行方向とし、椅子のZ+をその方向へ向ける
+        Vector3 segDir = (nearest.nodeB.Position - nearest.nodeA.Position).normalized;
+        if (segDir == Vector3.zero) return Quaternion.identity;
+
+        return Quaternion.LookRotation(segDir, Vector3.up) * Quaternion.Euler(0f, 180f, 0f);
     }
 
     public void ClearSeats()

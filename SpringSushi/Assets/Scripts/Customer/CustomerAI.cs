@@ -24,8 +24,8 @@ public class CustomerAI : MonoBehaviour
     [Header("設定")]
     [Tooltip("何注文以内で必ず帰るか")]
     public int maxOrderBatches = 3;
-    [Tooltip("一度に注文する数（バッチサイズ）")]
-    public int batchSize = 1;
+    [Tooltip("一度に注文する個数（実行時にmin?maxでランダム決定）")]
+    public int batchSize = 1; // Initialize時にランダム決定される
     [Tooltip("着席後に注文開始するまでの待機時間")]
     public float seatedWaitTime = 1.5f;
 
@@ -70,7 +70,7 @@ public class CustomerAI : MonoBehaviour
 
         // CustomerDataのパラメータを反映
         maxOrderBatches = data.maxOrderBatches;
-        batchSize = data.batchSize;
+        batchSize = Random.Range(data.batchSizeMin, data.batchSizeMax + 1);
         basePatienceTime = data.basePatienceTime;
         patienceDecayRate = data.patienceDecayRate;
 

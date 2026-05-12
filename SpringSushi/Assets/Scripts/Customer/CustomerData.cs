@@ -11,8 +11,10 @@ public class CustomerData : ScriptableObject
     public int maxOrderBatches = 3;
     [Tooltip("全注文数の最大値（この範囲でランダムに決定）")]
     public int maxTotalOrders = 5;
-    [Tooltip("一度に注文するバッチサイズ")]
-    public int batchSize = 1;
+    [Tooltip("一度に注文する個数の最小値")]
+    public int batchSizeMin = 1;
+    [Tooltip("一度に注文する個数の最大値")]
+    public int batchSizeMax = 2;
 
     [Header("Patience設定")]
     public float basePatienceTime = 10f;

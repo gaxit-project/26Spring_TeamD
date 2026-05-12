@@ -33,6 +33,9 @@ public class CustomerHUDEntry : MonoBehaviour
         satisfiedSlider.value = 0f;
         patienceSlider.value = 1f;
 
+        // Walking中は非表示（Ordering時のみ表示）
+        root.gameObject.SetActive(false);
+
         UpdateOrderImages();
     }
 
@@ -89,14 +92,26 @@ public class CustomerHUDEntry : MonoBehaviour
 
     private void OnStateChanged(CustomerAI ai)
     {
-        bool show = ai.State == CustomerAI.CustomerState.Ordering ||
-                    ai.State == CustomerAI.CustomerState.Satisfied;
-        root.gameObject.SetActive(show);
-
-        if (ai.State == CustomerAI.CustomerState.Leaving ||
-            ai.State == CustomerAI.CustomerState.Satisfied)
+        switch (ai.State)
         {
-            Invoke(nameof(DestroySelf), 1.5f);
+            case CustomerAI.CustomerState.Ordering:
+                root.gameObject.SetActive(true);
+                break;
+
+            case CustomerAI.CustomerState.Satisfied:
+                root.gameObject.SetActive(true); // 満足演出中は表示のまま
+                Invoke(nameof(DestroySelf), 1.5f);
+                break;
+
+            case CustomerAI.CustomerState.Leaving:
+                root.gameObject.SetActive(false);
+                Invoke(nameof(DestroySelf), 0.1f);
+                break;
+
+            default:
+                // Walking / Seated / Spawned は非表示
+                root.gameObject.SetActive(false);
+                break;
         }
     }
 
