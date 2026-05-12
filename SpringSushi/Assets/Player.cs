@@ -80,6 +80,24 @@ public partial class @Player: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RightStick"",
+                    ""type"": ""Value"",
+                    ""id"": ""ef19f86b-308b-47f9-adf8-2d04fdc8e438"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Spawn"",
+                    ""type"": ""Button"",
+                    ""id"": ""f9256fab-efb2-49f1-878b-6cdd3741ffbe"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -225,6 +243,28 @@ public partial class @Player: IInputActionCollection2, IDisposable
                     ""action"": ""StartAction"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""acbd7573-b5ed-4045-8c6a-ae55c9a77d9b"",
+                    ""path"": ""<Gamepad>/rightStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RightStick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""62def4f0-7de8-4c31-9126-c9cec859eaed"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Spawn"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -239,6 +279,8 @@ public partial class @Player: IInputActionCollection2, IDisposable
         m_GamePlay_LaneRed = m_GamePlay.FindAction("LaneRed", throwIfNotFound: true);
         m_GamePlay_Pause = m_GamePlay.FindAction("Pause", throwIfNotFound: true);
         m_GamePlay_StartAction = m_GamePlay.FindAction("StartAction", throwIfNotFound: true);
+        m_GamePlay_RightStick = m_GamePlay.FindAction("RightStick", throwIfNotFound: true);
+        m_GamePlay_Spawn = m_GamePlay.FindAction("Spawn", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -306,6 +348,8 @@ public partial class @Player: IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_LaneRed;
     private readonly InputAction m_GamePlay_Pause;
     private readonly InputAction m_GamePlay_StartAction;
+    private readonly InputAction m_GamePlay_RightStick;
+    private readonly InputAction m_GamePlay_Spawn;
     public struct GamePlayActions
     {
         private @Player m_Wrapper;
@@ -316,6 +360,8 @@ public partial class @Player: IInputActionCollection2, IDisposable
         public InputAction @LaneRed => m_Wrapper.m_GamePlay_LaneRed;
         public InputAction @Pause => m_Wrapper.m_GamePlay_Pause;
         public InputAction @StartAction => m_Wrapper.m_GamePlay_StartAction;
+        public InputAction @RightStick => m_Wrapper.m_GamePlay_RightStick;
+        public InputAction @Spawn => m_Wrapper.m_GamePlay_Spawn;
         public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -343,6 +389,12 @@ public partial class @Player: IInputActionCollection2, IDisposable
             @StartAction.started += instance.OnStartAction;
             @StartAction.performed += instance.OnStartAction;
             @StartAction.canceled += instance.OnStartAction;
+            @RightStick.started += instance.OnRightStick;
+            @RightStick.performed += instance.OnRightStick;
+            @RightStick.canceled += instance.OnRightStick;
+            @Spawn.started += instance.OnSpawn;
+            @Spawn.performed += instance.OnSpawn;
+            @Spawn.canceled += instance.OnSpawn;
         }
 
         private void UnregisterCallbacks(IGamePlayActions instance)
@@ -365,6 +417,12 @@ public partial class @Player: IInputActionCollection2, IDisposable
             @StartAction.started -= instance.OnStartAction;
             @StartAction.performed -= instance.OnStartAction;
             @StartAction.canceled -= instance.OnStartAction;
+            @RightStick.started -= instance.OnRightStick;
+            @RightStick.performed -= instance.OnRightStick;
+            @RightStick.canceled -= instance.OnRightStick;
+            @Spawn.started -= instance.OnSpawn;
+            @Spawn.performed -= instance.OnSpawn;
+            @Spawn.canceled -= instance.OnSpawn;
         }
 
         public void RemoveCallbacks(IGamePlayActions instance)
@@ -390,5 +448,7 @@ public partial class @Player: IInputActionCollection2, IDisposable
         void OnLaneRed(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
         void OnStartAction(InputAction.CallbackContext context);
+        void OnRightStick(InputAction.CallbackContext context);
+        void OnSpawn(InputAction.CallbackContext context);
     }
 }
