@@ -16,6 +16,9 @@ public class CustomerData : ScriptableObject
     [Tooltip("一度に注文する個数の最大値")]
     public int batchSizeMax = 2;
 
+    [Tooltip("1バッチを食べ終えた後の待機時間（秒）")]
+    public float eatTime = 4f;
+
     [Header("Patience設定")]
     public float basePatienceTime = 10f;
     [Range(0.5f, 1f)]

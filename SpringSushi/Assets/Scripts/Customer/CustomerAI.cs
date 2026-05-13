@@ -17,6 +17,7 @@ public class CustomerAI : MonoBehaviour
         Walking,   // EntryPointへ移動中
         Seated,    // 着席済み・注文前
         Ordering,  // 注文中（PatienceSlider動作）
+        Eating,    // 食事中（EatingTime経過後に次のバッチへ）
         Satisfied, // 全注文完了（SatisfiedSlider=1）
         Leaving,   // 退場中
     }
@@ -156,18 +157,25 @@ public class CustomerAI : MonoBehaviour
         // バッチ完了チェック
         if (orderQueue.IsBatchComplete)
         {
-            if (orderQueue.IsAllDelivered)
-            {
-                SetState(CustomerState.Satisfied);
-                Invoke(nameof(Leave), 1.5f);
-            }
-            else
-            {
-                StartNextBatch();
-            }
+            // 全注文完了・未完了問わずEatingへ
+            SetState(CustomerState.Eating);
+            Invoke(nameof(FinishEating), data != null ? data.eatTime : 1.5f);
         }
 
         return true;
+    }
+
+    private void FinishEating()
+    {
+        if (orderQueue.IsAllDelivered)
+        {
+            SetState(CustomerState.Satisfied);
+            Invoke(nameof(Leave), 0.5f);
+        }
+        else
+        {
+            StartNextBatch();
+        }
     }
 
     private void Leave()

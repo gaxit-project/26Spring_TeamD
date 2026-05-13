@@ -95,6 +95,7 @@ public class CustomerHUDEntry : MonoBehaviour
         switch (ai.State)
         {
             case CustomerAI.CustomerState.Ordering:
+            case CustomerAI.CustomerState.Eating:   // Eating’†‚àUI•\¦‚ğˆÛ
                 root.gameObject.SetActive(true);
                 break;
 
