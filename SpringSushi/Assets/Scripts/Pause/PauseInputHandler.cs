@@ -3,32 +3,44 @@ using UnityEngine.InputSystem;
 
 public class PauseInputHandler : MonoBehaviour
 {
-    // ここを Player に変更
     private Player inputActions;
     [SerializeField] private PauseMenuUI pauseMenuUI;
 
     private void Awake()
     {
-        // ここを Player に変更
         inputActions = new Player();
     }
 
     private void OnEnable()
     {
-        // inputActions.Player ではなく .GamePlay に変更
         inputActions.GamePlay.Enable();
         inputActions.GamePlay.Pause.performed += OnPausePerformed;
+        Debug.Log("[PauseInput] OnEnable: Pause入力購読完了");
     }
 
     private void OnDisable()
     {
-        // ここも .GamePlay に変更
         inputActions.GamePlay.Pause.performed -= OnPausePerformed;
         inputActions.GamePlay.Disable();
     }
 
     private void OnPausePerformed(InputAction.CallbackContext context)
     {
+        var state = GameStateManager.Instance?.CurrentState;
+        Debug.Log($"[PauseInput] Pause入力検知 (GameState:{state})");
+
+        if (GameStateManager.Instance == null)
+        {
+            Debug.LogError("[PauseInput] ★ GameStateManager.Instanceがnullです！");
+            return;
+        }
+
+        if (GameStateManager.Instance.IsReady)
+        {
+            Debug.LogWarning("[PauseInput] ★ Ready中のためPause入力を無視");
+            return;
+        }
+
         if (GameStateManager.Instance.IsPaused)
             pauseMenuUI.Resume();
         else

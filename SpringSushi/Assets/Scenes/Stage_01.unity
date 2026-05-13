@@ -13285,6 +13285,8 @@ MonoBehaviour:
   riseDistance: 60
   positiveColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   negativeColor: {r: 1, g: 0, b: 0, a: 1}
+  defaultCapacity: 10
+  maxSize: 30
 --- !u!1001 &2017642861
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13979,8 +13981,8 @@ SceneRoots:
   - {fileID: 1283608395}
   - {fileID: 726665884}
   - {fileID: 66613438}
-  - {fileID: 1402564091}
   - {fileID: 848440390}
+  - {fileID: 1402564091}
   - {fileID: 1143948381}
   - {fileID: 1609612475}
   - {fileID: 1612635288}

@@ -119,32 +119,10 @@ public class StageManager : MonoBehaviour
         LoadCurrentStage();
     }
 
-    public void ClearStage()
-    {
-        int nextIndex = currentStageIndex + 1;
-
-        if (nextIndex > ReachedStageIndex)
-            ReachedStageIndex = nextIndex;
-
-        currentStageIndex = nextIndex;
-
-        if (currentStageIndex >= stageOrder.Count)
-        {
-            GameStateManager.Instance.SetState(GameStateManager.GameState.GameClear);
-            SceneController.Instance.LoadSceneAsync("GameClear");
-            return;
-        }
-
-        LoadCurrentStage();
-    }
-
     private void LoadCurrentStage()
     {
         if (currentStageIndex < 0 || currentStageIndex >= stageOrder.Count) return;
-
         string sceneName = stageOrder[currentStageIndex];
-
-        GameStateManager.Instance.SetState(GameStateManager.GameState.Playing);
         SceneController.Instance.LoadSceneAsync(sceneName);
     }
 }

@@ -10,7 +10,7 @@ public class InGameSequenceManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI statusText;
 
     [Header("Settings")]
-    [SerializeField] private float operationTime = 60f; // 営業時間の長さ
+    [SerializeField] private float operationTime = 60f;
     [SerializeField] private string resultSceneName = "ResultScene";
 
     private Player inputActions;
@@ -19,58 +19,85 @@ public class InGameSequenceManager : MonoBehaviour
     private void Awake()
     {
         inputActions = new Player();
-        // シーン開始時はゲームを止めておく
-        GameStateManager.Instance.PauseGame();
         statusText.gameObject.SetActive(false);
+
+        // シーン開始時にゲームを止める（ドア演出はunscaledTimeで動くので問題なし）
+        // StateはReady（TitleUIで設定済み）のままにする
+        // PauseGame()はPlaying中にしか動かないため、ここではtimeScaleだけ止める
+        Time.timeScale = 0f;
+        Debug.Log($"[Sequence] Awake: timeScale=0 (GameState:{GameStateManager.Instance?.CurrentState})");
     }
 
     private void OnEnable()
     {
         inputActions.GamePlay.Enable();
-        // 入力があったらシーケンス開始
-        inputActions.GamePlay.StartAction.performed += _ => StartBusinessSequence();
+        inputActions.GamePlay.StartAction.performed += _ => TryStartSequence();
+        Debug.Log("[Sequence] OnEnable: StartAction購読完了");
     }
 
     private void OnDisable()
     {
+        inputActions.GamePlay.StartAction.performed -= _ => TryStartSequence();
         inputActions.GamePlay.Disable();
     }
 
-    private void StartBusinessSequence()
+    private void TryStartSequence()
     {
-        if (isSequenceStarted) return;
+        var state = GameStateManager.Instance?.CurrentState;
+        Debug.Log($"[Sequence] StartAction入力 (GameState:{state}, isSequenceStarted:{isSequenceStarted})");
+
+        if (GameStateManager.Instance == null)
+        {
+            Debug.LogError("[Sequence] ★ GameStateManager.Instanceがnull");
+            return;
+        }
+
+        // Ready状態のときだけ受け付ける
+        if (!GameStateManager.Instance.IsReady)
+        {
+            Debug.LogWarning($"[Sequence] ★ Ready状態でないため開始不可 (現在:{state})");
+            return;
+        }
+
+        if (isSequenceStarted)
+        {
+            Debug.Log("[Sequence] すでに開始済みのためスキップ");
+            return;
+        }
+
         isSequenceStarted = true;
         StartCoroutine(PlayBusinessSequenceCoroutine());
     }
 
     private IEnumerator PlayBusinessSequenceCoroutine()
     {
-        // --- 1. 開店演出 (Start) ---
+        // --- 1. 開店演出（timeScale=0のままunscaledTimeで動く） ---
+        Debug.Log("[Sequence] 開店演出開始");
         statusText.text = "開店!!";
         statusText.gameObject.SetActive(true);
-
         yield return doorAnim.Open();
-
         statusText.gameObject.SetActive(false);
 
-        // --- 2. 営業開始 (Playing) ---
-        GameStateManager.Instance.ResumeGame();
+        // --- 2. ドアが開ききったらPlaying開始（ここで初めてPause可能） ---
+        Debug.Log("[Sequence] ドア開放完了 → StartPlaying()");
+        Time.timeScale = 1f;
+        GameStateManager.Instance.StartPlaying();
 
         // 営業時間が終わるのを待つ
         yield return businessTimer.StartBusiness(operationTime);
 
-        // --- 3. 閉店演出 (End) ---
-        // ゲームを止めてから「終了」を表示
-        GameStateManager.Instance.PauseGame();
-
+        // --- 3. 閉店演出 ---
+        Debug.Log("[Sequence] 営業終了 → 閉店演出");
+        GameStateManager.Instance.PauseGame(); // timeScale=0
         statusText.text = "閉店!!";
         statusText.gameObject.SetActive(true);
-
-        // 扉を閉める
         yield return doorAnim.Close();
 
-        // 余韻を持たせてからリザルトシーンへ
         yield return new WaitForSecondsRealtime(2f);
+
+        // --- 4. Result ---
+        Debug.Log("[Sequence] Result遷移");
+        GameStateManager.Instance.EnterResult();
         SceneController.Instance.LoadSceneAsync(resultSceneName);
     }
 }
