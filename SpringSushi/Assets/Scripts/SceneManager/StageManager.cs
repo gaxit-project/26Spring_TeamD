@@ -12,25 +12,21 @@ public class StageManager : MonoBehaviour
     [SerializeField] private List<Sprite> stageSprites = new List<Sprite>();
 
     private int currentStageIndex = 0;
-
     private const string ClearKey = "ReachedStageIndex";
 
     // =========================================================
-    // ★ Debug（追加）
+    // Debug
     // =========================================================
-
     private bool debugForceUnlock = false;
     public bool IsDebugForceUnlock => debugForceUnlock;
 
     public void ToggleDebugUnlockAll()
     {
         debugForceUnlock = !debugForceUnlock;
-
         Debug.Log($"[DEBUG] Force Unlock = {debugForceUnlock}");
     }
 
     // =========================================================
-
     public int ReachedStageIndex
     {
         get => PlayerPrefs.GetInt(ClearKey, 0);
@@ -41,19 +37,13 @@ public class StageManager : MonoBehaviour
         }
     }
 
-    // =========================================================
-    // ★ 解放判定を一元化（超重要）
-    // =========================================================
     public bool IsStageUnlocked(int index)
     {
-        if (debugForceUnlock)
-            return true;
-
+        if (debugForceUnlock) return true;
         return index <= ReachedStageIndex;
     }
 
     // =========================================================
-
     private void Awake()
     {
         if (Instance != null)
@@ -61,13 +51,11 @@ public class StageManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
         if (stageOrder.Count == 0)
             Debug.LogError("StageManager にステージが登録されていません");
-
         if (stageSprites.Count != stageOrder.Count)
             Debug.LogWarning("stageOrder と stageSprites の数が一致していません！");
     }
@@ -75,45 +63,53 @@ public class StageManager : MonoBehaviour
     // =========================================================
     // Sprite取得
     // =========================================================
-
     public Sprite GetStageSprite(int index)
     {
-        if (index < 0 || index >= stageSprites.Count)
-            return null;
-
+        if (index < 0 || index >= stageSprites.Count) return null;
         return stageSprites[index];
     }
 
     // =========================================================
     // 既存機能
     // =========================================================
-
     public int GetTotalStageCount() => stageOrder.Count;
 
     public string GetStageNameAt(int index)
     {
-        return (index >= 0 && index < stageOrder.Count)
-            ? stageOrder[index]
-            : "";
+        return (index >= 0 && index < stageOrder.Count) ? stageOrder[index] : "";
     }
 
     public void StartFirstStage()
     {
+        // ★ 遷移中ガード
+        if (SceneController.Instance != null && SceneController.Instance.IsTransitioning) return;
+
         currentStageIndex = 0;
         LoadCurrentStage();
     }
 
     public void RetryFromBeginning()
     {
+        // ★ 遷移中ガード
+        if (SceneController.Instance != null && SceneController.Instance.IsTransitioning) return;
+
         currentStageIndex = 0;
         LoadCurrentStage();
     }
 
-    public void RetryCurrentStage() => LoadCurrentStage();
+    public void RetryCurrentStage()
+    {
+        // ★ 遷移中ガード
+        if (SceneController.Instance != null && SceneController.Instance.IsTransitioning) return;
+
+        LoadCurrentStage();
+    }
 
     public void SelectStage(int index)
     {
-        if (!IsStageUnlocked(index)) return; // ★安全対策追加
+        // ★ 解放チェック & 遷移中ガード
+        if (!IsStageUnlocked(index)) return;
+        if (SceneController.Instance != null && SceneController.Instance.IsTransitioning) return;
 
         currentStageIndex = index;
         LoadCurrentStage();
@@ -122,6 +118,7 @@ public class StageManager : MonoBehaviour
     private void LoadCurrentStage()
     {
         if (currentStageIndex < 0 || currentStageIndex >= stageOrder.Count) return;
+
         string sceneName = stageOrder[currentStageIndex];
         SceneController.Instance.LoadSceneAsync(sceneName);
     }

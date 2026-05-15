@@ -103,6 +103,12 @@ public class SushiSpawner : MonoBehaviour
         GameObject obj = Instantiate(sushiBasePrefab, myNode.Position, Quaternion.identity);
         SushiMovement move = obj.GetComponent<SushiMovement>();
         move.Initialize(data, targetSegment, myNode, registry);
+
+        // ★ ここで寿司の生成音（ポンッという音など）を鳴らす
+        if (SoundPlayer.Instance != null)
+        {
+            SoundPlayer.Instance.PlaySFX(SoundKeys.SushiSpawn);
+        }
     }
 
     /// <summary>

@@ -1,14 +1,16 @@
 using UnityEngine;
-using TMPro; // TextMeshProを使うために追加
+using TMPro;
 
 public class ResultUI : MonoBehaviour
 {
     [Header("UI参照")]
-    [SerializeField] private TextMeshProUGUI totalScoreText; // 合計スコアを表示するテキスト
+    [SerializeField] private TextMeshProUGUI totalScoreText;
+
+    // ★ ボタン操作済みフラグ（Retry / ReturnToTitle どちらかが押されたら封鎖）
+    private bool isButtonHandled = false;
 
     private void Start()
     {
-        // シーン開始時にScoreManagerから合計スコアを取得して表示する
         if (ScoreManager.Instance != null)
         {
             totalScoreText.text = $"{ScoreManager.Instance.TotalScore}円";
@@ -21,17 +23,25 @@ public class ResultUI : MonoBehaviour
 
     public void Retry()
     {
-        // 次のゲームに向けてスコアをリセット
+        // ★ 連打ガード & 遷移中ガード
+        if (isButtonHandled) return;
+        if (SceneController.Instance != null && SceneController.Instance.IsTransitioning) return;
+
+        isButtonHandled = true;
+
         if (ScoreManager.Instance != null) ScoreManager.Instance.ResetScore();
-        
         StageManager.Instance.RetryFromBeginning();
     }
 
     public void OnReturnToTitle()
     {
-        // タイトルに戻る際もスコアをリセット
-        if (ScoreManager.Instance != null) ScoreManager.Instance.ResetScore();
+        // ★ 連打ガード & 遷移中ガード
+        if (isButtonHandled) return;
+        if (SceneController.Instance != null && SceneController.Instance.IsTransitioning) return;
 
+        isButtonHandled = true;
+
+        if (ScoreManager.Instance != null) ScoreManager.Instance.ResetScore();
         GameStateManager.Instance.SetState(GameStateManager.GameState.Title);
         SceneController.Instance.LoadSceneAsync("Title");
     }

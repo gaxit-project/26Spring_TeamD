@@ -25,7 +25,6 @@ public class ScoreManager : MonoBehaviour
 
         Instance = this;
 
-        // --- ここを追加 ---
         // シーン遷移してもScoreManagerを破壊せず、ResultSceneへ引き継ぐ
         DontDestroyOnLoad(gameObject);
     }
@@ -35,6 +34,12 @@ public class ScoreManager : MonoBehaviour
         totalScore += amount;
         OnScoreChanged?.Invoke(amount, totalScore);
         Debug.Log($"<color=green>[Score]</color> +{amount} → 合計: {totalScore}円");
+
+        // ★ お金が増えた音を鳴らす（チャリンチャリンなど）
+        if (SoundPlayer.Instance != null)
+        {
+            SoundPlayer.Instance.PlaySFX(SoundKeys.ScoreUp);
+        }
     }
 
     public void SubtractScore(int amount)
@@ -42,6 +47,12 @@ public class ScoreManager : MonoBehaviour
         totalScore -= amount;
         OnScoreChanged?.Invoke(-amount, totalScore);
         Debug.Log($"<color=red>[Score]</color> -{amount} → 合計: {totalScore}円");
+
+        // ★ お金が減った音を鳴らす
+        if (SoundPlayer.Instance != null)
+        {
+            SoundPlayer.Instance.PlaySFX(SoundKeys.ScoreDown);
+        }
     }
 
     public void ResetScore()

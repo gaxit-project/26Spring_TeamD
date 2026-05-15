@@ -21,6 +21,7 @@ public static class SoundKeys
 
     // --- 寿司・レーン ---
     public const string PlateBreak = "plate_break";        // 皿同士がぶつかって割れる音
+    public const string SushiSpawn = "sushi_spawn";
 
     // --- スコア ---
     public const string ScoreUp = "score_up";           // チャリンチャリン（加算）

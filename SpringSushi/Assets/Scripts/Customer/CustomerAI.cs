@@ -82,6 +82,12 @@ public class CustomerAI : MonoBehaviour
 
         Debug.Log($"<color=lime>[Entry]</color> {data.customerType} が来店（全{orders.Count}注文）");
 
+        // ★ ここで「へいらっしゃい！」などのスポーン音を鳴らす
+        if (SoundPlayer.Instance != null)
+        {
+            SoundPlayer.Instance.PlayVoice(SoundKeys.CustomerSpawn);
+        }
+
         SetState(CustomerState.Walking);
         agent.SetDestination(targetSeat.position);
     }
