@@ -1,26 +1,19 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-/// <summary>
-/// SE・Voiceの単発再生とBGMのループ再生を担当するSingleton。
-/// DontDestroyOnLoad。
-/// オブジェクトプールを使用して、再生時のメモリ負荷（GCスパイク）をゼロにしています。
-/// </summary>
 public class SoundPlayer : MonoBehaviour
 {
     public static SoundPlayer Instance { get; private set; }
 
-    [Header("データベース")]
+    [Header("データベース（未アサインなら Resources/SoundDatabase を自動ロード）")]
     [SerializeField] private SoundDatabase database;
 
     [Header("BGM用AudioSource（ループ再生）")]
     [SerializeField] private AudioSource bgmSource;
 
     [Header("オブジェクトプール設定")]
-    [Tooltip("起動時に生成するAudioSourceの数")]
     [SerializeField] private int initialPoolSize = 15;
 
-    // プールされたAudioSourceと、その現在の設定を紐づけて管理するクラス
     private class PooledSource
     {
         public AudioSource Source;
@@ -28,10 +21,9 @@ public class SoundPlayer : MonoBehaviour
         public float VolumeMultiplier;
     }
 
-    // 単発SE・Voice用のプール
     private readonly List<PooledSource> sfxPool = new();
     private int lastUpdateCount = -1;
-    private float currentBgmMultiplier = 1f; // BGMの個別音量倍率を保持
+    private float currentBgmMultiplier = 1f;
 
     private void Awake()
     {
@@ -39,17 +31,33 @@ public class SoundPlayer : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
+        if (database == null)
+        {
+            database = Resources.Load<SoundDatabase>("SoundDatabase");
+            if (database == null)
+                Debug.LogError("[SoundPlayer] SoundDatabase が見つかりません。");
+            else
+                Debug.Log("[SoundPlayer] SoundDatabase 自動ロード成功。");
+        }
+        else
+        {
+            Debug.Log("[SoundPlayer] SoundDatabase はInspectorからアサイン済み。");
+        }
+
+        if (bgmSource == null)
+            Debug.LogError("[SoundPlayer] bgmSource がアサインされていません。");
+
         InitializePool();
+        Debug.Log($"[SoundPlayer] 初期化完了。プールサイズ={sfxPool.Count}");
     }
 
     private void Update()
     {
+        // ★ SoundManager が null でも例外を出さない
         if (SoundManager.Instance == null) return;
-        if (lastUpdateCount != SoundManager.Instance.VolumeUpdateCount)
-        {
-            lastUpdateCount = SoundManager.Instance.VolumeUpdateCount;
-            RefreshAllVolumes();
-        }
+        if (lastUpdateCount == SoundManager.Instance.VolumeUpdateCount) return;
+        lastUpdateCount = SoundManager.Instance.VolumeUpdateCount;
+        RefreshAllVolumes();
     }
 
     // -------------------------------------------------------
@@ -59,21 +67,16 @@ public class SoundPlayer : MonoBehaviour
     private void InitializePool()
     {
         for (int i = 0; i < initialPoolSize; i++)
-        {
             CreatePooledSource();
-        }
     }
 
     private PooledSource CreatePooledSource()
     {
-        // SoundPlayerの子オブジェクトとして生成
         var obj = new GameObject($"SE_Source_{sfxPool.Count}");
         obj.transform.SetParent(transform);
-
         var src = obj.AddComponent<AudioSource>();
         src.playOnAwake = false;
-        src.spatialBlend = 0f; // 2D再生
-
+        src.spatialBlend = 0f;
         var pooled = new PooledSource { Source = src };
         sfxPool.Add(pooled);
         return pooled;
@@ -81,14 +84,9 @@ public class SoundPlayer : MonoBehaviour
 
     private PooledSource GetAvailableSource()
     {
-        // 1. 再生されていない（空いている）ソースを探す
         foreach (var pooled in sfxPool)
-        {
             if (!pooled.Source.isPlaying) return pooled;
-        }
-
-        // 2. 全て使用中の場合は、プールを動的に拡張する
-        Debug.LogWarning($"[SoundPlayer] プールが枯渇したため AudioSource を追加生成します。現在のサイズ: {sfxPool.Count + 1}");
+        Debug.LogWarning($"[SoundPlayer] プール枯渇。追加生成。サイズ:{sfxPool.Count + 1}");
         return CreatePooledSource();
     }
 
@@ -96,39 +94,41 @@ public class SoundPlayer : MonoBehaviour
     // 公開API
     // -------------------------------------------------------
 
-    /// <summary>SFXを鳴らす</summary>
     public void PlaySFX(string key) => PlayOneShot(key);
-
-    /// <summary>Voiceを鳴らす</summary>
     public void PlayVoice(string key) => PlayOneShot(key);
+    public void PlaySushiVoice(string sushiName) => PlayOneShot($"voice_sushi_{sushiName}");
 
-    /// <summary>
-    /// 寿司名ボイスを鳴らす。
-    /// SoundDatabaseに "voice_sushi_{sushiName}" キーで登録する。
-    /// </summary>
-    public void PlaySushiVoice(string sushiName)
-        => PlayOneShot($"voice_sushi_{sushiName}");
-
-    /// <summary>BGMを再生する（同じクリップなら再生しない）</summary>
     public void PlayBGM(string key)
     {
-        if (database == null || bgmSource == null) return;
+        if (database == null) { Debug.LogError("[SoundPlayer] PlayBGM: database null"); return; }
+        if (bgmSource == null) { Debug.LogError("[SoundPlayer] PlayBGM: bgmSource null"); return; }
+
         var entry = database.Get(key);
-        if (entry == null || entry.clip == null) return;
+        if (entry == null || entry.clip == null)
+        {
+            Debug.LogWarning($"[SoundPlayer] PlayBGM: キー '{key}' が見つかりません。");
+            return;
+        }
         if (bgmSource.clip == entry.clip && bgmSource.isPlaying) return;
 
-        currentBgmMultiplier = entry.volumeMultiplier; // 音量更新用に倍率を保持
-
+        currentBgmMultiplier = entry.volumeMultiplier;
         bgmSource.clip = entry.clip;
         bgmSource.loop = true;
-        bgmSource.volume = SoundManager.Instance.GetVolume(SoundCategory.BGM) * currentBgmMultiplier;
+
+        // ★ SoundManager が null でも音量1で再生を試みる
+        float vol = SoundManager.Instance != null
+            ? SoundManager.Instance.GetVolume(SoundCategory.BGM) * currentBgmMultiplier
+            : currentBgmMultiplier;
+
+        bgmSource.volume = vol;
         bgmSource.Play();
+        Debug.Log($"[SoundPlayer] PlayBGM: '{key}' 再生開始。vol={vol}");
     }
 
-    /// <summary>BGMを停止する</summary>
     public void StopBGM()
     {
         bgmSource?.Stop();
+        Debug.Log("[SoundPlayer] StopBGM 呼び出し。");
     }
 
     // -------------------------------------------------------
@@ -137,42 +137,40 @@ public class SoundPlayer : MonoBehaviour
 
     private void PlayOneShot(string key)
     {
-        if (database == null) return;
+        if (database == null) { Debug.LogError("[SoundPlayer] PlayOneShot: database null"); return; }
+
         var entry = database.Get(key);
         if (entry == null || entry.clip == null)
         {
-            Debug.LogWarning($"[SoundPlayer] キー '{key}' が見つかりません。SoundDatabaseを確認してください。");
+            Debug.LogWarning($"[SoundPlayer] キー '{key}' が見つかりません。");
             return;
         }
 
-        // プールから空いているAudioSourceを取得
         var pooled = GetAvailableSource();
-
-        // カテゴリや倍率の設定を更新
         pooled.Category = entry.category;
         pooled.VolumeMultiplier = entry.volumeMultiplier;
-
-        // 再生
         pooled.Source.clip = entry.clip;
-        pooled.Source.volume = SoundManager.Instance.GetVolume(entry.category) * entry.volumeMultiplier;
+
+        // ★ SoundManager が null でも音量1で再生を試みる
+        float vol = SoundManager.Instance != null
+            ? SoundManager.Instance.GetVolume(entry.category) * entry.volumeMultiplier
+            : entry.volumeMultiplier;
+
+        pooled.Source.volume = vol;
         pooled.Source.Play();
     }
 
     private void RefreshAllVolumes()
     {
-        // BGMの音量更新
-        if (bgmSource != null)
-        {
-            bgmSource.volume = SoundManager.Instance.GetVolume(SoundCategory.BGM) * currentBgmMultiplier;
-        }
+        if (SoundManager.Instance == null) return;
 
-        // SE/Voiceの音量更新（再生中のもののみ）
+        if (bgmSource != null)
+            bgmSource.volume = SoundManager.Instance.GetVolume(SoundCategory.BGM) * currentBgmMultiplier;
+
         foreach (var pooled in sfxPool)
         {
             if (pooled.Source.isPlaying)
-            {
                 pooled.Source.volume = SoundManager.Instance.GetVolume(pooled.Category) * pooled.VolumeMultiplier;
-            }
         }
     }
 }

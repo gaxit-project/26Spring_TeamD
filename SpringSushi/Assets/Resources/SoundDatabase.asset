@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 19525cfa8320fa842af0c84f7e7b7766, type: 3}
   m_Name: SoundDatabase
-  m_EditorClassIdentifier: Assembly-CSharp::SoundDatabase
+  m_EditorClassIdentifier: 
   sounds:
   - key: ui_button_press
     clip: {fileID: 8300000, guid: 73b7001ab9cb3294397ff8d7341f7030, type: 3}
@@ -33,18 +33,10 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: ececa9b5f5667b64890785632b9c6e73, type: 3}
     category: 0
     volumeMultiplier: 3
-  - key: select_sushi
-    clip: {fileID: 0}
+  - key: sushi_spawn
+    clip: {fileID: 8300000, guid: 12fed78d81246d74a861295076ec07bf, type: 3}
     category: 0
-    volumeMultiplier: 0
-  - key: voice_sushi_tuna
-    clip: {fileID: 0}
-    category: 1
-    volumeMultiplier: 0
-  - key: voice_sushi_egg
-    clip: {fileID: 0}
-    category: 1
-    volumeMultiplier: 0
+    volumeMultiplier: 3
   - key: plate_break
     clip: {fileID: 8300000, guid: c04bf675001713c43a12da12593e2f9f, type: 3}
     category: 0
@@ -61,31 +53,19 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: e9826885e10416643bc227404bec34fd, type: 3}
     category: 0
     volumeMultiplier: 3
-  - key: customer_order
-    clip: {fileID: 0}
-    category: 1
-    volumeMultiplier: 0
-  - key: customer_eat
-    clip: {fileID: 0}
-    category: 0
-    volumeMultiplier: 0
   - key: customer_served
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 56e2dfb6bb6c387468d2d51646dc1514, type: 3}
     category: 0
-    volumeMultiplier: 0
-  - key: bgm_title
-    clip: {fileID: 8300000, guid: 5879f1018a9e8c34384a36bda1773453, type: 3}
-    category: 2
-    volumeMultiplier: 2
+    volumeMultiplier: 3
   - key: bgm_game
     clip: {fileID: 8300000, guid: f579117a96ff1b1448739fe4e6497bbe, type: 3}
     category: 2
-    volumeMultiplier: 2
+    volumeMultiplier: 3
+  - key: bgm_title
+    clip: {fileID: 8300000, guid: 5879f1018a9e8c34384a36bda1773453, type: 3}
+    category: 2
+    volumeMultiplier: 3
   - key: bgm_result
     clip: {fileID: 8300000, guid: 9ab433d1a6ef2504882613fb0bb0ef8a, type: 3}
     category: 2
-    volumeMultiplier: 2
-  - key: sushi_spawn
-    clip: {fileID: 8300000, guid: 12fed78d81246d74a861295076ec07bf, type: 3}
-    category: 0
     volumeMultiplier: 3
