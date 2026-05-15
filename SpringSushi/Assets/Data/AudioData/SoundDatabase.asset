@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: SoundDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::SoundDatabase
+  sounds:
+  - key: ui_button_press
+    clip: {fileID: 0}
+    category: 0
+    volumeMultiplier: 0
+  - key: ui_cursor_move
+    clip: {fileID: 0}
+    category: 0
+    volumeMultiplier: 0
+  - key: open_store
+    clip: {fileID: 0}
+    category: 0
+    volumeMultiplier: 0
+  - key: open_store
+    clip: {fileID: 0}
+    category: 0
+    volumeMultiplier: 0
+  - key: door_open
+    clip: {fileID: 0}
+    category: 0
+    volumeMultiplier: 0
+  - key: select_sushi
+    clip: {fileID: 0}
+    category: 0
+    volumeMultiplier: 0
+  - key: voice_sushi_tuna
+    clip: {fileID: 0}
+    category: 1
+    volumeMultiplier: 0
+  - key: voice_sushi_egg
+    clip: {fileID: 0}
+    category: 1
+    volumeMultiplier: 0
+  - key: plate_break
+    clip: {fileID: 0}
+    category: 0
+    volumeMultiplier: 0.05
+  - key: score_up
+    clip: {fileID: 0}
+    category: 0
+    volumeMultiplier: 0
+  - key: score_down
+    clip: {fileID: 0}
+    category: 0
+    volumeMultiplier: 0
+  - key: customer_spawn
+    clip: {fileID: 0}
+    category: 1
+    volumeMultiplier: 0
+  - key: customer_order
+    clip: {fileID: 0}
+    category: 1
+    volumeMultiplier: 0
+  - key: customer_eat
+    clip: {fileID: 0}
+    category: 0
+    volumeMultiplier: 0
+  - key: customer_served
+    clip: {fileID: 0}
+    category: 0
+    volumeMultiplier: 0
+  - key: bgm_title
+    clip: {fileID: 0}
+    category: 2
+    volumeMultiplier: 0
+  - key: bgm_game
+    clip: {fileID: 0}
+    category: 2
+    volumeMultiplier: 0
