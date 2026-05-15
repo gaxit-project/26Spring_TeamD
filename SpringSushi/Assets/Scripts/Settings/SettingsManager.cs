@@ -21,7 +21,7 @@ public class SettingsManager : MonoBehaviour
     [Header("First Selected")]
     public GameObject audioTabButton;
     public GameObject startButton;
-    public GameObject graphicsTabButton; // 未実装（無効化する）
+    public GameObject backToMainButton; // 戻るボタン
 
     private void Start()
     {
@@ -37,7 +37,6 @@ public class SettingsManager : MonoBehaviour
         sfxSlider.onValueChanged.AddListener(SoundManager.Instance.SetSfxVolume);
         voiceSlider.onValueChanged.AddListener(SoundManager.Instance.SetVoiceVolume);
 
-        DisableGraphicsTab();
         ShowMainMenu();
     }
 
@@ -46,7 +45,6 @@ public class SettingsManager : MonoBehaviour
         mainMenu.SetActive(false);
         settingsPanel.SetActive(true);
         audioPanel.SetActive(true);
-        DisableGraphicsTab();
         SetFocus(audioTabButton);
     }
 
@@ -61,12 +59,6 @@ public class SettingsManager : MonoBehaviour
         mainMenu.SetActive(true);
         settingsPanel.SetActive(false);
         SetFocus(startButton);
-    }
-
-    private void DisableGraphicsTab()
-    {
-        var btn = graphicsTabButton?.GetComponent<Button>();
-        if (btn != null) btn.interactable = false;
     }
 
     private void SetFocus(GameObject target)

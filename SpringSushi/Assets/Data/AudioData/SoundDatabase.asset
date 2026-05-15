@@ -74,9 +74,9 @@ MonoBehaviour:
     category: 0
     volumeMultiplier: 0
   - key: bgm_title
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 5879f1018a9e8c34384a36bda1773453, type: 3}
     category: 2
-    volumeMultiplier: 0
+    volumeMultiplier: 3
   - key: bgm_game
     clip: {fileID: 0}
     category: 2

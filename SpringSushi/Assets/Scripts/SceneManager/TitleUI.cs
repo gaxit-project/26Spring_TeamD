@@ -2,6 +2,11 @@ using UnityEngine;
 
 public class TitleUI : MonoBehaviour
 {
+    public void Start()
+    {
+        SoundPlayer.Instance.PlayBGM(SoundKeys.BgmTitle);
+    }
+
     public void OnStartButton()
     {
         Debug.Log($"[TitleUI] OnStartButton() ‰Ÿ‰º (GameState:{GameStateManager.Instance?.CurrentState})");
