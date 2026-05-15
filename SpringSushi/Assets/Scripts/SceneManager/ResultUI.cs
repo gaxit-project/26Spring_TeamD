@@ -30,6 +30,7 @@ public class ResultUI : MonoBehaviour
         isButtonHandled = true;
 
         if (ScoreManager.Instance != null) ScoreManager.Instance.ResetScore();
+        GameStateManager.Instance.EnterReady(); 
         StageManager.Instance.RetryFromBeginning();
     }
 

@@ -46,17 +46,17 @@ MonoBehaviour:
     category: 1
     volumeMultiplier: 0
   - key: plate_break
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: c04bf675001713c43a12da12593e2f9f, type: 3}
     category: 0
-    volumeMultiplier: 0.05
+    volumeMultiplier: 3
   - key: score_up
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 87108546b80958a4896bae211a1aea8d, type: 3}
     category: 0
-    volumeMultiplier: 0
+    volumeMultiplier: 3
   - key: score_down
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 63174df4bbff8a949b645b8b7b764459, type: 3}
     category: 0
-    volumeMultiplier: 0
+    volumeMultiplier: 3
   - key: customer_spawn
     clip: {fileID: 8300000, guid: e9826885e10416643bc227404bec34fd, type: 3}
     category: 0
@@ -76,12 +76,16 @@ MonoBehaviour:
   - key: bgm_title
     clip: {fileID: 8300000, guid: 5879f1018a9e8c34384a36bda1773453, type: 3}
     category: 2
-    volumeMultiplier: 3
+    volumeMultiplier: 2
   - key: bgm_game
     clip: {fileID: 8300000, guid: f579117a96ff1b1448739fe4e6497bbe, type: 3}
     category: 2
-    volumeMultiplier: 3
+    volumeMultiplier: 2
   - key: bgm_result
     clip: {fileID: 8300000, guid: 9ab433d1a6ef2504882613fb0bb0ef8a, type: 3}
     category: 2
+    volumeMultiplier: 2
+  - key: sushi_spawn
+    clip: {fileID: 8300000, guid: 12fed78d81246d74a861295076ec07bf, type: 3}
+    category: 0
     volumeMultiplier: 3

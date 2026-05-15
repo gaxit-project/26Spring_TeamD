@@ -9837,6 +9837,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseMenuUI: {fileID: 1143948382}
+  pauseInputCooldown: 0.2
 --- !u!4 &1408817110
 Transform:
   m_ObjectHideFlags: 0
