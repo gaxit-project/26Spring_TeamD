@@ -11,6 +11,7 @@ public static class SoundKeys
 
     // --- ƒQ[ƒ€ŠJn‰‰o ---
     public const string OpenStore = "open_store";         // ŠJ“X‰¹
+    public const string CloseStore = "close_store";      //•Â“X‰¹
     public const string DoorOpen = "door_open";          // ƒhƒA‚ªƒKƒ‰ƒKƒ‰ŠJ‚­‰¹
 
     // --- õiSpawner ---
