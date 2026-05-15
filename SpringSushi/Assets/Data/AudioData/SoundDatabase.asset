@@ -18,9 +18,9 @@ MonoBehaviour:
     category: 0
     volumeMultiplier: 0
   - key: ui_cursor_move
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: bee4b47d045e5c04db52512031330e0a, type: 3}
     category: 0
-    volumeMultiplier: 0
+    volumeMultiplier: 3
   - key: open_store
     clip: {fileID: 0}
     category: 0
@@ -78,6 +78,10 @@ MonoBehaviour:
     category: 2
     volumeMultiplier: 3
   - key: bgm_game
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: f579117a96ff1b1448739fe4e6497bbe, type: 3}
     category: 2
-    volumeMultiplier: 0
+    volumeMultiplier: 3
+  - key: bgm_result
+    clip: {fileID: 8300000, guid: 9ab433d1a6ef2504882613fb0bb0ef8a, type: 3}
+    category: 2
+    volumeMultiplier: 3

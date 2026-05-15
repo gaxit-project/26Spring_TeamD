@@ -34,4 +34,5 @@ public static class SoundKeys
     // --- BGM ---
     public const string BgmTitle = "bgm_title";          // タイトル画面BGM
     public const string BgmGame = "bgm_game";           // ゲーム中BGM
+    public const string BgmResult = "bgm_result";       //リザルト画面BGM
 }
