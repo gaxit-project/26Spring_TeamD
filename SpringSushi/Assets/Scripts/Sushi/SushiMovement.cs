@@ -172,6 +172,12 @@ public class SushiMovement : MonoBehaviour
             ScoreManager.Instance?.SubtractScore(lossAmount);
             PricePopupManager.Instance?.ShowPopup(-lossAmount, transform.position);
 
+            // ★ ここで皿が割れる音を鳴らす
+            if (SoundPlayer.Instance != null)
+            {
+                SoundPlayer.Instance.PlaySFX(SoundKeys.PlateBreak);
+            }
+
             // 両方をDestroy（相手側のOnTriggerEnterが二重発火しないようにnullチェック）
             if (otherSushi != null) otherSushi.SushiDestroy();
             SushiDestroy();
