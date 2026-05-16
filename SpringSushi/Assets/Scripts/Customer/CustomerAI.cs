@@ -72,7 +72,7 @@ public class CustomerAI : MonoBehaviour
         if (data.customerPrefab != null)
         {
             GameObject visual = Instantiate(data.customerPrefab, transform);
-            customerAnimator = visual.GetComponent<CustomerAnimator>(); // š
+            customerAnimator = visual.GetComponentInChildren<CustomerAnimator>();
         }
 
         // CustomerData‚Ìƒpƒ‰ƒ[ƒ^‚ğ”½‰f
