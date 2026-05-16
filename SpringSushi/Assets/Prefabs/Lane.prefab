@@ -117,7 +117,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   segment: {fileID: 0}
-  baseRotationY: 0
 --- !u!1 &2218902140010201979
 GameObject:
   m_ObjectHideFlags: 0
