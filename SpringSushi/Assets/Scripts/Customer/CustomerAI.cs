@@ -36,6 +36,9 @@ public class CustomerAI : MonoBehaviour
     private NavMeshAgent agent;
     private Transform targetSeat;
 
+    // ① フィールド追加
+    private CustomerAnimator customerAnimator;
+
     private CustomerOrderQueue orderQueue = new();
     private float basePatienceTime;
     private float patienceDecayRate;
@@ -65,9 +68,12 @@ public class CustomerAI : MonoBehaviour
         data = newData;
         targetSeat = seat;
 
-        // 見た目を生成
+        // ② Initialize() の Instantiate 直後を差し替え
         if (data.customerPrefab != null)
-            Instantiate(data.customerPrefab, transform);
+        {
+            GameObject visual = Instantiate(data.customerPrefab, transform);
+            customerAnimator = visual.GetComponent<CustomerAnimator>(); // ★
+        }
 
         // CustomerDataのパラメータを反映
         maxOrderBatches = data.maxOrderBatches;
@@ -115,6 +121,7 @@ public class CustomerAI : MonoBehaviour
         Invoke(nameof(StartNextBatch), seatedWaitTime);
     }
 
+    // ④ Leave() のAngry分岐にも通知（Patience切れで帰る場合）
     private void UpdateOrdering()
     {
         currentPatience -= Time.deltaTime;
@@ -123,6 +130,7 @@ public class CustomerAI : MonoBehaviour
         if (currentPatience <= 0f)
         {
             Debug.Log($"<color=red>[Angry]</color> {data.customerType} が怒って帰りました。");
+            customerAnimator?.PlayAngry(); // ★ Angryアニメ → Leaveへ
             Leave();
         }
     }
@@ -196,10 +204,13 @@ public class CustomerAI : MonoBehaviour
         Destroy(gameObject);
     }
 
+    // ③ SetState() にアニメーション通知を追加
     private void SetState(CustomerState newState)
     {
         state = newState;
         OnStateChanged?.Invoke(this);
-        Debug.Log($"<color=cyan>[State]</color> {(data != null ? data.customerType : gameObject.name)}: {newState}");
+        customerAnimator?.ApplyState(newState); // ★ 1行追加するだけ
+        Debug.Log($"<color=cyan>[State]</color> " +
+                  $"{(data != null ? data.customerType : gameObject.name)}: {newState}");
     }
 }

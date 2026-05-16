@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 7638319942421403727}
   - component: {fileID: 3162150210230701808}
   - component: {fileID: 8303886615462219765}
+  - component: {fileID: 8551964157843738893}
+  - component: {fileID: 2822823788585585659}
   m_Layer: 0
   m_Name: Customer_Base
   m_TagString: Customer
@@ -53,8 +55,6 @@ MonoBehaviour:
   maxOrderBatches: 3
   batchSize: 1
   seatedWaitTime: 1.5
-  basePatienceTime: 10
-  patienceDecayRate: 0.9
 --- !u!65 &3162150210230701808
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -98,3 +98,36 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!95 &8551964157843738893
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6338434977211433864}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2822823788585585659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6338434977211433864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b091d757e92dde4380439b26be9a316, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
