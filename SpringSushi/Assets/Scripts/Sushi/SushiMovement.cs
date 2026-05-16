@@ -25,6 +25,9 @@ public class SushiMovement : MonoBehaviour
     private Vector3 wobbleAxis;
     private float wobbleTime = 0f;
 
+    // ★ 衝突処理済みフラグ（二重発火防止）
+    private bool isCollisionHandled = false;
+
     public void Initialize(SushiData data, LaneSegment seg, LaneNode spawnNode, SushiRegistry registry)
     {
         this.registry = registry;
@@ -116,7 +119,6 @@ public class SushiMovement : MonoBehaviour
         arrivedFromSegment = from;
         wobbleTime = 0f;
 
-        // 振動軸：到着したSegmentのA→B方向
         Vector3 dir = from.nodeB.Position - from.nodeA.Position;
         wobbleAxis = dir.sqrMagnitude > 0.001f ? dir.normalized : Vector3.right;
 
@@ -133,19 +135,13 @@ public class SushiMovement : MonoBehaviour
 
     public void SushiDestroy() => Destroy(gameObject);
 
-    /// <summary>
-    /// LaneNetworkから呼ばれる。振動位置（どちらに寄っているか）に基づいて再出発するSegmentを決める。
-    /// </summary>
     public void TryExitStuck()
     {
         if (!isStuck) return;
 
-        // 現在の exit Segment を取得（arrivedFrom との一致チェックは行わない）
         LaneSegment exitSeg = stuckNode.GetExitSegment();
         if (exitSeg == null) return;
 
-        // exit Segment に stuckNode 側から乗れるか確認
-        // （IsReversed=false なら nodeA から乗る、true なら nodeB から乗る）
         bool canEnter = exitSeg.IsReversed
             ? exitSeg.nodeB == stuckNode
             : exitSeg.nodeA == stuckNode;
@@ -166,30 +162,45 @@ public class SushiMovement : MonoBehaviour
     {
         if (other.CompareTag("Sushi"))
         {
-            // 衝突した寿司の合計金額を減算
             var otherSushi = other.GetComponent<SushiMovement>();
-            int lossAmount = data.price + (otherSushi != null ? otherSushi.data.price : 0);
+            if (otherSushi == null) return;
+
+            // ★ どちらか一方がすでに処理済みなら何もしない
+            if (isCollisionHandled || otherSushi.isCollisionHandled) return;
+
+            // ★ インスタンスIDが大きい方だけがスコア計算・Destroyを担当する
+            //    これにより A→B と B→A の二重発火を1回に抑える
+            if (gameObject.GetInstanceID() < otherSushi.gameObject.GetInstanceID()) return;
+
+            // 両方に処理済みフラグを立てる
+            isCollisionHandled = true;
+            otherSushi.isCollisionHandled = true;
+
+            int lossAmount = data.price + otherSushi.data.price;
+
             ScoreManager.Instance?.SubtractScore(lossAmount);
-            PricePopupManager.Instance?.ShowPopup(-lossAmount, transform.position);
 
-            // ★ ここで皿が割れる音を鳴らす
+            // ポップアップは衝突した2点の中間に1つだけ表示
+            Vector3 popupPos = (transform.position + otherSushi.transform.position) * 0.5f;
+            PricePopupManager.Instance?.ShowPopup(-lossAmount, popupPos);
+
             if (SoundPlayer.Instance != null)
-            {
                 SoundPlayer.Instance.PlaySFX(SoundKeys.PlateBreak);
-            }
 
-            // 両方をDestroy（相手側のOnTriggerEnterが二重発火しないようにnullチェック）
-            if (otherSushi != null) otherSushi.SushiDestroy();
+            otherSushi.SushiDestroy();
             SushiDestroy();
             return;
         }
 
         if (other.CompareTag("Customer"))
         {
+            // 衝突処理済みなら客への配達もスキップ
+            if (isCollisionHandled) return;
+
             var customer = other.GetComponent<CustomerAI>();
             if (customer != null && customer.TryDeliver(data))
             {
-                // 加算＋価格UIを表示
+                isCollisionHandled = true;
                 ScoreManager.Instance?.AddScore(data.price);
                 PricePopupManager.Instance?.ShowPopup(data.price, transform.position);
                 SushiDestroy();
