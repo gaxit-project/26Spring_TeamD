@@ -2,17 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// HUD_Canvas上の1客分のUI。
-/// CustomerAIのイベントを購読してUIを更新する。
-/// </summary>
 public class CustomerHUDEntry : MonoBehaviour
 {
     [Header("UI参照")]
     public RectTransform root;
     public HorizontalLayoutGroup orderImageContainer;
-    public GameObject orderImagePrefab;  // SushiIconを表示するImage Prefab
-    public Slider patienceSlider;
+    public GameObject orderImagePrefab;
+    public PatienceGaugeBubble patienceGauge; // ← 新コンポーネントに変更
     public Slider satisfiedSlider;
 
     private CustomerAI customer;
@@ -31,11 +27,9 @@ public class CustomerHUDEntry : MonoBehaviour
         customer.OnPatienceChanged += OnPatienceChanged;
 
         satisfiedSlider.value = 0f;
-        patienceSlider.value = 1f;
+        patienceGauge.SetValue(1f); // ← 初期値
 
-        // Walking中は非表示（Ordering時のみ表示）
         root.gameObject.SetActive(false);
-
         UpdateOrderImages();
     }
 
@@ -49,31 +43,21 @@ public class CustomerHUDEntry : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (customer == null)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        if (customer == null) { Destroy(gameObject); return; }
         FollowCustomer();
     }
 
-    /// <summary>
-    /// お客さんの頭上にUIを追従させる。
-    /// </summary>
     private void FollowCustomer()
     {
         if (customer.Seat == null) return;
 
-        // SeatのWorld座標をScreen座標に変換
         Vector3 worldPos = customer.Seat.position + Vector3.up * 2f;
         Vector3 screenPos = mainCamera.WorldToScreenPoint(worldPos);
 
-        // カメラの後ろにいる場合は非表示
         bool behindCamera = screenPos.z < 0f;
         root.gameObject.SetActive(!behindCamera);
         if (behindCamera) return;
 
-        // CanvasのRenderMode対応
         if (hudCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
         {
             root.position = screenPos;
@@ -82,10 +66,8 @@ public class CustomerHUDEntry : MonoBehaviour
         {
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 hudCanvas.transform as RectTransform,
-                screenPos,
-                hudCanvas.worldCamera,
-                out Vector2 localPoint
-            );
+                screenPos, hudCanvas.worldCamera,
+                out Vector2 localPoint);
             root.localPosition = localPoint;
         }
     }
@@ -95,22 +77,18 @@ public class CustomerHUDEntry : MonoBehaviour
         switch (ai.State)
         {
             case CustomerAI.CustomerState.Ordering:
-            case CustomerAI.CustomerState.Eating:   // Eating中もUI表示を維持
+            case CustomerAI.CustomerState.Eating:
                 root.gameObject.SetActive(true);
                 break;
-
             case CustomerAI.CustomerState.Satisfied:
-                root.gameObject.SetActive(true); // 満足演出中は表示のまま
+                root.gameObject.SetActive(true);
                 Invoke(nameof(DestroySelf), 1.5f);
                 break;
-
             case CustomerAI.CustomerState.Leaving:
                 root.gameObject.SetActive(false);
                 Invoke(nameof(DestroySelf), 0.1f);
                 break;
-
             default:
-                // Walking / Seated / Spawned は非表示
                 root.gameObject.SetActive(false);
                 break;
         }
@@ -124,21 +102,17 @@ public class CustomerHUDEntry : MonoBehaviour
 
     private void OnPatienceChanged(CustomerAI ai)
     {
-        patienceSlider.value = ai.PatienceRate;
+        patienceGauge.SetValue(ai.PatienceRate); // ← 変更
     }
 
     private void UpdateOrderImages()
     {
         if (customer == null) return;
-
         var batch = customer.OrderQueue.CurrentBatch;
 
-        // 既存ImageをClear
-        foreach (var img in orderImages)
-            Destroy(img.gameObject);
+        foreach (var img in orderImages) Destroy(img.gameObject);
         orderImages.Clear();
 
-        // バッチ分のImageを生成
         foreach (var order in batch)
         {
             var obj = Instantiate(orderImagePrefab, orderImageContainer.transform);
@@ -146,7 +120,6 @@ public class CustomerHUDEntry : MonoBehaviour
             if (img != null && order.sushiData != null)
             {
                 img.sprite = order.sushiData.sushiIcon;
-                // 届いた注文はグレーアウト
                 img.color = order.isDelivered ? Color.gray : Color.white;
             }
             orderImages.Add(img);

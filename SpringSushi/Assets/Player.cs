@@ -246,6 +246,17 @@ public partial class @Player: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""f60d6aee-aa4a-497c-84f4-7259cafb2a46"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""StartAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""acbd7573-b5ed-4045-8c6a-ae55c9a77d9b"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
