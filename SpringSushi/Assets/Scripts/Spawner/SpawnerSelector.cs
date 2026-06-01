@@ -50,26 +50,8 @@ public class SpawnerSelector : MonoBehaviour
 
     private void Update()
     {
-        // --- 左スティック上下：Spawner選択 ---
-        float vertical = SpawnerInputManager.LeftStickValue.y;
-        if (Mathf.Abs(vertical) > stickDeadzone)
-        {
-            spawnerSwitchTimer -= Time.deltaTime;
-            if (spawnerSwitchTimer <= 0f)
-            {
-                int dir = vertical > 0 ? -1 : 1; // 上=前のSpawner、下=次のSpawner
-                selectedSpawnerIndex = (selectedSpawnerIndex + dir + spawners.Count) % spawners.Count;
-                spawnerSwitchTimer = spawnerSwitchInterval;
-                OnSpawnerIndexChanged?.Invoke(selectedSpawnerIndex);
-            }
-        }
-        else
-        {
-            spawnerSwitchTimer = 0f;
-        }
-
-        // --- 右スティック左右：寿司選択 ---
-        float horizontal = SpawnerInputManager.RightStickValue.x;
+        // --- 左スティック左右：寿司選択 ---
+        float horizontal = SpawnerInputManager.LeftStickValue.x; // ★ Left に変更
         if (Mathf.Abs(horizontal) > stickDeadzone)
         {
             sushiSwitchTimer -= Time.deltaTime;
@@ -85,6 +67,24 @@ public class SpawnerSelector : MonoBehaviour
         else
         {
             sushiSwitchTimer = 0f;
+        }
+
+        // --- 左スティック上下：Spawner選択 ---
+        float vertical = SpawnerInputManager.LeftStickValue.y; // ★ Left に変更
+        if (Mathf.Abs(vertical) > stickDeadzone)
+        {
+            spawnerSwitchTimer -= Time.deltaTime;
+            if (spawnerSwitchTimer <= 0f)
+            {
+                int dir = vertical > 0 ? -1 : 1;
+                selectedSpawnerIndex = (selectedSpawnerIndex + dir + spawners.Count) % spawners.Count;
+                spawnerSwitchTimer = spawnerSwitchInterval;
+                OnSpawnerIndexChanged?.Invoke(selectedSpawnerIndex);
+            }
+        }
+        else
+        {
+            spawnerSwitchTimer = 0f;
         }
     }
 

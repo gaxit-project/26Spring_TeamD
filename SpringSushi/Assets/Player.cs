@@ -82,7 +82,7 @@ public partial class @Player: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""RightStick"",
+                    ""name"": ""LeftStick"",
                     ""type"": ""Value"",
                     ""id"": ""ef19f86b-308b-47f9-adf8-2d04fdc8e438"",
                     ""expectedControlType"": ""Vector2"",
@@ -258,11 +258,11 @@ public partial class @Player: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""acbd7573-b5ed-4045-8c6a-ae55c9a77d9b"",
-                    ""path"": ""<Gamepad>/rightStick"",
+                    ""path"": ""<Gamepad>/leftStick"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""RightStick"",
+                    ""action"": ""LeftStick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -290,7 +290,7 @@ public partial class @Player: IInputActionCollection2, IDisposable
         m_GamePlay_LaneRed = m_GamePlay.FindAction("LaneRed", throwIfNotFound: true);
         m_GamePlay_Pause = m_GamePlay.FindAction("Pause", throwIfNotFound: true);
         m_GamePlay_StartAction = m_GamePlay.FindAction("StartAction", throwIfNotFound: true);
-        m_GamePlay_RightStick = m_GamePlay.FindAction("RightStick", throwIfNotFound: true);
+        m_GamePlay_LeftStick = m_GamePlay.FindAction("LeftStick", throwIfNotFound: true);
         m_GamePlay_Spawn = m_GamePlay.FindAction("Spawn", throwIfNotFound: true);
     }
 
@@ -359,7 +359,7 @@ public partial class @Player: IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_LaneRed;
     private readonly InputAction m_GamePlay_Pause;
     private readonly InputAction m_GamePlay_StartAction;
-    private readonly InputAction m_GamePlay_RightStick;
+    private readonly InputAction m_GamePlay_LeftStick;
     private readonly InputAction m_GamePlay_Spawn;
     public struct GamePlayActions
     {
@@ -371,7 +371,7 @@ public partial class @Player: IInputActionCollection2, IDisposable
         public InputAction @LaneRed => m_Wrapper.m_GamePlay_LaneRed;
         public InputAction @Pause => m_Wrapper.m_GamePlay_Pause;
         public InputAction @StartAction => m_Wrapper.m_GamePlay_StartAction;
-        public InputAction @RightStick => m_Wrapper.m_GamePlay_RightStick;
+        public InputAction @LeftStick => m_Wrapper.m_GamePlay_LeftStick;
         public InputAction @Spawn => m_Wrapper.m_GamePlay_Spawn;
         public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
         public void Enable() { Get().Enable(); }
@@ -400,9 +400,9 @@ public partial class @Player: IInputActionCollection2, IDisposable
             @StartAction.started += instance.OnStartAction;
             @StartAction.performed += instance.OnStartAction;
             @StartAction.canceled += instance.OnStartAction;
-            @RightStick.started += instance.OnRightStick;
-            @RightStick.performed += instance.OnRightStick;
-            @RightStick.canceled += instance.OnRightStick;
+            @LeftStick.started += instance.OnLeftStick;
+            @LeftStick.performed += instance.OnLeftStick;
+            @LeftStick.canceled += instance.OnLeftStick;
             @Spawn.started += instance.OnSpawn;
             @Spawn.performed += instance.OnSpawn;
             @Spawn.canceled += instance.OnSpawn;
@@ -428,9 +428,9 @@ public partial class @Player: IInputActionCollection2, IDisposable
             @StartAction.started -= instance.OnStartAction;
             @StartAction.performed -= instance.OnStartAction;
             @StartAction.canceled -= instance.OnStartAction;
-            @RightStick.started -= instance.OnRightStick;
-            @RightStick.performed -= instance.OnRightStick;
-            @RightStick.canceled -= instance.OnRightStick;
+            @LeftStick.started -= instance.OnLeftStick;
+            @LeftStick.performed -= instance.OnLeftStick;
+            @LeftStick.canceled -= instance.OnLeftStick;
             @Spawn.started -= instance.OnSpawn;
             @Spawn.performed -= instance.OnSpawn;
             @Spawn.canceled -= instance.OnSpawn;
@@ -459,7 +459,7 @@ public partial class @Player: IInputActionCollection2, IDisposable
         void OnLaneRed(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
         void OnStartAction(InputAction.CallbackContext context);
-        void OnRightStick(InputAction.CallbackContext context);
+        void OnLeftStick(InputAction.CallbackContext context);
         void OnSpawn(InputAction.CallbackContext context);
     }
 }

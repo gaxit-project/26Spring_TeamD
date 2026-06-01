@@ -179,6 +179,7 @@ public class SushiMovement : MonoBehaviour
             int lossAmount = data.price + otherSushi.data.price;
 
             ScoreManager.Instance?.SubtractScore(lossAmount);
+            ComboManager.Instance?.ResetCombo();
 
             // ポップアップは衝突した2点の中間に1つだけ表示
             Vector3 popupPos = (transform.position + otherSushi.transform.position) * 0.5f;
@@ -194,7 +195,6 @@ public class SushiMovement : MonoBehaviour
 
         if (other.CompareTag("Customer"))
         {
-            // 衝突処理済みなら客への配達もスキップ
             if (isCollisionHandled) return;
 
             var customer = other.GetComponent<CustomerAI>();
@@ -203,6 +203,7 @@ public class SushiMovement : MonoBehaviour
                 isCollisionHandled = true;
                 ScoreManager.Instance?.AddScore(data.price);
                 PricePopupManager.Instance?.ShowPopup(data.price, transform.position);
+                ComboManager.Instance?.IncrementCombo(); // ★ 追加
                 SushiDestroy();
             }
         }

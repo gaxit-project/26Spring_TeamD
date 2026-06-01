@@ -50,6 +50,7 @@ public class CustomerAI : MonoBehaviour
     public event System.Action<CustomerAI> OnStateChanged;
     public event System.Action<CustomerAI> OnOrderUpdated;
     public event System.Action<CustomerAI> OnPatienceChanged;
+    public event System.Action<CustomerAI> OnAngryLeave;
 
     // --- 公開プロパティ ---
     public CustomerState State => state;
@@ -130,7 +131,8 @@ public class CustomerAI : MonoBehaviour
         if (currentPatience <= 0f)
         {
             Debug.Log($"<color=red>[Angry]</color> {data.customerType} が怒って帰りました。");
-            customerAnimator?.PlayAngry(); // ★ Angryアニメ → Leaveへ
+            customerAnimator?.PlayAngry();
+            OnAngryLeave?.Invoke(this); // ★ 追加（コンボリセット通知）
             Leave();
         }
     }

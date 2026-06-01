@@ -26,19 +26,22 @@ public class CustomerHUD : MonoBehaviour
     public void RegisterCustomer(CustomerAI customer)
     {
         if (hudEntryPrefab == null || hudCanvas == null) return;
-
         var obj = Instantiate(hudEntryPrefab, hudCanvas.transform);
         var entry = obj.GetComponent<CustomerHUDEntry>();
         if (entry == null) return;
-
         entry.Initialize(customer, hudCanvas, mainCamera);
         entries.Add(entry);
 
-        // 削除時にリストからも除く
         customer.OnStateChanged += ai =>
         {
             if (ai.State == CustomerAI.CustomerState.Leaving)
                 entries.Remove(entry);
+        };
+
+        // ★ 追加：怒り退場でコンボリセット
+        customer.OnAngryLeave += ai =>
+        {
+            ComboManager.Instance?.ResetCombo();
         };
     }
 }

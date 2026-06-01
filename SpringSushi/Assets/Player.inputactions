@@ -60,7 +60,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "RightStick",
+                    "name": "LeftStick",
                     "type": "Value",
                     "id": "ef19f86b-308b-47f9-adf8-2d04fdc8e438",
                     "expectedControlType": "Vector2",
@@ -236,11 +236,11 @@
                 {
                     "name": "",
                     "id": "acbd7573-b5ed-4045-8c6a-ae55c9a77d9b",
-                    "path": "<Gamepad>/rightStick",
+                    "path": "<Gamepad>/leftStick",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "RightStick",
+                    "action": "LeftStick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
