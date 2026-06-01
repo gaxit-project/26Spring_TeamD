@@ -6,10 +6,19 @@ public class CustomerHUDEntry : MonoBehaviour
 {
     [Header("UI参照")]
     public RectTransform root;
-    public HorizontalLayoutGroup orderImageContainer;
+    public VerticalLayoutGroup orderImageContainer;
     public GameObject orderImagePrefab;
     public PatienceGaugeBubble patienceGauge; // ← 新コンポーネントに変更
     public Slider satisfiedSlider;
+
+    // フィールド追加（インスペクターで設定）
+    [Header("注文アイコン設定")]
+    [Tooltip("アイコン1個のときの基本サイズ")]
+    public float baseIconSize = 48f;
+    [Tooltip("アイコンの最小サイズ（これ以下には縮小しない）")]
+    public float minIconSize = 20f;
+    [Tooltip("縦に並べるときの間隔")]
+    public float iconSpacing = 4f;
 
     private CustomerAI customer;
     private Camera mainCamera;
@@ -113,6 +122,27 @@ public class CustomerHUDEntry : MonoBehaviour
         foreach (var img in orderImages) Destroy(img.gameObject);
         orderImages.Clear();
 
+        // --- VerticalLayoutGroup に切り替え ---
+        // HorizontalLayoutGroup を無効化して VerticalLayoutGroup を使う
+        var hlg = orderImageContainer.GetComponent<HorizontalLayoutGroup>();
+        if (hlg != null) hlg.enabled = false;
+
+        var vlg = orderImageContainer.GetComponent<VerticalLayoutGroup>();
+        if (vlg == null) vlg = orderImageContainer.gameObject.AddComponent<VerticalLayoutGroup>();
+        vlg.enabled = true;
+        vlg.childAlignment = TextAnchor.MiddleCenter;
+        vlg.spacing = iconSpacing;
+        vlg.childControlWidth = true;
+        vlg.childControlHeight = true;
+        vlg.childForceExpandWidth = false;
+        vlg.childForceExpandHeight = false;
+
+        // --- アイコンサイズを注文数に応じてスケール ---
+        int count = batch.Count;
+        float iconSize = count > 0
+            ? Mathf.Max(minIconSize, baseIconSize / Mathf.Sqrt(count))
+            : baseIconSize;
+
         foreach (var order in batch)
         {
             var obj = Instantiate(orderImagePrefab, orderImageContainer.transform);
@@ -122,9 +152,17 @@ public class CustomerHUDEntry : MonoBehaviour
                 img.sprite = order.sushiData.sushiIcon;
                 img.color = order.isDelivered ? Color.gray : Color.white;
             }
+
+            // LayoutElement でサイズを強制指定
+            var le = obj.GetComponent<LayoutElement>();
+            if (le == null) le = obj.AddComponent<LayoutElement>();
+            le.preferredWidth = iconSize;
+            le.preferredHeight = iconSize;
+            le.minWidth = iconSize;
+            le.minHeight = iconSize;
+
             orderImages.Add(img);
         }
     }
-
     private void DestroySelf() => Destroy(gameObject);
 }
