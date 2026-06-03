@@ -3560,9 +3560,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4b7bf36809f2ed41abb8fcf9525c1f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seatPrefab: {fileID: 8201102773154587149, guid: 09bd6d7832e21124a8195466c77eca94,
-    type: 3}
-  customerManager: {fileID: 513464557}
 --- !u!1 &522956786
 GameObject:
   m_ObjectHideFlags: 0
@@ -6181,7 +6178,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 12
   m_TargetDisplay: 0
 --- !u!224 &848440390
 RectTransform:
@@ -8230,7 +8227,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 11
   m_TargetDisplay: 0
 --- !u!224 &1143948381
 RectTransform:

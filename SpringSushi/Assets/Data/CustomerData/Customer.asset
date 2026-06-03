@@ -19,6 +19,7 @@ MonoBehaviour:
   maxTotalOrders: 5
   batchSizeMin: 1
   batchSizeMax: 2
-  basePatienceTime: 10
+  eatTime: 4
+  basePatienceTime: 20
   patienceDecayRate: 0.9
   scoreMultiplier: 1
