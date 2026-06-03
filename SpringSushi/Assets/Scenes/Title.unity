@@ -4846,6 +4846,8 @@ MonoBehaviour:
   fadeImage: {fileID: 867011602}
   fadeDuration: 1
   inputUnlockDelay: 1
+  stageSceneNames:
+  - Stage
 --- !u!4 &1725958123
 Transform:
   m_ObjectHideFlags: 0
@@ -5067,7 +5069,9 @@ MonoBehaviour:
   - Stage_01
   stageSprites:
   - {fileID: 21300000, guid: f258426eedd95174697ae0af117a9408, type: 3}
-  stageDataList:
+  stageGoals:
+  - {fileID: 11400000, guid: 40489985cca60d24c81bf7fde1700dce, type: 2}
+  stageDatas:
   - {fileID: 11400000, guid: f7453dad9a5e2cd4492f10f6d49c9e2e, type: 2}
 --- !u!4 &1866519999
 Transform:

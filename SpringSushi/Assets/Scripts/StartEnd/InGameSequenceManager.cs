@@ -9,6 +9,9 @@ public class InGameSequenceManager : MonoBehaviour
     [SerializeField] private BusinessHoursTimer businessTimer;
     [SerializeField] private TextMeshProUGUI statusText;
 
+    [Header("売上目標UI（StartEnd_Canvas上）")]
+    [SerializeField] private StageGoalUI stageGoalUI;
+
     [Header("Settings")]
     [SerializeField] private float operationTime = 60f;
     [SerializeField] private string resultSceneName = "ResultScene";
@@ -27,18 +30,15 @@ public class InGameSequenceManager : MonoBehaviour
     private void OnEnable()
     {
         inputActions.GamePlay.Enable();
-        // ラムダではなくメソッド参照を使うことで、OnDisable で確実に解除できる
         inputActions.GamePlay.StartAction.performed += OnStartActionPerformed;
     }
 
     private void OnDisable()
     {
-        // ラムダだと別インスタンス扱いになり解除されないため、メソッド参照で統一
         inputActions.GamePlay.StartAction.performed -= OnStartActionPerformed;
         inputActions.GamePlay.Disable();
     }
 
-    // InputSystem のコールバックを名前付きメソッドで受ける
     private void OnStartActionPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx)
     {
         TryStartSequence();
@@ -48,12 +48,16 @@ public class InGameSequenceManager : MonoBehaviour
     {
         if (GameStateManager.Instance == null) return;
         if (!GameStateManager.Instance.IsReady) return;
-
-        // 連打ガード: 一度でも開始したら以降の入力を完全無視
         if (isSequenceStarted) return;
-        isSequenceStarted = true;
 
-        // 入力自体をここで無効化し、コールバック到達を物理的に止める
+        // 売上目標UIの表示が終わるまでスタートを受け付けない
+        if (stageGoalUI != null && !stageGoalUI.IsReadyToStart)
+        {
+            Debug.Log("[Sequence] 売上目標表示中のためスタートを待機");
+            return;
+        }
+
+        isSequenceStarted = true;
         inputActions.GamePlay.StartAction.performed -= OnStartActionPerformed;
         inputActions.GamePlay.Disable();
 
@@ -73,6 +77,8 @@ public class InGameSequenceManager : MonoBehaviour
 
         statusText.text = "開店!!";
         statusText.gameObject.SetActive(true);
+        // ★ ドアが開ききったタイミングでGoalPanelを非表示にする
+        stageGoalUI?.HidePanel();
 
         yield return doorAnim.Open();
 
@@ -87,12 +93,12 @@ public class InGameSequenceManager : MonoBehaviour
 
         // --- 3. 閉店演出 ---
         Debug.Log("[Sequence] 営業終了 → 閉店演出");
-        GameStateManager.Instance.PauseGame(); // timeScale=0
+        GameStateManager.Instance.PauseGame();
 
         if (SoundPlayer.Instance != null)
         {
             SoundPlayer.Instance.PlaySFX(SoundKeys.CloseStore);
-            SoundPlayer.Instance.PlaySFX(SoundKeys.DoorOpen); 
+            SoundPlayer.Instance.PlaySFX(SoundKeys.DoorOpen);
         }
 
         statusText.text = "閉店!!";
