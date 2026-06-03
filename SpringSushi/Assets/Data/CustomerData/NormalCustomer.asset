@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 205f441ca37bbbd46b94c3016305d7fe, type: 3}
-  m_Name: Customer
+  m_Name: NormalCustomer
   m_EditorClassIdentifier: 
-  customerType: normal
+  customerType: Normal
   customerPrefab: {fileID: 3967108684766030035, guid: 1c8950e890f8de640b645d9ccc90ffa4,
     type: 3}
   maxOrderBatches: 3
@@ -20,6 +20,6 @@ MonoBehaviour:
   batchSizeMin: 1
   batchSizeMax: 2
   eatTime: 4
-  basePatienceTime: 20
+  basePatienceTime: 25
   patienceDecayRate: 0.9
   scoreMultiplier: 1

@@ -17,6 +17,7 @@ MonoBehaviour:
   spawnInterval: 5
   customerVariations:
   - {fileID: 11400000, guid: c23e309f0c956c14e8f86e74d6be7acb, type: 2}
+  - {fileID: 11400000, guid: e4b336163418abf4eb12ff9c64fba6d8, type: 2}
   availableSushiList:
   - {fileID: 11400000, guid: 94d78b5c51e3d8f458e37e97418aaa10, type: 2}
   - {fileID: 11400000, guid: e835477af019fbf4a9f1da1f3428cf0f, type: 2}

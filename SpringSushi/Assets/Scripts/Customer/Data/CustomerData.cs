@@ -25,5 +25,5 @@ public class CustomerData : ScriptableObject
     public float patienceDecayRate = 0.9f;
 
     [Header("ÉXÉRÉA")]
-    public int scoreMultiplier = 1;
+    public float scoreMultiplier = 1f;
 }

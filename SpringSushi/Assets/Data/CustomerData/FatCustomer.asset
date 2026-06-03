@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 205f441ca37bbbd46b94c3016305d7fe, type: 3}
+  m_Name: FatCustomer
+  m_EditorClassIdentifier: 
+  customerType: normal
+  customerPrefab: {fileID: 7835503706444598827, guid: f41b243eb177e4946824beb1f6bb4008,
+    type: 3}
+  maxOrderBatches: 3
+  maxTotalOrders: 10
+  batchSizeMin: 2
+  batchSizeMax: 4
+  eatTime: 1
+  basePatienceTime: 25
+  patienceDecayRate: 0.9
+  scoreMultiplier: 1.5
