@@ -2241,8 +2241,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4283744342
-  m_fontColor: {r: 0.33794254, g: 0.754717, b: 0.33107865, a: 1}
+    rgba: 4294963118
+  m_fontColor: {r: 0.6839622, g: 0.9385482, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3181,12 +3181,12 @@ GameObject:
   - component: {fileID: 436455796}
   - component: {fileID: 436455795}
   m_Layer: 5
-  m_Name: ImageRight (1)
+  m_Name: ExplainRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &436455794
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3396,7 +3396,7 @@ GameObject:
   m_Component:
   - component: {fileID: 463500427}
   m_Layer: 5
-  m_Name: Left
+  m_Name: LeftDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4288,7 +4288,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 579, y: -260}
+  m_AnchoredPosition: {x: 304, y: 87}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &634247218
@@ -7638,7 +7638,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1082194827}
   m_Layer: 5
-  m_Name: Right
+  m_Name: RightDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12689,12 +12689,12 @@ GameObject:
   - component: {fileID: 1803674340}
   - component: {fileID: 1803674339}
   m_Layer: 5
-  m_Name: ImageLeft (1)
+  m_Name: ExplainLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1803674338
 RectTransform:
   m_ObjectHideFlags: 0
