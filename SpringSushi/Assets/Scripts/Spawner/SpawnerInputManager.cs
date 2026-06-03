@@ -2,20 +2,13 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 
-/// <summary>
-/// InputSystemからSpawner操作に必要な入力を受け取りイベントで通知する。
-/// GameManagerなどにアタッチしてInputActionAssetと接続する。
-/// </summary>
 public class SpawnerInputManager : MonoBehaviour
 {
-    // 左スティックの軸値（Spawner選択用）
     public static Vector2 LeftStickValue { get; private set; }
-
-    // 右スティックの軸値（寿司選択用）
     public static Vector2 RightStickValue { get; private set; }
 
-    // RTボタン押下イベント
     public static event Action OnSpawnPressed;
+    public static event Action<int> OnSushiShift; // ★ 追加：左右矢印キー用
 
     public void OnLeftStick(InputValue value)
     {
@@ -31,5 +24,18 @@ public class SpawnerInputManager : MonoBehaviour
     {
         if (value.isPressed)
             OnSpawnPressed?.Invoke();
+    }
+
+    // ★ 追加：InputActionAssetのAction名は "SushiShiftLeft" / "SushiShiftRight" に対応
+    public void OnSushiShiftLeft(InputValue value)
+    {
+        if (value.isPressed)
+            OnSushiShift?.Invoke(-1);
+    }
+
+    public void OnSushiShiftRight(InputValue value)
+    {
+        if (value.isPressed)
+            OnSushiShift?.Invoke(1);
     }
 }

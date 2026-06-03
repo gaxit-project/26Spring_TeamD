@@ -98,6 +98,24 @@ public partial class @Player: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SushiShiftLeft"",
+                    ""type"": ""Button"",
+                    ""id"": ""11ed65b0-cba5-49dc-a63e-c8939d936db4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SushiShiftRight"",
+                    ""type"": ""Button"",
+                    ""id"": ""cf5d1963-4939-42c5-9852-c6bca66b52a3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -276,6 +294,28 @@ public partial class @Player: IInputActionCollection2, IDisposable
                     ""action"": ""Spawn"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""352c7f6e-0ebf-4727-b408-6124ecbaf8c6"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SushiShiftLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""68cf4e58-c772-482d-b76b-68899d38e332"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SushiShiftRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -292,6 +332,8 @@ public partial class @Player: IInputActionCollection2, IDisposable
         m_GamePlay_StartAction = m_GamePlay.FindAction("StartAction", throwIfNotFound: true);
         m_GamePlay_LeftStick = m_GamePlay.FindAction("LeftStick", throwIfNotFound: true);
         m_GamePlay_Spawn = m_GamePlay.FindAction("Spawn", throwIfNotFound: true);
+        m_GamePlay_SushiShiftLeft = m_GamePlay.FindAction("SushiShiftLeft", throwIfNotFound: true);
+        m_GamePlay_SushiShiftRight = m_GamePlay.FindAction("SushiShiftRight", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -361,6 +403,8 @@ public partial class @Player: IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_StartAction;
     private readonly InputAction m_GamePlay_LeftStick;
     private readonly InputAction m_GamePlay_Spawn;
+    private readonly InputAction m_GamePlay_SushiShiftLeft;
+    private readonly InputAction m_GamePlay_SushiShiftRight;
     public struct GamePlayActions
     {
         private @Player m_Wrapper;
@@ -373,6 +417,8 @@ public partial class @Player: IInputActionCollection2, IDisposable
         public InputAction @StartAction => m_Wrapper.m_GamePlay_StartAction;
         public InputAction @LeftStick => m_Wrapper.m_GamePlay_LeftStick;
         public InputAction @Spawn => m_Wrapper.m_GamePlay_Spawn;
+        public InputAction @SushiShiftLeft => m_Wrapper.m_GamePlay_SushiShiftLeft;
+        public InputAction @SushiShiftRight => m_Wrapper.m_GamePlay_SushiShiftRight;
         public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -406,6 +452,12 @@ public partial class @Player: IInputActionCollection2, IDisposable
             @Spawn.started += instance.OnSpawn;
             @Spawn.performed += instance.OnSpawn;
             @Spawn.canceled += instance.OnSpawn;
+            @SushiShiftLeft.started += instance.OnSushiShiftLeft;
+            @SushiShiftLeft.performed += instance.OnSushiShiftLeft;
+            @SushiShiftLeft.canceled += instance.OnSushiShiftLeft;
+            @SushiShiftRight.started += instance.OnSushiShiftRight;
+            @SushiShiftRight.performed += instance.OnSushiShiftRight;
+            @SushiShiftRight.canceled += instance.OnSushiShiftRight;
         }
 
         private void UnregisterCallbacks(IGamePlayActions instance)
@@ -434,6 +486,12 @@ public partial class @Player: IInputActionCollection2, IDisposable
             @Spawn.started -= instance.OnSpawn;
             @Spawn.performed -= instance.OnSpawn;
             @Spawn.canceled -= instance.OnSpawn;
+            @SushiShiftLeft.started -= instance.OnSushiShiftLeft;
+            @SushiShiftLeft.performed -= instance.OnSushiShiftLeft;
+            @SushiShiftLeft.canceled -= instance.OnSushiShiftLeft;
+            @SushiShiftRight.started -= instance.OnSushiShiftRight;
+            @SushiShiftRight.performed -= instance.OnSushiShiftRight;
+            @SushiShiftRight.canceled -= instance.OnSushiShiftRight;
         }
 
         public void RemoveCallbacks(IGamePlayActions instance)
@@ -461,5 +519,7 @@ public partial class @Player: IInputActionCollection2, IDisposable
         void OnStartAction(InputAction.CallbackContext context);
         void OnLeftStick(InputAction.CallbackContext context);
         void OnSpawn(InputAction.CallbackContext context);
+        void OnSushiShiftLeft(InputAction.CallbackContext context);
+        void OnSushiShiftRight(InputAction.CallbackContext context);
     }
 }

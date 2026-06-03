@@ -76,6 +76,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "SushiShiftLeft",
+                    "type": "Button",
+                    "id": "11ed65b0-cba5-49dc-a63e-c8939d936db4",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SushiShiftRight",
+                    "type": "Button",
+                    "id": "cf5d1963-4939-42c5-9852-c6bca66b52a3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -252,6 +270,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Spawn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "352c7f6e-0ebf-4727-b408-6124ecbaf8c6",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SushiShiftLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "68cf4e58-c772-482d-b76b-68899d38e332",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SushiShiftRight",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

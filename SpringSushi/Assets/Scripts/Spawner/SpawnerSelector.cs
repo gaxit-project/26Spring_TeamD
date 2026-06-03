@@ -33,11 +33,21 @@ public class SpawnerSelector : MonoBehaviour
     private void OnEnable()
     {
         SpawnerInputManager.OnSpawnPressed += OnSpawnPressed;
+        SpawnerInputManager.OnSushiShift += OnSushiShift; // Åö í«â¡
     }
 
     private void OnDisable()
     {
         SpawnerInputManager.OnSpawnPressed -= OnSpawnPressed;
+        SpawnerInputManager.OnSushiShift -= OnSushiShift; // Åö í«â¡
+    }
+
+    // Åö í«â¡
+    private void OnSushiShift(int dir)
+    {
+        SelectedSpawner?.ShiftSelection(dir);
+        if (SelectedSpawner != null)
+            OnSushiChanged?.Invoke(SelectedSpawner);
     }
 
     private void Start()
