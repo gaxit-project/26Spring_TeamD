@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a06810866b888bd41b81eb85dc403bb9, type: 3}
+  m_Name: Stage1
+  m_EditorClassIdentifier: 
+  stageName: "\u30B9\u30C6\u30FC\u30B81"
+  totalCustomerCount: 24
+  spawnInterval: 5
+  customerVariations:
+  - {fileID: 11400000, guid: c23e309f0c956c14e8f86e74d6be7acb, type: 2}
+  availableSushiList:
+  - {fileID: 11400000, guid: 94d78b5c51e3d8f458e37e97418aaa10, type: 2}
+  - {fileID: 11400000, guid: e835477af019fbf4a9f1da1f3428cf0f, type: 2}

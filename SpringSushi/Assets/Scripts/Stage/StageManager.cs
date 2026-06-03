@@ -11,6 +11,9 @@ public class StageManager : MonoBehaviour
     [Header("各ステージのプレビュー画像（同じ順番で並べる）")]
     [SerializeField] private List<Sprite> stageSprites = new List<Sprite>();
 
+    [Header("各ステージのデータ（同じ順番で並べる）")]
+    [SerializeField] private List<StageDataSO> stageDataList = new List<StageDataSO>();
+
     private int currentStageIndex = 0;
     private const string ClearKey = "ReachedStageIndex";
 
@@ -46,11 +49,7 @@ public class StageManager : MonoBehaviour
     // =========================================================
     private void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
@@ -58,68 +57,54 @@ public class StageManager : MonoBehaviour
             Debug.LogError("StageManager にステージが登録されていません");
         if (stageSprites.Count != stageOrder.Count)
             Debug.LogWarning("stageOrder と stageSprites の数が一致していません！");
+        if (stageDataList.Count != stageOrder.Count)
+            Debug.LogWarning("stageOrder と stageDataList の数が一致していません！");
     }
 
     // =========================================================
-    // Sprite取得
-    // =========================================================
-    public Sprite GetStageSprite(int index)
-    {
-        if (index < 0 || index >= stageSprites.Count) return null;
-        return stageSprites[index];
-    }
-
-    // =========================================================
-    // 既存機能
+    // 取得
     // =========================================================
     public int GetTotalStageCount() => stageOrder.Count;
 
-    public string GetStageNameAt(int index)
-    {
-        return (index >= 0 && index < stageOrder.Count) ? stageOrder[index] : "";
-    }
+    public string GetStageNameAt(int index) =>
+        (index >= 0 && index < stageOrder.Count) ? stageOrder[index] : "";
 
+    public Sprite GetStageSprite(int index) =>
+        (index >= 0 && index < stageSprites.Count) ? stageSprites[index] : null;
+
+    public StageDataSO GetStageData(int index) =>
+        (index >= 0 && index < stageDataList.Count) ? stageDataList[index] : null;
+
+    public StageDataSO GetCurrentStageData() => GetStageData(currentStageIndex);
+
+    // =========================================================
+    // 遷移
+    // =========================================================
     public void StartFirstStage()
     {
-        // ★ 遷移中ガード
         if (SceneController.Instance != null && SceneController.Instance.IsTransitioning) return;
-
         currentStageIndex = 0;
         LoadCurrentStage();
     }
 
     public void RetryFromBeginning()
     {
-        // ★ 遷移中ガード
+        // 途切れていた箇所を修正し、処理を補完しました
         if (SceneController.Instance != null && SceneController.Instance.IsTransitioning) return;
 
-        currentStageIndex = 0;
+        // 現在のステージを再読み込み
         LoadCurrentStage();
     }
 
-    public void RetryCurrentStage()
-    {
-        // ★ 遷移中ガード
-        if (SceneController.Instance != null && SceneController.Instance.IsTransitioning) return;
-
-        LoadCurrentStage();
-    }
-
-    public void SelectStage(int index)
-    {
-        // ★ 解放チェック & 遷移中ガード
-        if (!IsStageUnlocked(index)) return;
-        if (SceneController.Instance != null && SceneController.Instance.IsTransitioning) return;
-
-        currentStageIndex = index;
-        LoadCurrentStage();
-    }
-
+    /// <summary>
+    /// 現在のインデックスのステージをロードする
+    /// </summary>
     private void LoadCurrentStage()
     {
         if (currentStageIndex < 0 || currentStageIndex >= stageOrder.Count) return;
 
-        string sceneName = stageOrder[currentStageIndex];
-        SceneController.Instance.LoadSceneAsync(sceneName);
+        Debug.Log($"[StageManager] SceneController.Instance = {SceneController.Instance}"); // ★追加
+
+        SceneController.Instance.LoadSceneAsync(stageOrder[currentStageIndex]);
     }
 }

@@ -3,39 +3,68 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// お客さんのスポーンと椅子（EntryPoint）管理を担当する。
-///
-/// 生成フロー：
-/// CustomerSpawnPoint → (NavMesh移動) → EntryPoint（椅子）→ 注文開始
+/// ステージデータに基づいて客をスポーンし、
+/// 全客の退場を検知してステージクリアを通知する。
 /// </summary>
 public class CustomerManager : MonoBehaviour
 {
+    public static CustomerManager Instance { get; private set; }
+
     [Header("Prefab")]
     public GameObject customerPrefab;
 
     [Header("スポーン設定")]
     public List<Transform> customerSpawnPoints = new();
-    public List<Transform> entryPoints = new();         // 椅子の位置
-    public float spawnInterval = 5f;
-
-    [Header("お客さんのバリエーション")]
-    public List<CustomerData> customerVariationList = new();
+    public List<Transform> entryPoints = new();
 
     [Header("HUD")]
     [SerializeField] private CustomerHUD customerHUD;
 
-    [Header("注文候補")]
-    public List<SushiData> availableSushiList = new();
+    // --- StageDataSO から設定される ---
+    private int totalCustomerCount;
+    private float spawnInterval;
+    private List<CustomerData> customerVariations = new();
+    private List<SushiData> availableSushiList = new();
 
-    private void Start()
+    // --- カウンタ ---
+    private int spawnedCount = 0;
+    private int exitedCount = 0;
+    private bool isRunning = false;
+
+    // ★ 予約済み席を管理
+    private readonly HashSet<Transform> reservedSeats = new();
+
+    private void Awake()
     {
-        if (customerVariationList == null || customerVariationList.Count == 0) return;
+        if (Instance != null) { Destroy(gameObject); return; }
+        Instance = this;
+    }
+
+    public void StartStage(StageDataSO stageData)
+    {
+        totalCustomerCount = stageData.totalCustomerCount;
+        spawnInterval = stageData.spawnInterval;
+        customerVariations = stageData.customerVariations;
+        availableSushiList = stageData.availableSushiList;
+
+        spawnedCount = 0;
+        exitedCount = 0;
+        isRunning = true;
+        reservedSeats.Clear(); // ★ リセット
+
+        GameStateManager.Instance.OnStateChanged += OnGameStateChanged;
+    }
+
+    private void OnGameStateChanged(GameStateManager.GameState prev, GameStateManager.GameState next)
+    {
+        if (next != GameStateManager.GameState.Playing) return;
+        GameStateManager.Instance.OnStateChanged -= OnGameStateChanged;
         StartCoroutine(CustomerEntryRoutine());
     }
 
     private IEnumerator CustomerEntryRoutine()
     {
-        while (true)
+        while (isRunning && spawnedCount < totalCustomerCount)
         {
             yield return new WaitForSeconds(spawnInterval);
             TrySpawnCustomer();
@@ -44,35 +73,69 @@ public class CustomerManager : MonoBehaviour
 
     private void TrySpawnCustomer()
     {
+        if (spawnedCount >= totalCustomerCount) return;
+
         Transform seat = GetEmptySeat();
         if (seat == null)
         {
-            Debug.Log("<color=yellow>[Manager]</color> 満席のためスキップ。");
+            Debug.Log("<color=yellow>[CustomerManager]</color> 満席のためスキップ。");
             return;
         }
 
         Transform spawnPoint = GetRandomSpawnPoint();
         if (spawnPoint == null) return;
 
-        CustomerData data = customerVariationList[Random.Range(0, customerVariationList.Count)];
+        // ★ スポーン時点で席を予約
+        reservedSeats.Add(seat);
 
+        CustomerData data = customerVariations[Random.Range(0, customerVariations.Count)];
         GameObject obj = Instantiate(customerPrefab, spawnPoint.position, spawnPoint.rotation);
         CustomerAI ai = obj.GetComponent<CustomerAI>();
-        if (ai == null) return;
+        if (ai == null)
+        {
+            reservedSeats.Remove(seat); // 失敗時は予約を解放
+            return;
+        }
 
-        // 注文リストを生成
         List<SushiData> orders = GenerateOrders(data);
         ai.Initialize(data, seat, orders);
-
-        // HUDに登録
         customerHUD?.RegisterCustomer(ai);
 
-        Debug.Log($"<color=lime>[Manager]</color> {seat.name} に客を生成しました。");
+        spawnedCount++;
+        Debug.Log($"<color=lime>[CustomerManager]</color> {seat.name} に客を生成（{spawnedCount}/{totalCustomerCount}）");
+
+        // 退場カウント
+        ai.OnStateChanged += OnCustomerStateChanged;
+
+        // ★ Leaving時に予約を解放
+        ai.OnStateChanged += (customerAI) =>
+        {
+            if (customerAI.State == CustomerAI.CustomerState.Leaving)
+                reservedSeats.Remove(seat);
+        };
     }
 
-    /// <summary>
-    /// CustomerDataを元に注文リストを生成する。
-    /// </summary>
+    private void OnCustomerStateChanged(CustomerAI ai)
+    {
+        if (ai.State != CustomerAI.CustomerState.Leaving &&
+            ai.State != CustomerAI.CustomerState.Satisfied) return;
+
+        ai.OnStateChanged -= OnCustomerStateChanged;
+        exitedCount++;
+        Debug.Log($"<color=cyan>[CustomerManager]</color> 退場 {exitedCount}/{totalCustomerCount}");
+
+        CheckStageClear();
+    }
+
+    private void CheckStageClear()
+    {
+        if (spawnedCount >= totalCustomerCount && exitedCount >= totalCustomerCount)
+        {
+            Debug.Log("<color=gold>[CustomerManager]</color> 全客退場 → ステージクリア");
+            GameStateManager.Instance?.EnterResult();
+        }
+    }
+
     private List<SushiData> GenerateOrders(CustomerData data)
     {
         var orders = new List<SushiData>();
@@ -86,13 +149,9 @@ public class CustomerManager : MonoBehaviour
     {
         foreach (var seat in entryPoints)
         {
-            Collider[] colliders = Physics.OverlapSphere(seat.position, 0.5f);
-            bool occupied = false;
-            foreach (var col in colliders)
-            {
-                if (col.CompareTag("Customer")) { occupied = true; break; }
-            }
-            if (!occupied) return seat;
+            // ★ 予約済みならスキップ
+            if (reservedSeats.Contains(seat)) continue;
+            return seat;
         }
         return null;
     }
