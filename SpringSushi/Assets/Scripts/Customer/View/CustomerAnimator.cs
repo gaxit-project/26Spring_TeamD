@@ -13,6 +13,9 @@ public class CustomerAnimator : MonoBehaviour
     private static readonly int HashSatisfied = Animator.StringToHash("Satisfied");
     private static readonly int HashSpeed = Animator.StringToHash("Speed");
 
+    [Header("怒りエフェクト")]
+    [SerializeField] private ParticleSystem angryParticle;
+
     private Animator anim;
     private NavMeshAgent agent;
 
@@ -109,6 +112,10 @@ public class CustomerAnimator : MonoBehaviour
     {
         ResetAllBools();
         anim.SetBool(HashIsAngry, true);
+
+        // ★ 怒りParticleを再生
+        if (angryParticle != null)
+            angryParticle.Play();
     }
 
     private void ResetAllBools()

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 205f441ca37bbbd46b94c3016305d7fe, type: 3}
   m_Name: FatCustomer
   m_EditorClassIdentifier: 
-  customerType: normal
+  customerType: Fat
   customerPrefab: {fileID: 7835503706444598827, guid: f41b243eb177e4946824beb1f6bb4008,
     type: 3}
   maxOrderBatches: 3
