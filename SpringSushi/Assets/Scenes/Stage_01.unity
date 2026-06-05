@@ -4244,10 +4244,6 @@ MonoBehaviour:
   - {fileID: 1412770149}
   - {fileID: 2116276563}
   customerHUD: {fileID: 1402564092}
-  availableMoods:
-  - {fileID: 11400000, guid: 22ab2c4f57d8c0c458689aef252681fc, type: 2}
-  - {fileID: 11400000, guid: 542ef701e9be3f147ad8af6c20f8c386, type: 2}
-  - {fileID: 11400000, guid: ffae5ef1570c9f240a6c2899babfdf3d, type: 2}
 --- !u!4 &513464558
 Transform:
   m_ObjectHideFlags: 0
@@ -7267,6 +7263,7 @@ MonoBehaviour:
   stageGoalUI: {fileID: 595447606}
   operationTime: 120
   resultSceneName: Result
+  stageData: {fileID: 11400000, guid: f7453dad9a5e2cd4492f10f6d49c9e2e, type: 2}
 --- !u!114 &848440392
 MonoBehaviour:
   m_ObjectHideFlags: 0

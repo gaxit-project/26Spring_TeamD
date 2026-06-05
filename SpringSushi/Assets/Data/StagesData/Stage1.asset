@@ -18,6 +18,38 @@ MonoBehaviour:
   customerVariations:
   - {fileID: 11400000, guid: c23e309f0c956c14e8f86e74d6be7acb, type: 2}
   - {fileID: 11400000, guid: e4b336163418abf4eb12ff9c64fba6d8, type: 2}
+  moodVariations:
+  - {fileID: 11400000, guid: 22ab2c4f57d8c0c458689aef252681fc, type: 2}
+  - {fileID: 11400000, guid: ffae5ef1570c9f240a6c2899babfdf3d, type: 2}
+  - {fileID: 11400000, guid: 542ef701e9be3f147ad8af6c20f8c386, type: 2}
+  - {fileID: 11400000, guid: 3ec85ee99a6c4b248b3ad5b9aa3b3377, type: 2}
+  scheduledEntries:
+  - customerData: {fileID: 11400000, guid: c23e309f0c956c14e8f86e74d6be7acb, type: 2}
+    mood: {fileID: 11400000, guid: 3ec85ee99a6c4b248b3ad5b9aa3b3377, type: 2}
+  - customerData: {fileID: 11400000, guid: c23e309f0c956c14e8f86e74d6be7acb, type: 2}
+    mood: {fileID: 11400000, guid: 3ec85ee99a6c4b248b3ad5b9aa3b3377, type: 2}
+  - customerData: {fileID: 11400000, guid: c23e309f0c956c14e8f86e74d6be7acb, type: 2}
+    mood: {fileID: 11400000, guid: 22ab2c4f57d8c0c458689aef252681fc, type: 2}
+  - customerData: {fileID: 11400000, guid: c23e309f0c956c14e8f86e74d6be7acb, type: 2}
+    mood: {fileID: 11400000, guid: 22ab2c4f57d8c0c458689aef252681fc, type: 2}
+  - customerData: {fileID: 11400000, guid: c23e309f0c956c14e8f86e74d6be7acb, type: 2}
+    mood: {fileID: 11400000, guid: 22ab2c4f57d8c0c458689aef252681fc, type: 2}
+  - customerData: {fileID: 11400000, guid: e4b336163418abf4eb12ff9c64fba6d8, type: 2}
+    mood: {fileID: 11400000, guid: 3ec85ee99a6c4b248b3ad5b9aa3b3377, type: 2}
+  - customerData: {fileID: 11400000, guid: c23e309f0c956c14e8f86e74d6be7acb, type: 2}
+    mood: {fileID: 11400000, guid: ffae5ef1570c9f240a6c2899babfdf3d, type: 2}
+  - customerData: {fileID: 11400000, guid: e4b336163418abf4eb12ff9c64fba6d8, type: 2}
+    mood: {fileID: 11400000, guid: 542ef701e9be3f147ad8af6c20f8c386, type: 2}
+  - customerData: {fileID: 11400000, guid: c23e309f0c956c14e8f86e74d6be7acb, type: 2}
+    mood: {fileID: 11400000, guid: ffae5ef1570c9f240a6c2899babfdf3d, type: 2}
+  - customerData: {fileID: 11400000, guid: e4b336163418abf4eb12ff9c64fba6d8, type: 2}
+    mood: {fileID: 11400000, guid: 6cfc63a0f9588d14baad0ef68ca2daf7, type: 2}
+  - customerData: {fileID: 11400000, guid: e4b336163418abf4eb12ff9c64fba6d8, type: 2}
+    mood: {fileID: 11400000, guid: 542ef701e9be3f147ad8af6c20f8c386, type: 2}
+  - customerData: {fileID: 11400000, guid: e4b336163418abf4eb12ff9c64fba6d8, type: 2}
+    mood: {fileID: 11400000, guid: 6cfc63a0f9588d14baad0ef68ca2daf7, type: 2}
+  - customerData: {fileID: 11400000, guid: e4b336163418abf4eb12ff9c64fba6d8, type: 2}
+    mood: {fileID: 11400000, guid: 6cfc63a0f9588d14baad0ef68ca2daf7, type: 2}
   availableSushiList:
   - {fileID: 11400000, guid: 94d78b5c51e3d8f458e37e97418aaa10, type: 2}
   - {fileID: 11400000, guid: e835477af019fbf4a9f1da1f3428cf0f, type: 2}

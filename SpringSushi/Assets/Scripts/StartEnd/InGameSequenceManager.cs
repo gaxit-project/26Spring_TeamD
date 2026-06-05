@@ -13,8 +13,9 @@ public class InGameSequenceManager : MonoBehaviour
     [SerializeField] private StageGoalUI stageGoalUI;
 
     [Header("Settings")]
-    [SerializeField] private float operationTime = 60f;
+    [SerializeField] private float operationTime = 60f; // © StageDataSO‚Åã‘‚«‚³‚ê‚é
     [SerializeField] private string resultSceneName = "ResultScene";
+    [SerializeField] private StageDataSO stageData; // š ’Ç‰Á
 
     private Player inputActions;
     private bool isSequenceStarted = false;
@@ -24,6 +25,11 @@ public class InGameSequenceManager : MonoBehaviour
         inputActions = new Player();
         statusText.gameObject.SetActive(false);
         Time.timeScale = 0f;
+
+        // š StageDataSO‚©‚çoperationTime‚ğã‘‚«
+        if (stageData != null)
+            operationTime = stageData.operationTime;
+
         Debug.Log($"[Sequence] Awake: timeScale=0 (GameState:{GameStateManager.Instance?.CurrentState})");
     }
 

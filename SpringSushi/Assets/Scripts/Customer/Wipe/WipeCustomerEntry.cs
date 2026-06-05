@@ -20,13 +20,25 @@ public class WipeCustomerEntry : MonoBehaviour
     {
         waitingData = data;
 
-        // 人のイラスト
         if (customerIcon != null)
             customerIcon.sprite = defaultCustomerSprite;
 
-        // 吹き出しのアイコン
-        if (moodIcon != null && data.mood != null)
-            moodIcon.sprite = data.mood.moodIcon;
+        bool isRandom = data.mood == null || data.mood.moodType == CustomerMoodSO.MoodType.Random;
+
+        if (moodIcon != null)
+        {
+            moodIcon.sprite = isRandom ? null : data.mood.moodIcon;
+            var c = moodIcon.color;
+            c.a = isRandom ? 0f : 1f;
+            moodIcon.color = c;
+        }
+
+        if (speechBubble != null)
+        {
+            var c = speechBubble.color;
+            c.a = isRandom ? 0f : 1f;
+            speechBubble.color = c;
+        }
     }
 
     /// <summary>

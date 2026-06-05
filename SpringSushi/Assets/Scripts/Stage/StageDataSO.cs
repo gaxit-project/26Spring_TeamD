@@ -13,9 +13,27 @@ public class StageDataSO : ScriptableObject
     [Tooltip("客のスポーン間隔（秒）")]
     public float spawnInterval = 5f;
 
-    [Header("客バリエーション")]
+    [Header("客バリエーション（ランダム枠）")]
     public List<CustomerData> customerVariations = new();
+
+    [Header("Mood候補（ランダム枠）")]
+    public List<CustomerMoodSO> moodVariations = new();
+
+    [Header("指定来店リスト（順番通りに来店・空欄はランダム）")]
+    public List<ScheduledCustomerEntry> scheduledEntries = new();
 
     [Header("注文候補寿司")]
     public List<SushiData> availableSushiList = new();
+    [Header("営業時間設定")]
+    [Tooltip("営業時間（秒）")]
+    public float operationTime = 60f;
+}
+
+[System.Serializable]
+public class ScheduledCustomerEntry
+{
+    [Tooltip("nullならcustomerVariationsからランダム")]
+    public CustomerData customerData;
+    [Tooltip("nullならmoodVariationsからランダム")]
+    public CustomerMoodSO mood;
 }

@@ -16,8 +16,8 @@ public class CustomerManager : MonoBehaviour
     [Header("HUD")]
     [SerializeField] private CustomerHUD customerHUD;
 
-    [Header("Mood候補（ワイプの吹き出し用）")]
-    [SerializeField] private List<CustomerMoodSO> availableMoods = new();
+    private List<CustomerMoodSO> moodVariations = new();
+    private List<ScheduledCustomerEntry> scheduledEntries = new();
 
     // --- StageDataSO から設定される ---
     private int totalCustomerCount;
@@ -51,6 +51,8 @@ public class CustomerManager : MonoBehaviour
         spawnInterval = stageData.spawnInterval;
         customerVariations = stageData.customerVariations;
         availableSushiList = stageData.availableSushiList;
+        moodVariations = stageData.moodVariations;           // ★
+        scheduledEntries = stageData.scheduledEntries;       // ★
 
         spawnedCount = 0;
         exitedCount = 0;
@@ -101,10 +103,28 @@ public class CustomerManager : MonoBehaviour
     {
         if (spawnedCount >= totalCustomerCount) return;
 
-        CustomerData data = customerVariations[Random.Range(0, customerVariations.Count)];
-        CustomerMoodSO mood = availableMoods.Count > 0
-            ? availableMoods[Random.Range(0, availableMoods.Count)]
-            : null;
+        CustomerData data;
+        CustomerMoodSO mood;
+
+        // ★ scheduledEntriesに定義があればそちらを優先
+        if (spawnedCount < scheduledEntries.Count)
+        {
+            var entry = scheduledEntries[spawnedCount];
+            data = entry.customerData != null
+                ? entry.customerData
+                : customerVariations[Random.Range(0, customerVariations.Count)];
+            mood = entry.mood != null
+                ? entry.mood
+                : (moodVariations.Count > 0 ? moodVariations[Random.Range(0, moodVariations.Count)] : null);
+        }
+        else
+        {
+            // ★ リストを超えたらランダム
+            data = customerVariations[Random.Range(0, customerVariations.Count)];
+            mood = moodVariations.Count > 0
+                ? moodVariations[Random.Range(0, moodVariations.Count)]
+                : null;
+        }
 
         var waitingData = new WaitingCustomerData
         {
