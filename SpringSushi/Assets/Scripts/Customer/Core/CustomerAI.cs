@@ -187,6 +187,10 @@ public class CustomerAI : MonoBehaviour
     {
         SetState(CustomerState.Angry);          // š Angry State‚É‘JˆÚ
         OnAngryLeave?.Invoke(this);
+        if (SoundPlayer.Instance != null)
+        {
+            SoundPlayer.Instance.PlayVoice(SoundKeys.CustomerAngry);
+        }
         Invoke(nameof(Leave), data != null ? data.angryTime : 3f); // š angryTimeŒã‚É‘Şê
     }
 

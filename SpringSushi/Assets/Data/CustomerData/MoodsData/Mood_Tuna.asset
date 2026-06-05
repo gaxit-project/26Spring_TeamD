@@ -17,4 +17,4 @@ MonoBehaviour:
   fixedOrders:
   - {fileID: 11400000, guid: e835477af019fbf4a9f1da1f3428cf0f, type: 2}
   orderCountMultiplier: 1
-  patienceMultiplier: 0.5
+  patienceMultiplier: 0.1

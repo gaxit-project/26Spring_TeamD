@@ -195,8 +195,15 @@ public class CustomerManager : MonoBehaviour
             switch (mood.moodType)
             {
                 case CustomerMoodSO.MoodType.SpecificSushi:
-                    foreach (var sushi in mood.fixedOrders)
-                        orders.Add(sushi);
+                    if (mood.fixedOrders.Count > 0)
+                    {
+                        int specificCount = Random.Range(1, data.maxTotalOrders + 1);
+                        for (int i = 0; i < specificCount; i++)
+                        {
+                            int idx = Random.Range(0, mood.fixedOrders.Count);
+                            orders.Add(mood.fixedOrders[idx]);
+                        }
+                    }
                     return orders;
 
                 case CustomerMoodSO.MoodType.Hungry:

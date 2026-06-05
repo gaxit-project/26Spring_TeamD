@@ -16,4 +16,4 @@ MonoBehaviour:
   moodType: 3
   fixedOrders: []
   orderCountMultiplier: 1
-  patienceMultiplier: 1
+  patienceMultiplier: 0.1

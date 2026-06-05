@@ -9,6 +9,7 @@ public class CustomerPatienceController : MonoBehaviour
     private float maxPatience;
     private float basePatienceTime;
     private float patienceDecayRate;
+    private float currentMultiplier = 1f; // š ’Ç‰Á: ‹C•ª‚É‚æ‚é”{—¦‚ğ•Û‚·‚é
     private CustomerAI owner;
 
     public float PatienceRate => maxPatience > 0 ? currentPatience / maxPatience : 0f;
@@ -19,12 +20,12 @@ public class CustomerPatienceController : MonoBehaviour
         patienceDecayRate = data.patienceDecayRate;
         owner = ai;
 
-        // š Irritated ‚È‚ç Patience ‚ğ’Z‚­‚·‚é
-        float mult = (mood != null && mood.moodType == CustomerMoodSO.MoodType.Irritated)
+        // š Irritated ‚È‚ç Patience ‚ğ’Z‚­‚·‚é”{—¦‚ğŒˆ’è
+        currentMultiplier = (mood != null && mood.moodType == CustomerMoodSO.MoodType.Irritated)
             ? mood.patienceMultiplier
             : 1f;
 
-        maxPatience = basePatienceTime * mult;
+        maxPatience = basePatienceTime * currentMultiplier;
         currentPatience = maxPatience;
     }
 
@@ -33,7 +34,8 @@ public class CustomerPatienceController : MonoBehaviour
     /// </summary>
     public void ResetPatience(int batchCount)
     {
-        maxPatience = basePatienceTime * Mathf.Pow(patienceDecayRate, batchCount - 1);
+        // š C³: 2‰ñ–ÚˆÈ~‚Ì’•¶ƒŠƒZƒbƒg‚É‚àAcurrentMultiplieri“{‚è”{—¦j‚ğ‚µ‚Á‚©‚èŠ|‚¯‚é
+        maxPatience = basePatienceTime * Mathf.Pow(patienceDecayRate, batchCount - 1) * currentMultiplier;
         currentPatience = maxPatience;
     }
 

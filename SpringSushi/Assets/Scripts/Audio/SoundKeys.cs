@@ -32,6 +32,7 @@ public static class SoundKeys
     public const string CustomerOrder = "customer_order";     // 注文だよー・すみませーん
     public const string CustomerEat = "customer_eat";       // むしゃむしゃ
     public const string CustomerServed = "customer_served";    // キラン（寿司が届いた）
+    public const string CustomerAngry = "customer_angry";     //ふざけんなよ
 
     // --- BGM ---
     public const string BgmTitle = "bgm_title";          // タイトル画面BGM
