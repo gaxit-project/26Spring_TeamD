@@ -39,7 +39,7 @@ public class StageGoalUI : MonoBehaviour
     [SerializeField] private float rowInterval = 0.4f;
 
     [Tooltip("全行表示後、スタートボタンが出るまでの待機時間（秒）")]
-    [SerializeField] private float waitBeforePrompt = 1.0f;
+    [SerializeField] private float waitBeforePrompt = 2.9f;
 
     [Tooltip("全行表示後、入力を受け付けるまでの最低待機時間（秒）\n waitBeforePrompt 以上に設定してください")]
     [SerializeField] private float inputUnlockDelay = 3.0f;
