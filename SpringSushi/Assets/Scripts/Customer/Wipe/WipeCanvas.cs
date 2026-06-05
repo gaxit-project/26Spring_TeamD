@@ -77,8 +77,10 @@ public class WipeCanvas : MonoBehaviour
         for (int i = 0; i < queue.Count; i++)
         {
             var rect = queue[i].GetComponent<RectTransform>();
-            // i=0 がドアに近い（左）、i が増えるほど右
-            float x = startX - i * spacing;
+
+            // i=0（先頭）が startX になり、iが増える（後続）ほど spacing 分だけ右（+方向）にずれる
+            float x = startX + (i * spacing);
+
             rect.anchoredPosition = new Vector2(x, posY);
         }
     }

@@ -116,6 +116,15 @@ public partial class @Player: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""AdmitCustomer"",
+                    ""type"": ""Button"",
+                    ""id"": ""f634a52f-986a-4d54-b3b7-b279dd802682"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -316,6 +325,17 @@ public partial class @Player: IInputActionCollection2, IDisposable
                     ""action"": ""SushiShiftRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1fa23ebf-e11a-43fb-bb9f-955cd052ce42"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AdmitCustomer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -334,6 +354,7 @@ public partial class @Player: IInputActionCollection2, IDisposable
         m_GamePlay_Spawn = m_GamePlay.FindAction("Spawn", throwIfNotFound: true);
         m_GamePlay_SushiShiftLeft = m_GamePlay.FindAction("SushiShiftLeft", throwIfNotFound: true);
         m_GamePlay_SushiShiftRight = m_GamePlay.FindAction("SushiShiftRight", throwIfNotFound: true);
+        m_GamePlay_AdmitCustomer = m_GamePlay.FindAction("AdmitCustomer", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -405,6 +426,7 @@ public partial class @Player: IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_Spawn;
     private readonly InputAction m_GamePlay_SushiShiftLeft;
     private readonly InputAction m_GamePlay_SushiShiftRight;
+    private readonly InputAction m_GamePlay_AdmitCustomer;
     public struct GamePlayActions
     {
         private @Player m_Wrapper;
@@ -419,6 +441,7 @@ public partial class @Player: IInputActionCollection2, IDisposable
         public InputAction @Spawn => m_Wrapper.m_GamePlay_Spawn;
         public InputAction @SushiShiftLeft => m_Wrapper.m_GamePlay_SushiShiftLeft;
         public InputAction @SushiShiftRight => m_Wrapper.m_GamePlay_SushiShiftRight;
+        public InputAction @AdmitCustomer => m_Wrapper.m_GamePlay_AdmitCustomer;
         public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -458,6 +481,9 @@ public partial class @Player: IInputActionCollection2, IDisposable
             @SushiShiftRight.started += instance.OnSushiShiftRight;
             @SushiShiftRight.performed += instance.OnSushiShiftRight;
             @SushiShiftRight.canceled += instance.OnSushiShiftRight;
+            @AdmitCustomer.started += instance.OnAdmitCustomer;
+            @AdmitCustomer.performed += instance.OnAdmitCustomer;
+            @AdmitCustomer.canceled += instance.OnAdmitCustomer;
         }
 
         private void UnregisterCallbacks(IGamePlayActions instance)
@@ -492,6 +518,9 @@ public partial class @Player: IInputActionCollection2, IDisposable
             @SushiShiftRight.started -= instance.OnSushiShiftRight;
             @SushiShiftRight.performed -= instance.OnSushiShiftRight;
             @SushiShiftRight.canceled -= instance.OnSushiShiftRight;
+            @AdmitCustomer.started -= instance.OnAdmitCustomer;
+            @AdmitCustomer.performed -= instance.OnAdmitCustomer;
+            @AdmitCustomer.canceled -= instance.OnAdmitCustomer;
         }
 
         public void RemoveCallbacks(IGamePlayActions instance)
@@ -521,5 +550,6 @@ public partial class @Player: IInputActionCollection2, IDisposable
         void OnSpawn(InputAction.CallbackContext context);
         void OnSushiShiftLeft(InputAction.CallbackContext context);
         void OnSushiShiftRight(InputAction.CallbackContext context);
+        void OnAdmitCustomer(InputAction.CallbackContext context);
     }
 }

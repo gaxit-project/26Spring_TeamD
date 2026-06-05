@@ -38,6 +38,13 @@ public class CustomerManager : MonoBehaviour
         Instance = this;
     }
 
+    // ★ オブジェクト破棄時に入力イベントの解除漏れを防ぐ
+    private void OnDestroy()
+    {
+        // if文を取り除き、直接これだけにします（C#の仕様上、これで安全に解除されます）
+        SpawnerInputManager.OnAdmitCustomerPressed -= HandleAdmitInput;
+    }
+
     public void StartStage(StageDataSO stageData)
     {
         totalCustomerCount = stageData.totalCustomerCount;
@@ -57,24 +64,34 @@ public class CustomerManager : MonoBehaviour
     {
         if (next != GameStateManager.GameState.Playing) return;
         GameStateManager.Instance.OnStateChanged -= OnGameStateChanged;
+
+        // ★ ゲームプレイ開始時に LTボタンの入力イベントを購読
+        SpawnerInputManager.OnAdmitCustomerPressed += HandleAdmitInput;
+
         StartCoroutine(CustomerEntryRoutine());
+    }
+
+    /// <summary>
+    /// ★ LTボタンが押されたときに実行されるハンドラー
+    /// </summary>
+    private void HandleAdmitInput()
+    {
+        if (!isRunning) return;
+
+        // ボタン入力によって能動的に入店を試みる
+        TryAdmitFromWipe();
     }
 
     private IEnumerator CustomerEntryRoutine()
     {
+        // ★ 自動入店を完全に廃止。時間経過では「ワイプ（待機列）への追加」のみを行う
         while (isRunning && spawnedCount < totalCustomerCount)
         {
             yield return new WaitForSeconds(spawnInterval);
-            EnqueueNextCustomer();       // ★ ワイプに追加
-            TryAdmitFromWipe();          // ★ 空席があれば即入店
+            EnqueueNextCustomer();       // ワイプに客を追加
         }
 
-        // 全員生成後も待機列が残っていれば入店チェックを続ける
-        while (isRunning && (WipeCanvas.Instance?.HasWaiting ?? false))
-        {
-            yield return new WaitForSeconds(1f);
-            TryAdmitFromWipe();
-        }
+        // （全員生成後の待機列チェック用ループは不要になったため削除）
     }
 
     /// <summary>
@@ -103,14 +120,18 @@ public class CustomerManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 空席があれば待機列の先頭を入店させる。
+    /// 待機列の先頭を入店させる。
     /// </summary>
     public void TryAdmitFromWipe()
     {
         if (!(WipeCanvas.Instance?.HasWaiting ?? false)) return;
 
         Transform seat = GetEmptySeat();
-        if (seat == null) return;
+        if (seat == null)
+        {
+            Debug.Log("<color=yellow>[CustomerManager]</color> 満席のため、LTを押しても入店できません。");
+            return;
+        }
 
         Transform spawnPoint = GetRandomSpawnPoint();
         if (spawnPoint == null) return;
@@ -135,8 +156,8 @@ public class CustomerManager : MonoBehaviour
             if (customerAI.State == CustomerAI.CustomerState.Leaving)
             {
                 reservedSeats.Remove(seat);
-                // ★ 退場のたびに待機列から入店を試みる
-                TryAdmitFromWipe();
+                // ★ 退場時の自動入店処理（TryAdmitFromWipe）も削除
+                // 席が空いても、プレイヤーが次にLTを押すまで誰も入ってきません
             }
         };
     }
@@ -157,6 +178,10 @@ public class CustomerManager : MonoBehaviour
         if (spawnedCount >= totalCustomerCount && exitedCount >= totalCustomerCount)
         {
             Debug.Log("<color=gold>[CustomerManager]</color> 全客退場 → ステージクリア");
+
+            // ★ ステージクリア時に入力購読を解除
+            SpawnerInputManager.OnAdmitCustomerPressed -= HandleAdmitInput;
+
             GameStateManager.Instance?.EnterResult();
         }
     }
@@ -184,7 +209,6 @@ public class CustomerManager : MonoBehaviour
             }
         }
 
-        // Random / Irritated → 通常生成
         int count = Random.Range(1, data.maxTotalOrders + 1);
         for (int i = 0; i < count; i++)
             orders.Add(availableSushiList[Random.Range(0, availableSushiList.Count)]);
