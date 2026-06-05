@@ -71,7 +71,8 @@ public class CustomerAI : MonoBehaviour
         }
     }
 
-    public void Initialize(CustomerData newData, Transform seat, List<SushiData> orders)
+    public void Initialize(CustomerData newData, Transform seat,
+                       List<SushiData> orders, CustomerMoodSO mood = null)
     {
         data = newData;
         targetSeat = seat;
@@ -86,7 +87,7 @@ public class CustomerAI : MonoBehaviour
         batchSize = Random.Range(data.batchSizeMin, data.batchSizeMax + 1);
 
         orderController.Initialize(orders);
-        patienceController.Initialize(data, this);
+        patienceController.Initialize(data, this, mood); // Åö mood ÇìnÇ∑
 
         if (SoundPlayer.Instance != null)
             SoundPlayer.Instance.PlayVoice(SoundKeys.CustomerSpawn);
@@ -186,6 +187,10 @@ public class CustomerAI : MonoBehaviour
     {
         SetState(CustomerState.Angry);          // Åö Angry StateÇ…ëJà⁄
         OnAngryLeave?.Invoke(this);
+        if (SoundPlayer.Instance != null)
+        {
+            SoundPlayer.Instance.PlayVoice(SoundKeys.CustomerAngry);
+        }
         Invoke(nameof(Leave), data != null ? data.angryTime : 3f); // Åö angryTimeå„Ç…ëﬁèÍ
     }
 

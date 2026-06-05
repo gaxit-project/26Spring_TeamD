@@ -2,9 +2,9 @@ using UnityEngine;
 using System.Collections.Generic;
 
 /// <summary>
-/// 全シーン共通のサウンド定義。
-/// SoundManagerにアサインして使う。
-/// キーの一覧はSoundKeys.csを参照。
+/// 全シーン共通のサウンド定義
+/// SoundManagerにアサインして使う
+/// キーの一覧はSoundKeys.csを参照
 /// </summary>
 [CreateAssetMenu(fileName = "SoundDatabase", menuName = "Audio/SoundDatabase")]
 public class SoundDatabase : ScriptableObject

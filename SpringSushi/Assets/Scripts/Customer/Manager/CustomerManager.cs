@@ -2,10 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// ステージデータに基づいて客をスポーンし、
-/// 全客の退場を検知してステージクリアを通知する。
-/// </summary>
 public class CustomerManager : MonoBehaviour
 {
     public static CustomerManager Instance { get; private set; }
@@ -20,6 +16,9 @@ public class CustomerManager : MonoBehaviour
     [Header("HUD")]
     [SerializeField] private CustomerHUD customerHUD;
 
+    [Header("Mood候補（ワイプの吹き出し用）")]
+    [SerializeField] private List<CustomerMoodSO> availableMoods = new();
+
     // --- StageDataSO から設定される ---
     private int totalCustomerCount;
     private float spawnInterval;
@@ -31,13 +30,19 @@ public class CustomerManager : MonoBehaviour
     private int exitedCount = 0;
     private bool isRunning = false;
 
-    // ★ 予約済み席を管理
     private readonly HashSet<Transform> reservedSeats = new();
 
     private void Awake()
     {
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
+    }
+
+    // ★ オブジェクト破棄時に入力イベントの解除漏れを防ぐ
+    private void OnDestroy()
+    {
+        // if文を取り除き、直接これだけにします（C#の仕様上、これで安全に解除されます）
+        SpawnerInputManager.OnAdmitCustomerPressed -= HandleAdmitInput;
     }
 
     public void StartStage(StageDataSO stageData)
@@ -50,7 +55,7 @@ public class CustomerManager : MonoBehaviour
         spawnedCount = 0;
         exitedCount = 0;
         isRunning = true;
-        reservedSeats.Clear(); // ★ リセット
+        reservedSeats.Clear();
 
         GameStateManager.Instance.OnStateChanged += OnGameStateChanged;
     }
@@ -59,59 +64,101 @@ public class CustomerManager : MonoBehaviour
     {
         if (next != GameStateManager.GameState.Playing) return;
         GameStateManager.Instance.OnStateChanged -= OnGameStateChanged;
+
+        // ★ ゲームプレイ開始時に LTボタンの入力イベントを購読
+        SpawnerInputManager.OnAdmitCustomerPressed += HandleAdmitInput;
+
         StartCoroutine(CustomerEntryRoutine());
+    }
+
+    /// <summary>
+    /// ★ LTボタンが押されたときに実行されるハンドラー
+    /// </summary>
+    private void HandleAdmitInput()
+    {
+        if (!isRunning) return;
+
+        // ボタン入力によって能動的に入店を試みる
+        TryAdmitFromWipe();
     }
 
     private IEnumerator CustomerEntryRoutine()
     {
+        // ★ 自動入店を完全に廃止。時間経過では「ワイプ（待機列）への追加」のみを行う
         while (isRunning && spawnedCount < totalCustomerCount)
         {
             yield return new WaitForSeconds(spawnInterval);
-            TrySpawnCustomer();
+            EnqueueNextCustomer();       // ワイプに客を追加
         }
+
+        // （全員生成後の待機列チェック用ループは不要になったため削除）
     }
 
-    private void TrySpawnCustomer()
+    /// <summary>
+    /// 待機列に客データを追加する。
+    /// </summary>
+    private void EnqueueNextCustomer()
     {
         if (spawnedCount >= totalCustomerCount) return;
+
+        CustomerData data = customerVariations[Random.Range(0, customerVariations.Count)];
+        CustomerMoodSO mood = availableMoods.Count > 0
+            ? availableMoods[Random.Range(0, availableMoods.Count)]
+            : null;
+
+        var waitingData = new WaitingCustomerData
+        {
+            customerData = data,
+            mood = mood,
+            orders = GenerateOrders(data, mood),
+        };
+
+        WipeCanvas.Instance?.EnqueueCustomer(waitingData);
+        spawnedCount++;
+
+        Debug.Log($"<color=lime>[CustomerManager]</color> ワイプに追加（{spawnedCount}/{totalCustomerCount}）");
+    }
+
+    /// <summary>
+    /// 待機列の先頭を入店させる。
+    /// </summary>
+    public void TryAdmitFromWipe()
+    {
+        if (!(WipeCanvas.Instance?.HasWaiting ?? false)) return;
 
         Transform seat = GetEmptySeat();
         if (seat == null)
         {
-            Debug.Log("<color=yellow>[CustomerManager]</color> 満席のためスキップ。");
+            Debug.Log("<color=yellow>[CustomerManager]</color> 満席のため、LTを押しても入店できません。");
             return;
         }
 
         Transform spawnPoint = GetRandomSpawnPoint();
         if (spawnPoint == null) return;
 
-        // ★ スポーン時点で席を予約
         reservedSeats.Add(seat);
 
-        CustomerData data = customerVariations[Random.Range(0, customerVariations.Count)];
+        WaitingCustomerData waitingData = WipeCanvas.Instance.DequeueCustomer();
+        if (waitingData == null) { reservedSeats.Remove(seat); return; }
+
         GameObject obj = Instantiate(customerPrefab, spawnPoint.position, spawnPoint.rotation);
         CustomerAI ai = obj.GetComponent<CustomerAI>();
-        if (ai == null)
-        {
-            reservedSeats.Remove(seat); // 失敗時は予約を解放
-            return;
-        }
+        if (ai == null) { reservedSeats.Remove(seat); return; }
 
-        List<SushiData> orders = GenerateOrders(data);
-        ai.Initialize(data, seat, orders);
+        ai.Initialize(waitingData.customerData, seat, waitingData.orders, waitingData.mood);
         customerHUD?.RegisterCustomer(ai);
 
-        spawnedCount++;
-        Debug.Log($"<color=lime>[CustomerManager]</color> {seat.name} に客を生成（{spawnedCount}/{totalCustomerCount}）");
+        Debug.Log($"<color=cyan>[CustomerManager]</color> {seat.name} に入店");
 
-        // 退場カウント
         ai.OnStateChanged += OnCustomerStateChanged;
-
-        // ★ Leaving時に予約を解放
         ai.OnStateChanged += (customerAI) =>
         {
             if (customerAI.State == CustomerAI.CustomerState.Leaving)
+            {
                 reservedSeats.Remove(seat);
+                // ★ 退場時の自動入店処理（TryAdmitFromWipe）も削除
+                // 席が空いても、プレイヤーが次にLTを押すまで誰も入ってきません
+            }
         };
     }
 
@@ -123,7 +170,6 @@ public class CustomerManager : MonoBehaviour
         ai.OnStateChanged -= OnCustomerStateChanged;
         exitedCount++;
         Debug.Log($"<color=cyan>[CustomerManager]</color> 退場 {exitedCount}/{totalCustomerCount}");
-
         CheckStageClear();
     }
 
@@ -132,13 +178,44 @@ public class CustomerManager : MonoBehaviour
         if (spawnedCount >= totalCustomerCount && exitedCount >= totalCustomerCount)
         {
             Debug.Log("<color=gold>[CustomerManager]</color> 全客退場 → ステージクリア");
+
+            // ★ ステージクリア時に入力購読を解除
+            SpawnerInputManager.OnAdmitCustomerPressed -= HandleAdmitInput;
+
             GameStateManager.Instance?.EnterResult();
         }
     }
 
-    private List<SushiData> GenerateOrders(CustomerData data)
+    private List<SushiData> GenerateOrders(CustomerData data, CustomerMoodSO mood)
     {
         var orders = new List<SushiData>();
+
+        if (mood != null)
+        {
+            switch (mood.moodType)
+            {
+                case CustomerMoodSO.MoodType.SpecificSushi:
+                    if (mood.fixedOrders.Count > 0)
+                    {
+                        int specificCount = Random.Range(1, data.maxTotalOrders + 1);
+                        for (int i = 0; i < specificCount; i++)
+                        {
+                            int idx = Random.Range(0, mood.fixedOrders.Count);
+                            orders.Add(mood.fixedOrders[idx]);
+                        }
+                    }
+                    return orders;
+
+                case CustomerMoodSO.MoodType.Hungry:
+                    int hungryCount = Mathf.RoundToInt(
+                        Random.Range(1, data.maxTotalOrders + 1) * mood.orderCountMultiplier);
+                    hungryCount = Mathf.Max(1, hungryCount);
+                    for (int i = 0; i < hungryCount; i++)
+                        orders.Add(availableSushiList[Random.Range(0, availableSushiList.Count)]);
+                    return orders;
+            }
+        }
+
         int count = Random.Range(1, data.maxTotalOrders + 1);
         for (int i = 0; i < count; i++)
             orders.Add(availableSushiList[Random.Range(0, availableSushiList.Count)]);
@@ -149,7 +226,6 @@ public class CustomerManager : MonoBehaviour
     {
         foreach (var seat in entryPoints)
         {
-            // ★ 予約済みならスキップ
             if (reservedSeats.Contains(seat)) continue;
             return seat;
         }

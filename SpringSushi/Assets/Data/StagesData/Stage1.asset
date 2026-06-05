@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Stage1
   m_EditorClassIdentifier: 
   stageName: "\u30B9\u30C6\u30FC\u30B81"
-  totalCustomerCount: 24
-  spawnInterval: 5
+  totalCustomerCount: 12
+  spawnInterval: 10
   customerVariations:
   - {fileID: 11400000, guid: c23e309f0c956c14e8f86e74d6be7acb, type: 2}
   - {fileID: 11400000, guid: e4b336163418abf4eb12ff9c64fba6d8, type: 2}

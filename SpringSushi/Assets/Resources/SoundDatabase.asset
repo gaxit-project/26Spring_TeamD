@@ -69,3 +69,7 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 9ab433d1a6ef2504882613fb0bb0ef8a, type: 3}
     category: 2
     volumeMultiplier: 3
+  - key: customer_angry
+    clip: {fileID: 8300000, guid: 879442c8920978b4cbfdcd0a9e089189, type: 3}
+    category: 1
+    volumeMultiplier: 3

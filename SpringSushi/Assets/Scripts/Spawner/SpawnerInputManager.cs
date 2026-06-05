@@ -7,8 +7,10 @@ public class SpawnerInputManager : MonoBehaviour
     public static Vector2 LeftStickValue { get; private set; }
     public static Vector2 RightStickValue { get; private set; }
 
+    // ★ イベント名を入店用であることが分かりやすい名前に変更
+    public static event Action OnAdmitCustomerPressed;
     public static event Action OnSpawnPressed;
-    public static event Action<int> OnSushiShift; // ★ 追加：左右矢印キー用
+    public static event Action<int> OnSushiShift;
 
     public void OnLeftStick(InputValue value)
     {
@@ -26,7 +28,15 @@ public class SpawnerInputManager : MonoBehaviour
             OnSpawnPressed?.Invoke();
     }
 
-    // ★ 追加：InputActionAssetのAction名は "SushiShiftLeft" / "SushiShiftRight" に対応
+    /// <summary>
+    /// ★ 追加：LTボタン（Action名: AdmitCustomer）が押されたときに実行される
+    /// </summary>
+    public void OnAdmitCustomer(InputValue value)
+    {
+        if (value.isPressed)
+            OnAdmitCustomerPressed?.Invoke();
+    }
+
     public void OnSushiShiftLeft(InputValue value)
     {
         if (value.isPressed)
