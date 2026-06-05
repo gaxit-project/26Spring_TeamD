@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: NormalCustomer
   m_EditorClassIdentifier: 
   customerType: Normal
-  customerPrefab: {fileID: 3967108684766030035, guid: 1c8950e890f8de640b645d9ccc90ffa4,
+  customerPrefab: {fileID: 3967108684766030035, guid: 44d50036f173fd54bb9d1956fca635f7,
     type: 3}
   maxOrderBatches: 3
   maxTotalOrders: 5
@@ -22,4 +22,5 @@ MonoBehaviour:
   eatTime: 4
   basePatienceTime: 25
   patienceDecayRate: 0.9
+  angryTime: 3
   scoreMultiplier: 1

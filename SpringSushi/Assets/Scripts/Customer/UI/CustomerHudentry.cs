@@ -12,11 +12,8 @@ public class CustomerHUDEntry : MonoBehaviour
     public Slider satisfiedSlider;
 
     [Header("注文アイコン設定")]
-    [Tooltip("アイコン1個のときの基本サイズ")]
     public float baseIconSize = 48f;
-    [Tooltip("アイコンの最小サイズ（これ以下には縮小しない）")]
     public float minIconSize = 20f;
-    [Tooltip("縦に並べるときの間隔")]
     public float iconSpacing = 4f;
 
     private CustomerAI customer;
@@ -53,7 +50,6 @@ public class CustomerHUDEntry : MonoBehaviour
     private void OnOrderPhaseChanged(CustomerAI ai)
     {
         patienceGauge.SetOrderPhase(ai.Phase);
-
         if (ai.Phase == CustomerAI.OrderPhase.Waiting)
             patienceGauge.ResetToFull();
     }
@@ -76,9 +72,7 @@ public class CustomerHUDEntry : MonoBehaviour
         if (behindCamera) return;
 
         if (hudCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
-        {
             root.position = screenPos;
-        }
         else
         {
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -95,15 +89,19 @@ public class CustomerHUDEntry : MonoBehaviour
         {
             case CustomerAI.CustomerState.Ordering:
                 root.gameObject.SetActive(true);
-                ShowOrderImages(true);          // ★ アイコン再表示
-                patienceGauge.ResetToFull();    // ★ ゲージをFullに
-                patienceGauge.SetOrderPhase(CustomerAI.OrderPhase.Waiting); // ★ EatingOverlay非表示
+                ShowOrderImages(true);
+                patienceGauge.ResetToFull();
+                patienceGauge.SetOrderPhase(CustomerAI.OrderPhase.Waiting);
                 break;
 
             case CustomerAI.CustomerState.Eating:
                 root.gameObject.SetActive(true);
-                ShowOrderImages(false);         // ★ アイコン非表示
-                patienceGauge.SetOrderPhase(ai.Phase); // ★ EatingOverlay表示
+                ShowOrderImages(false);
+                patienceGauge.SetOrderPhase(ai.Phase);
+                break;
+
+            case CustomerAI.CustomerState.Angry:
+                root.gameObject.SetActive(false); // ★ false に変更
                 break;
 
             case CustomerAI.CustomerState.Satisfied:
@@ -125,10 +123,7 @@ public class CustomerHUDEntry : MonoBehaviour
     private void ShowOrderImages(bool visible)
     {
         foreach (var img in orderImages)
-        {
-            if (img != null)
-                img.gameObject.SetActive(visible);
-        }
+            if (img != null) img.gameObject.SetActive(visible);
     }
 
     private void OnOrderUpdated(CustomerAI ai)
@@ -172,7 +167,6 @@ public class CustomerHUDEntry : MonoBehaviour
         {
             var obj = Instantiate(orderImagePrefab, orderImageContainer.transform);
 
-            // ★ 個別Canvasがあれば無効化して親の描画順に従わせる
             var objCanvas = obj.GetComponent<Canvas>();
             if (objCanvas != null) objCanvas.enabled = false;
 

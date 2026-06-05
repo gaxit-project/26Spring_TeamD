@@ -35,21 +35,12 @@ public class CustomerAnimator : MonoBehaviour
             anim.SetFloat(HashSpeed, agent.velocity.magnitude, 0.1f, Time.deltaTime);
     }
 
-    // ─────────────────────────────────────
-    // ★ 着席時に最寄りLaneSegmentへ向きを合わせる
-    // CustomerAI.SetState(Seated) のタイミングで呼ぶ
-    // ─────────────────────────────────────
     public void FaceNearestLane()
     {
         var segments = Object.FindObjectsByType<LaneSegment>(FindObjectsSortMode.None);
-        Quaternion rot = CalcFacingRotation(transform.position, segments);
-        transform.rotation = rot;
+        transform.rotation = CalcFacingRotation(transform.position, segments);
     }
 
-    /// <summary>
-    /// SeatBuilderのCalcSeatRotationと同じロジック。
-    /// 最寄りLaneSegmentのA→B方向にZ+を向け、180°反転して客席向きにする。
-    /// </summary>
     private Quaternion CalcFacingRotation(Vector3 pos, LaneSegment[] segments)
     {
         if (segments == null || segments.Length == 0) return Quaternion.identity;
@@ -84,7 +75,7 @@ public class CustomerAnimator : MonoBehaviour
 
             case CustomerAI.CustomerState.Seated:
                 anim.SetBool(HashIsSeated, true);
-                FaceNearestLane(); // ★ 着席と同時に向きを確定
+                FaceNearestLane();
                 break;
 
             case CustomerAI.CustomerState.Ordering:
@@ -102,20 +93,17 @@ public class CustomerAnimator : MonoBehaviour
                 anim.SetTrigger(HashSatisfied);
                 break;
 
+            case CustomerAI.CustomerState.Angry:   // ★ 追加
+                anim.SetBool(HashIsSeated, true);
+                anim.SetBool(HashIsAngry, true);
+                if (angryParticle != null) angryParticle.Play();
+                break;
+
             case CustomerAI.CustomerState.Leaving:
                 anim.SetBool(HashIsLeaving, true);
+                if (angryParticle != null) angryParticle.Stop(); // ★ 退場時に停止
                 break;
         }
-    }
-
-    public void PlayAngry()
-    {
-        ResetAllBools();
-        anim.SetBool(HashIsAngry, true);
-
-        // ★ 怒りParticleを再生
-        if (angryParticle != null)
-            angryParticle.Play();
     }
 
     private void ResetAllBools()
