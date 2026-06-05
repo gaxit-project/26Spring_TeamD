@@ -13,12 +13,18 @@ public class CustomerPatienceController : MonoBehaviour
 
     public float PatienceRate => maxPatience > 0 ? currentPatience / maxPatience : 0f;
 
-    public void Initialize(CustomerData data, CustomerAI ai)
+    public void Initialize(CustomerData data, CustomerAI ai, CustomerMoodSO mood = null)
     {
         basePatienceTime = data.basePatienceTime;
         patienceDecayRate = data.patienceDecayRate;
         owner = ai;
-        maxPatience = basePatienceTime;
+
+        // Åö Irritated Ç»ÇÁ Patience ÇíZÇ≠Ç∑ÇÈ
+        float mult = (mood != null && mood.moodType == CustomerMoodSO.MoodType.Irritated)
+            ? mood.patienceMultiplier
+            : 1f;
+
+        maxPatience = basePatienceTime * mult;
         currentPatience = maxPatience;
     }
 
