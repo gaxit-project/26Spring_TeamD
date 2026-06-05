@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 public class SushiSpawner : MonoBehaviour
@@ -8,26 +7,18 @@ public class SushiSpawner : MonoBehaviour
     public GameObject sushiBasePrefab;
     public List<SushiData> sushiDataList;
 
-    [Header("自動生成インターバル（秒）※生成のたびにリセット")]
-    public float autoSpawnInterval = 3.0f;
-
-    [Header("手動生成インターバル（秒）")]
-    public float manualSpawnInterval = 2.0f;
-
     public int SelectedIndex { get; private set; } = 0;
     public SushiData SelectedSushi =>
         (sushiDataList != null && sushiDataList.Count > 0)
             ? sushiDataList[SelectedIndex] : null;
 
-    private float manualCooldownRemaining = 0f;
-    public bool CanManualSpawn => manualCooldownRemaining <= 0f;
+    // ★ 寿司ごとのクールダウンを管理
+    private readonly Dictionary<SushiData, float> cooldowns = new();
+
+    public bool CanManualSpawn => SelectedSushi != null && GetCooldown(SelectedSushi) <= 0f;
 
     private LaneNode myNode;
     private SushiRegistry registry;
-    private Coroutine autoSpawnCoroutine;
-
-    // ★ 追加: 自動生成を一時的にスキップするフラグ
-    private bool suppressNextAutoSpawn = false;
 
     public void SetMasterNode(LaneNode master) => myNode = master;
 
@@ -35,36 +26,16 @@ public class SushiSpawner : MonoBehaviour
     {
         registry = FindFirstObjectByType<SushiRegistry>();
         if (myNode == null) myNode = GetComponent<LaneNode>();
-        StartCoroutine(SafeStart());
     }
 
     private void Update()
     {
-        if (manualCooldownRemaining > 0f)
-            manualCooldownRemaining -= Time.deltaTime;
-    }
-
-    private IEnumerator SafeStart()
-    {
-        yield return null;
-        if (myNode != null)
-            autoSpawnCoroutine = StartCoroutine(AutoSpawnRoutine());
-    }
-
-    private IEnumerator AutoSpawnRoutine()
-    {
-        while (true)
+        // ★ 全寿司のクールダウンを減らす
+        var keys = new List<SushiData>(cooldowns.Keys);
+        foreach (var key in keys)
         {
-            yield return new WaitForSeconds(autoSpawnInterval);
-
-            // ★ 手動生成と被りそうなときはスキップしてタイマーをリセット
-            if (suppressNextAutoSpawn)
-            {
-                suppressNextAutoSpawn = false;
-                continue; // while(true)の先頭へ戻りタイマー再計測
-            }
-
-            SpawnSushi(SelectedSushi);
+            if (cooldowns[key] > 0f)
+                cooldowns[key] -= Time.deltaTime;
         }
     }
 
@@ -72,15 +43,33 @@ public class SushiSpawner : MonoBehaviour
     {
         if (!CanManualSpawn) return false;
 
-        // ★ 次の自動生成をスキップ予約してからCoroutineをリセット
-        suppressNextAutoSpawn = true;
+        SushiData sushi = SelectedSushi;
+        SpawnSushi(sushi);
 
-        SpawnSushi(SelectedSushi);
-        manualCooldownRemaining = manualSpawnInterval;
+        // ★ この寿司のクールダウンだけセット
+        cooldowns[sushi] = sushi.spawnInterval;
 
-        if (autoSpawnCoroutine != null) StopCoroutine(autoSpawnCoroutine);
-        autoSpawnCoroutine = StartCoroutine(AutoSpawnRoutine());
         return true;
+    }
+
+    /// <summary>
+    /// 指定した寿司の残りクールダウンを返す。
+    /// </summary>
+    public float GetCooldown(SushiData sushi)
+    {
+        if (sushi == null) return 0f;
+        return cooldowns.TryGetValue(sushi, out float val) ? Mathf.Max(0f, val) : 0f;
+    }
+
+    /// <summary>
+    /// 現在選択中の寿司の残りクールダウン（0?1に正規化）。
+    /// HUDのクールダウン表示に使う。
+    /// </summary>
+    public float GetCooldownRate()
+    {
+        var sushi = SelectedSushi;
+        if (sushi == null || sushi.spawnInterval <= 0f) return 0f;
+        return GetCooldown(sushi) / sushi.spawnInterval;
     }
 
     public void ShiftSelection(int direction)

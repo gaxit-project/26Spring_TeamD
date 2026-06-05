@@ -2,16 +2,16 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// <summary>
-/// 1つのSushiSpawnerに対応する「? [寿司画像] ?」UI。
-/// SpawnerHUDから生成・管理される。
-/// </summary>
 public class SpawnerHUDEntry : MonoBehaviour
 {
     [Header("UI参照")]
     [SerializeField] private RectTransform root;
     [SerializeField] private Image sushiIcon;
-    [SerializeField] private GameObject cursorFrame; // 選択中のハイライト枠
+    [SerializeField] private GameObject cursorFrame;
+
+    [Header("クールダウンタイマー")]
+    [SerializeField] private Image cooldownCircle;
+    [SerializeField] private TextMeshProUGUI cooldownText; // ★ 追加
 
     private SushiSpawner spawner;
     private Camera mainCamera;
@@ -22,15 +22,21 @@ public class SpawnerHUDEntry : MonoBehaviour
         spawner = target;
         hudCanvas = canvas;
         mainCamera = cam;
-
         UpdateIcon();
         SetSelected(false);
+
+        if (cooldownCircle != null)
+            cooldownCircle.fillAmount = 0f;
+
+        if (cooldownText != null)
+            cooldownText.gameObject.SetActive(false);
     }
 
     private void LateUpdate()
     {
         if (spawner == null) return;
         FollowSpawner();
+        UpdateCooldown();
     }
 
     private void FollowSpawner()
@@ -49,21 +55,39 @@ public class SpawnerHUDEntry : MonoBehaviour
                 hudCanvas.transform as RectTransform,
                 screenPos,
                 hudCanvas.worldCamera,
-                out Vector2 local
-            );
+                out Vector2 local);
             root.localPosition = local;
         }
     }
 
-    /// <summary>選択中の寿司アイコンを更新する</summary>
+    private void UpdateCooldown()
+    {
+        float rate = spawner.GetCooldownRate();
+        float remaining = spawner.GetCooldown(spawner.SelectedSushi);
+        bool isOnCD = rate > 0f;
+
+        // --- サークル ---
+        if (cooldownCircle != null)
+        {
+            cooldownCircle.gameObject.SetActive(isOnCD);
+            cooldownCircle.fillAmount = rate;
+        }
+
+        // --- テキスト ---
+        if (cooldownText != null)
+        {
+            cooldownText.gameObject.SetActive(isOnCD);
+            // 小数点1桁で表示（例: 3.4）
+            cooldownText.text = remaining.ToString("F1");
+        }
+    }
+
     public void UpdateIcon()
     {
         if (spawner == null || sushiIcon == null) return;
-        var sushi = spawner.SelectedSushi;
-        sushiIcon.sprite = sushi != null ? sushi.sushiIcon : null;
+        sushiIcon.sprite = spawner.SelectedSushi?.sushiIcon;
     }
 
-    /// <summary>このSpawnerが選択中かどうかを反映する</summary>
     public void SetSelected(bool selected)
     {
         if (cursorFrame != null)
