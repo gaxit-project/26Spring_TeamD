@@ -60,16 +60,16 @@ MonoBehaviour:
   - key: bgm_game
     clip: {fileID: 8300000, guid: f579117a96ff1b1448739fe4e6497bbe, type: 3}
     category: 2
-    volumeMultiplier: 3
+    volumeMultiplier: 0.25
   - key: bgm_title
     clip: {fileID: 8300000, guid: 5879f1018a9e8c34384a36bda1773453, type: 3}
     category: 2
-    volumeMultiplier: 3
+    volumeMultiplier: 0.25
   - key: bgm_result
     clip: {fileID: 8300000, guid: 9ab433d1a6ef2504882613fb0bb0ef8a, type: 3}
     category: 2
     volumeMultiplier: 3
   - key: customer_angry
-    clip: {fileID: 8300000, guid: 879442c8920978b4cbfdcd0a9e089189, type: 3}
+    clip: {fileID: 8300000, guid: e875e7886d4ae0f4c807bb96d7f84786, type: 3}
     category: 1
     volumeMultiplier: 3

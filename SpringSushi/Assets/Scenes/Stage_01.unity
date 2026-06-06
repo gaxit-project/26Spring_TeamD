@@ -7263,7 +7263,7 @@ MonoBehaviour:
   businessTimer: {fileID: 848440393}
   statusText: {fileID: 1428523235}
   stageGoalUI: {fileID: 595447606}
-  operationTime: 120
+  operationTime: 180
   resultSceneName: Result
   stageData: {fileID: 11400000, guid: f7453dad9a5e2cd4492f10f6d49c9e2e, type: 2}
 --- !u!114 &848440392
