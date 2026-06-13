@@ -27,12 +27,16 @@ public static class SoundKeys
     public const string ScoreUp = "score_up";           // チャリンチャリン（加算）
     public const string ScoreDown = "score_down";         // 減算音
 
-    // --- 客 ---
-    public const string CustomerSpawn = "customer_spawn";     // へいらっしゃい！
-    public const string CustomerOrder = "customer_order";     // 注文だよー・すみませーん
+    // --- ボイス系 ---
+    public const string CustomerSpawn = "customer_spawn";     // テレレンテレレン！
+    public const string CustomerOrder = "customer_order";     // 注文だよー・すみませーん・これお願いしまーす
     public const string CustomerEat = "customer_eat";       // むしゃむしゃ
     public const string CustomerServed = "customer_served";    // キラン（寿司が届いた）
     public const string CustomerAngry = "customer_angry";     //ふざけんなよ
+    public const string CustomerAngry2 = "customer_angry_2";  //むかつくわ
+    public const string CustomerAngryOrder = "customer_angry_order";  //はよもってこい
+    public const string EntryVoice = "entry_voice";  //へいらっしゃい
+
 
     // --- BGM ---
     public const string BgmTitle = "bgm_title";          // タイトル画面BGM

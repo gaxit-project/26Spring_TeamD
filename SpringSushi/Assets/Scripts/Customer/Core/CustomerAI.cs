@@ -91,6 +91,7 @@ public class CustomerAI : MonoBehaviour
 
         if (SoundPlayer.Instance != null)
             SoundPlayer.Instance.PlayVoice(SoundKeys.CustomerSpawn);
+            SoundPlayer.Instance.PlayVoice(SoundKeys.EntryVoice);
 
         SetState(CustomerState.Walking);
         agent.SetDestination(targetSeat.position);
