@@ -190,7 +190,15 @@ public class CustomerAI : MonoBehaviour
         OnAngryLeave?.Invoke(this);
         if (SoundPlayer.Instance != null)
         {
-            SoundPlayer.Instance.PlayVoice(SoundKeys.CustomerAngry);
+            if(Random.Range(0,2) == 0)
+            {
+                SoundPlayer.Instance.PlayVoice(SoundKeys.CustomerAngry);
+            }
+            else
+            {
+                SoundPlayer.Instance.PlayVoice(SoundKeys.CustomerAngry2);
+            }
+            
         }
         Invoke(nameof(Leave), data != null ? data.angryTime : 3f); // Åö angryTimeå„Ç…ëﬁèÍ
     }
