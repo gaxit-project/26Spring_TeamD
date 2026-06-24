@@ -2,24 +2,22 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 右スティックでSpawner選択・寿司選択・RT生成を管理する。
+/// 右スティックでSpawner選択・寿司選択を管理する。
 /// GameManagerにアタッチする。
+/// ※寿司生成は各SushiSpawnerが自動生成するため、RTでの手動生成は廃止。
 /// </summary>
 public class SpawnerSelector : MonoBehaviour
 {
     [Header("設定")]
     [Tooltip("スティックを倒し続けたとき寿司選択が切り替わる間隔（秒）")]
     [SerializeField] private float sushiSwitchInterval = 0.3f;
-
     [Tooltip("スティックを倒し続けたときSpawner選択が切り替わる間隔（秒）")]
     [SerializeField] private float spawnerSwitchInterval = 0.4f;
-
     [Tooltip("スティックの入力を有効とみなすしきい値")]
     [SerializeField] private float stickDeadzone = 0.5f;
 
     private List<SushiSpawner> spawners = new();
     private int selectedSpawnerIndex = 0;
-
     private float sushiSwitchTimer = 0f;
     private float spawnerSwitchTimer = 0f;
 
@@ -32,17 +30,17 @@ public class SpawnerSelector : MonoBehaviour
 
     private void OnEnable()
     {
-        SpawnerInputManager.OnSpawnPressed += OnSpawnPressed;
-        SpawnerInputManager.OnSushiShift += OnSushiShift; // ★ 追加
+        // ★ 自動生成化に伴い手動生成入力(RT)の購読を廃止
+        // SpawnerInputManager.OnSpawnPressed += OnSpawnPressed;
+        SpawnerInputManager.OnSushiShift += OnSushiShift;
     }
 
     private void OnDisable()
     {
-        SpawnerInputManager.OnSpawnPressed -= OnSpawnPressed;
-        SpawnerInputManager.OnSushiShift -= OnSushiShift; // ★ 追加
+        // SpawnerInputManager.OnSpawnPressed -= OnSpawnPressed;
+        SpawnerInputManager.OnSushiShift -= OnSushiShift;
     }
 
-    // ★ 追加
     private void OnSushiShift(int dir)
     {
         SelectedSpawner?.ShiftSelection(dir);
@@ -52,7 +50,6 @@ public class SpawnerSelector : MonoBehaviour
 
     private void Start()
     {
-        // シーン内の全SushiSpawnerを収集
         spawners.AddRange(FindObjectsByType<SushiSpawner>(FindObjectsSortMode.None));
         if (spawners.Count > 0)
             OnSpawnerIndexChanged?.Invoke(selectedSpawnerIndex);
@@ -61,7 +58,7 @@ public class SpawnerSelector : MonoBehaviour
     private void Update()
     {
         // --- 左スティック左右：寿司選択 ---
-        float horizontal = SpawnerInputManager.LeftStickValue.x; // ★ Left に変更
+        float horizontal = SpawnerInputManager.LeftStickValue.x;
         if (Mathf.Abs(horizontal) > stickDeadzone)
         {
             sushiSwitchTimer -= Time.deltaTime;
@@ -80,7 +77,7 @@ public class SpawnerSelector : MonoBehaviour
         }
 
         // --- 左スティック上下：Spawner選択 ---
-        float vertical = SpawnerInputManager.LeftStickValue.y; // ★ Left に変更
+        float vertical = SpawnerInputManager.LeftStickValue.y;
         if (Mathf.Abs(vertical) > stickDeadzone)
         {
             spawnerSwitchTimer -= Time.deltaTime;
@@ -98,6 +95,10 @@ public class SpawnerSelector : MonoBehaviour
         }
     }
 
+    // ───────────────────────────────────────────────
+    // ★ 旧・RT手動生成入力。自動生成への仕様変更によりコメントアウト
+    // ───────────────────────────────────────────────
+    /*
     private void OnSpawnPressed()
     {
         if (SelectedSpawner == null) return;
@@ -105,4 +106,5 @@ public class SpawnerSelector : MonoBehaviour
         if (spawned)
             Debug.Log($"[SpawnerSelector] 手動生成: {SelectedSpawner.SelectedSushi?.sushiName}");
     }
+    */
 }

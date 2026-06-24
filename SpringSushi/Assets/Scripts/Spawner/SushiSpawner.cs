@@ -12,10 +12,8 @@ public class SushiSpawner : MonoBehaviour
         (sushiDataList != null && sushiDataList.Count > 0)
             ? sushiDataList[SelectedIndex] : null;
 
-    // ★ 寿司ごとのクールダウンを管理
+    // ★ 寿司ごとのクールダウンを管理（全寿司が並行して進行する）
     private readonly Dictionary<SushiData, float> cooldowns = new();
-
-    public bool CanManualSpawn => SelectedSushi != null && GetCooldown(SelectedSushi) <= 0f;
 
     private LaneNode myNode;
     private SushiRegistry registry;
@@ -30,27 +28,46 @@ public class SushiSpawner : MonoBehaviour
 
     private void Update()
     {
-        // ★ 全寿司のクールダウンを減らす
-        var keys = new List<SushiData>(cooldowns.Keys);
-        foreach (var key in keys)
+        if (sushiDataList == null) return;
+
+        // ★ 全寿司のクールダウンを並行して減らす（選択中かどうかは無関係）
+        foreach (var sushi in sushiDataList)
         {
-            if (cooldowns[key] > 0f)
-                cooldowns[key] -= Time.deltaTime;
+            if (sushi == null) continue;
+
+            // 初回は即生成可能な状態（0）として登録
+            if (!cooldowns.ContainsKey(sushi))
+                cooldowns[sushi] = 0f;
+
+            if (cooldowns[sushi] > 0f)
+                cooldowns[sushi] -= Time.deltaTime;
+        }
+
+        // ★ 自動生成：選択中の寿司のクールダウンが0以下なら自動生成してリセット
+        //    （選択を切り替えた直後に対象のクールダウンが0なら即生成される）
+        SushiData selected = SelectedSushi;
+        if (selected != null && GetCooldown(selected) <= 0f)
+        {
+            SpawnSushi(selected);
+            cooldowns[selected] = selected.spawnInterval;
         }
     }
+
+    // ───────────────────────────────────────────────
+    // ★ 旧・トリガー式（手動生成）。自動生成への仕様変更によりコメントアウト
+    // ───────────────────────────────────────────────
+    /*
+    public bool CanManualSpawn => SelectedSushi != null && GetCooldown(SelectedSushi) <= 0f;
 
     public bool TryManualSpawn()
     {
         if (!CanManualSpawn) return false;
-
         SushiData sushi = SelectedSushi;
         SpawnSushi(sushi);
-
-        // ★ この寿司のクールダウンだけセット
         cooldowns[sushi] = sushi.spawnInterval;
-
         return true;
     }
+    */
 
     /// <summary>
     /// 指定した寿司の残りクールダウンを返す。
@@ -86,7 +103,6 @@ public class SushiSpawner : MonoBehaviour
             Debug.LogWarning($"[SushiSpawner] {myNode.name} のexitSegmentsが未設定です。");
             return;
         }
-
         LaneSegment targetSegment = myNode.exitSegments[0];
         if (targetSegment == null) return;
 
