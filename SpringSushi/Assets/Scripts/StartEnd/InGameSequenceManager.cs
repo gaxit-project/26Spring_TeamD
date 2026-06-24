@@ -95,8 +95,12 @@ public class InGameSequenceManager : MonoBehaviour
         Time.timeScale = 1f;
         GameStateManager.Instance.StartPlaying();
 
-        yield return businessTimer.StartBusiness(operationTime);
+        // ★ 追加：ここで全SushiSpawnerの生成を許可する
+        var spawners = FindObjectsByType<SushiSpawner>(FindObjectsSortMode.None);
+        foreach (var spawner in spawners)
+            spawner.SetSpawningEnabled(true);
 
+        yield return businessTimer.StartBusiness(operationTime);
         // --- 3. 閉店演出 ---
         Debug.Log("[Sequence] 営業終了 → 閉店演出");
         GameStateManager.Instance.PauseGame();

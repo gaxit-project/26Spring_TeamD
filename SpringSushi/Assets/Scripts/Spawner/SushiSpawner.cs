@@ -12,13 +12,32 @@ public class SushiSpawner : MonoBehaviour
         (sushiDataList != null && sushiDataList.Count > 0)
             ? sushiDataList[SelectedIndex] : null;
 
-    // ★ 寿司ごとのクールダウンを管理（全寿司が並行して進行する）
     private readonly Dictionary<SushiData, float> cooldowns = new();
 
     private LaneNode myNode;
     private SushiRegistry registry;
 
+    // ★ 追加：営業開始（スタート操作）まで生成を止めるフラグ
+    public bool IsSpawningEnabled { get; private set; } = false;
+
     public void SetMasterNode(LaneNode master) => myNode = master;
+
+    // ★ 追加：InGameSequenceManagerなど外部から呼ぶ
+    public void SetSpawningEnabled(bool enabled)
+    {
+        IsSpawningEnabled = enabled;
+
+        // ★ 生成開始時にクールダウンを全寿司リセットしておく
+        //    （開店前に裏で進んでいたタイマーが残らないようにする）
+        if (enabled && sushiDataList != null)
+        {
+            foreach (var sushi in sushiDataList)
+            {
+                if (sushi == null) continue;
+                cooldowns[sushi] = 0f; // 開店直後は即生成可能にする
+            }
+        }
+    }
 
     private void Start()
     {
@@ -28,14 +47,14 @@ public class SushiSpawner : MonoBehaviour
 
     private void Update()
     {
+        // ★ 生成許可が出るまでは何もしない
+        if (!IsSpawningEnabled) return;
         if (sushiDataList == null) return;
 
-        // ★ 全寿司のクールダウンを並行して減らす（選択中かどうかは無関係）
         foreach (var sushi in sushiDataList)
         {
             if (sushi == null) continue;
 
-            // 初回は即生成可能な状態（0）として登録
             if (!cooldowns.ContainsKey(sushi))
                 cooldowns[sushi] = 0f;
 
@@ -43,8 +62,6 @@ public class SushiSpawner : MonoBehaviour
                 cooldowns[sushi] -= Time.deltaTime;
         }
 
-        // ★ 自動生成：選択中の寿司のクールダウンが0以下なら自動生成してリセット
-        //    （選択を切り替えた直後に対象のクールダウンが0なら即生成される）
         SushiData selected = SelectedSushi;
         if (selected != null && GetCooldown(selected) <= 0f)
         {
@@ -53,9 +70,6 @@ public class SushiSpawner : MonoBehaviour
         }
     }
 
-    // ───────────────────────────────────────────────
-    // ★ 旧・トリガー式（手動生成）。自動生成への仕様変更によりコメントアウト
-    // ───────────────────────────────────────────────
     /*
     public bool CanManualSpawn => SelectedSushi != null && GetCooldown(SelectedSushi) <= 0f;
 
@@ -69,19 +83,12 @@ public class SushiSpawner : MonoBehaviour
     }
     */
 
-    /// <summary>
-    /// 指定した寿司の残りクールダウンを返す。
-    /// </summary>
     public float GetCooldown(SushiData sushi)
     {
         if (sushi == null) return 0f;
         return cooldowns.TryGetValue(sushi, out float val) ? Mathf.Max(0f, val) : 0f;
     }
 
-    /// <summary>
-    /// 現在選択中の寿司の残りクールダウン（0?1に正規化）。
-    /// HUDのクールダウン表示に使う。
-    /// </summary>
     public float GetCooldownRate()
     {
         var sushi = SelectedSushi;
