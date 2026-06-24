@@ -4,13 +4,9 @@ using System.Collections;
 
 public class BusinessHoursTimer : MonoBehaviour
 {
-    [SerializeField] private Image businessTimeImage; // ImageType=Filled の円形Image
+    [SerializeField] private Image businessTimeImage;
     public bool IsInBusiness { get; private set; }
 
-    /// <summary>
-    /// 営業時間を開始します。多重呼び出しは無視されます。
-    /// </summary>
-    /// <param name="duration">営業時間（秒）</param>
     public IEnumerator StartBusiness(float duration)
     {
         if (IsInBusiness)
@@ -20,7 +16,6 @@ public class BusinessHoursTimer : MonoBehaviour
         }
 
         IsInBusiness = true;
-
         if (businessTimeImage != null)
             businessTimeImage.fillAmount = 0f;
 
@@ -28,16 +23,25 @@ public class BusinessHoursTimer : MonoBehaviour
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-
             if (businessTimeImage != null)
                 businessTimeImage.fillAmount = Mathf.Clamp01(elapsed / duration);
-
             yield return null;
         }
 
         if (businessTimeImage != null)
             businessTimeImage.fillAmount = 1f;
+        IsInBusiness = false;
+    }
 
+    /// <summary>
+    /// ★ 追加：客が全員帰った等の理由で営業時間を強制終了する。
+    /// 外部からStartBusinessのコルーチンをStopCoroutineした直後に呼ぶこと。
+    /// </summary>
+    public void ForceComplete()
+    {
+        if (!IsInBusiness) return;
+        if (businessTimeImage != null)
+            businessTimeImage.fillAmount = 1f;
         IsInBusiness = false;
     }
 }

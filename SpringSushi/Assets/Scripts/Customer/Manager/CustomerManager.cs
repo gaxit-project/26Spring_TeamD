@@ -6,6 +6,9 @@ public class CustomerManager : MonoBehaviour
 {
     public static CustomerManager Instance { get; private set; }
 
+    // ★ 追加：客が全員帰ったことをInGameSequenceManagerに通知するイベント
+    public event System.Action OnAllCustomersExited;
+
     [Header("Prefab")]
     public GameObject customerPrefab;
 
@@ -19,13 +22,11 @@ public class CustomerManager : MonoBehaviour
     private List<CustomerMoodSO> moodVariations = new();
     private List<ScheduledCustomerEntry> scheduledEntries = new();
 
-    // --- StageDataSO から設定される ---
     private int totalCustomerCount;
     private float spawnInterval;
     private List<CustomerData> customerVariations = new();
     private List<SushiData> availableSushiList = new();
 
-    // --- カウンタ ---
     private int spawnedCount = 0;
     private int exitedCount = 0;
     private bool isRunning = false;
@@ -38,10 +39,9 @@ public class CustomerManager : MonoBehaviour
         Instance = this;
     }
 
-    // ★ オブジェクト破棄時に入力イベントの解除漏れを防ぐ
     private void OnDestroy()
     {
-        // if文を取り除き、直接これだけにします（C#の仕様上、これで安全に解除されます）
+        // ★ 自動入店化後もLT入力は保険として残すため、解除は引き続き必要
         SpawnerInputManager.OnAdmitCustomerPressed -= HandleAdmitInput;
     }
 
@@ -51,8 +51,8 @@ public class CustomerManager : MonoBehaviour
         spawnInterval = stageData.spawnInterval;
         customerVariations = stageData.customerVariations;
         availableSushiList = stageData.availableSushiList;
-        moodVariations = stageData.moodVariations;           // ★
-        scheduledEntries = stageData.scheduledEntries;       // ★
+        moodVariations = stageData.moodVariations;
+        scheduledEntries = stageData.scheduledEntries;
 
         spawnedCount = 0;
         exitedCount = 0;
@@ -67,37 +67,31 @@ public class CustomerManager : MonoBehaviour
         if (next != GameStateManager.GameState.Playing) return;
         GameStateManager.Instance.OnStateChanged -= OnGameStateChanged;
 
-        // ★ ゲームプレイ開始時に LTボタンの入力イベントを購読
+        // ★ LT入力は保険として残す（押しても自動判定と同じ処理が走るだけ）
         SpawnerInputManager.OnAdmitCustomerPressed += HandleAdmitInput;
 
         StartCoroutine(CustomerEntryRoutine());
     }
 
-    /// <summary>
-    /// ★ LTボタンが押されたときに実行されるハンドラー
-    /// </summary>
     private void HandleAdmitInput()
     {
         if (!isRunning) return;
-
-        // ボタン入力によって能動的に入店を試みる
         TryAdmitFromWipe();
     }
 
     private IEnumerator CustomerEntryRoutine()
     {
-        // ★ 自動入店を完全に廃止。時間経過では「ワイプ（待機列）への追加」のみを行う
+        // 時間経過でWipe（待機列）への追加のみを行う
         while (isRunning && spawnedCount < totalCustomerCount)
         {
             yield return new WaitForSeconds(spawnInterval);
-            EnqueueNextCustomer();       // ワイプに客を追加
+            EnqueueNextCustomer();
         }
-
-        // （全員生成後の待機列チェック用ループは不要になったため削除）
     }
 
     /// <summary>
     /// 待機列に客データを追加する。
+    /// ★ 追加直後に空席があれば自動で即入店を試みる。
     /// </summary>
     private void EnqueueNextCustomer()
     {
@@ -106,7 +100,6 @@ public class CustomerManager : MonoBehaviour
         CustomerData data;
         CustomerMoodSO mood;
 
-        // ★ scheduledEntriesに定義があればそちらを優先
         if (spawnedCount < scheduledEntries.Count)
         {
             var entry = scheduledEntries[spawnedCount];
@@ -119,7 +112,6 @@ public class CustomerManager : MonoBehaviour
         }
         else
         {
-            // ★ リストを超えたらランダム
             data = customerVariations[Random.Range(0, customerVariations.Count)];
             mood = moodVariations.Count > 0
                 ? moodVariations[Random.Range(0, moodVariations.Count)]
@@ -137,21 +129,22 @@ public class CustomerManager : MonoBehaviour
         spawnedCount++;
 
         Debug.Log($"<color=lime>[CustomerManager]</color> ワイプに追加（{spawnedCount}/{totalCustomerCount}）");
+
+        // ★ 追加直後に空席があれば即座に入店させる
+        //   （空席が無ければWipeに残って待機 → 後で席が空いた時に自動入店される）
+        TryAdmitFromWipe();
     }
 
     /// <summary>
     /// 待機列の先頭を入店させる。
+    /// 空席・待機客のいずれかが無い場合は何もしない（自動呼び出しのため通常ログは出さない）。
     /// </summary>
     public void TryAdmitFromWipe()
     {
         if (!(WipeCanvas.Instance?.HasWaiting ?? false)) return;
 
         Transform seat = GetEmptySeat();
-        if (seat == null)
-        {
-            Debug.Log("<color=yellow>[CustomerManager]</color> 満席のため、LTを押しても入店できません。");
-            return;
-        }
+        if (seat == null) return; // ★ 自動呼び出しが頻発するため警告ログは出さない
 
         Transform spawnPoint = GetRandomSpawnPoint();
         if (spawnPoint == null) return;
@@ -176,8 +169,9 @@ public class CustomerManager : MonoBehaviour
             if (customerAI.State == CustomerAI.CustomerState.Leaving)
             {
                 reservedSeats.Remove(seat);
-                // ★ 退場時の自動入店処理（TryAdmitFromWipe）も削除
-                // 席が空いても、プレイヤーが次にLTを押すまで誰も入ってきません
+
+                // ★ 席が空いた直後に次の待機客を自動入店させる
+                TryAdmitFromWipe();
             }
         };
     }
@@ -197,12 +191,15 @@ public class CustomerManager : MonoBehaviour
     {
         if (spawnedCount >= totalCustomerCount && exitedCount >= totalCustomerCount)
         {
-            Debug.Log("<color=gold>[CustomerManager]</color> 全客退場 → ステージクリア");
+            Debug.Log("<color=gold>[CustomerManager]</color> 全客退場 → ステージクリア通知");
 
-            // ★ ステージクリア時に入力購読を解除
             SpawnerInputManager.OnAdmitCustomerPressed -= HandleAdmitInput;
 
-            GameStateManager.Instance?.EnterResult();
+            // ★ 変更：直接EnterResult()を呼ばず、イベントで通知するだけにする
+            //    （実際のResult遷移・閉店演出はInGameSequenceManagerが担当する）
+            OnAllCustomersExited?.Invoke();
+
+            // GameStateManager.Instance?.EnterResult(); ← 削除
         }
     }
 

@@ -13,12 +13,15 @@ public class InGameSequenceManager : MonoBehaviour
     [SerializeField] private StageGoalUI stageGoalUI;
 
     [Header("Settings")]
-    [SerializeField] private float operationTime = 60f; // ← StageDataSOで上書きされる
+    [SerializeField] private float operationTime = 60f;
     [SerializeField] private string resultSceneName = "ResultScene";
-    [SerializeField] private StageDataSO stageData; // ★ 追加
+    [SerializeField] private StageDataSO stageData;
 
     private Player inputActions;
     private bool isSequenceStarted = false;
+
+    // ★ 追加：客が全員帰ったかどうかのフラグ
+    private bool allCustomersExited = false;
 
     private void Awake()
     {
@@ -26,7 +29,6 @@ public class InGameSequenceManager : MonoBehaviour
         statusText.gameObject.SetActive(false);
         Time.timeScale = 0f;
 
-        // ★ StageDataSOからoperationTimeを上書き
         if (stageData != null)
             operationTime = stageData.operationTime;
 
@@ -43,6 +45,10 @@ public class InGameSequenceManager : MonoBehaviour
     {
         inputActions.GamePlay.StartAction.performed -= OnStartActionPerformed;
         inputActions.GamePlay.Disable();
+
+        // ★ 念のため購読解除（コルーチン中断時の解除漏れ防止）
+        if (CustomerManager.Instance != null)
+            CustomerManager.Instance.OnAllCustomersExited -= HandleAllCustomersExited;
     }
 
     private void OnStartActionPerformed(UnityEngine.InputSystem.InputAction.CallbackContext ctx)
@@ -56,7 +62,6 @@ public class InGameSequenceManager : MonoBehaviour
         if (!GameStateManager.Instance.IsReady) return;
         if (isSequenceStarted) return;
 
-        // 売上目標UIの表示が終わるまでスタートを受け付けない
         if (stageGoalUI != null && !stageGoalUI.IsReadyToStart)
         {
             Debug.Log("[Sequence] 売上目標表示中のためスタートを待機");
@@ -68,6 +73,12 @@ public class InGameSequenceManager : MonoBehaviour
         inputActions.GamePlay.Disable();
 
         StartCoroutine(PlayBusinessSequenceCoroutine());
+    }
+
+    // ★ 追加：CustomerManagerからの通知を受けるハンドラー
+    private void HandleAllCustomersExited()
+    {
+        allCustomersExited = true;
     }
 
     private IEnumerator PlayBusinessSequenceCoroutine()
@@ -83,7 +94,6 @@ public class InGameSequenceManager : MonoBehaviour
 
         statusText.text = "開店!!";
         statusText.gameObject.SetActive(true);
-        // ★ ドアが開ききったタイミングでGoalPanelを非表示にする
         stageGoalUI?.HidePanel();
 
         yield return doorAnim.Open();
@@ -95,12 +105,31 @@ public class InGameSequenceManager : MonoBehaviour
         Time.timeScale = 1f;
         GameStateManager.Instance.StartPlaying();
 
-        // ★ 追加：ここで全SushiSpawnerの生成を許可する
         var spawners = FindObjectsByType<SushiSpawner>(FindObjectsSortMode.None);
         foreach (var spawner in spawners)
             spawner.SetSpawningEnabled(true);
 
-        yield return businessTimer.StartBusiness(operationTime);
+        // ★ 変更：営業時間タイマーと「客が全員帰った」を並行監視し、早い方で終了する
+        allCustomersExited = false;
+        if (CustomerManager.Instance != null)
+            CustomerManager.Instance.OnAllCustomersExited += HandleAllCustomersExited;
+
+        Coroutine businessRoutine = StartCoroutine(businessTimer.StartBusiness(operationTime));
+
+        while (businessTimer.IsInBusiness && !allCustomersExited)
+            yield return null;
+
+        if (CustomerManager.Instance != null)
+            CustomerManager.Instance.OnAllCustomersExited -= HandleAllCustomersExited;
+
+        // ★ 客が全員帰って早期終了した場合、タイマーCoroutineを止めてUIを100%にする
+        if (businessTimer.IsInBusiness)
+        {
+            StopCoroutine(businessRoutine);
+            businessTimer.ForceComplete();
+            Debug.Log("[Sequence] 全客退店により営業時間タイマーを早期終了");
+        }
+
         // --- 3. 閉店演出 ---
         Debug.Log("[Sequence] 営業終了 → 閉店演出");
         GameStateManager.Instance.PauseGame();
