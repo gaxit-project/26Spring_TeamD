@@ -2,10 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
-/// <summary>
-/// ワイプ上の客1人分のUI。
-/// イラスト＋吹き出しを表示する。
-/// </summary>
 public class WipeCustomerEntry : MonoBehaviour
 {
     [Header("UI参照")]
@@ -39,19 +35,22 @@ public class WipeCustomerEntry : MonoBehaviour
     }
 
     /// <summary>
-    /// ★ 追加：Wipe上をドア位置まで歩く。
-    /// 到着後にonArrivedを呼び、自身を削除する。
+    /// 指定X座標まで移動する。
+    /// ★ destroyOnComplete=trueのときのみ到着後にDestroy。
+    ///    2段階アニメーションの1段目ではfalseを渡すこと。
     /// </summary>
-    public void WalkToDoor(float doorX, float duration, System.Action onArrived)
+    public void WalkToDoor(float targetX, float duration, System.Action onArrived,
+                           bool destroyOnComplete = true)
     {
-        StartCoroutine(WalkToDoorCoroutine(doorX, duration, onArrived));
+        StartCoroutine(WalkToDoorCoroutine(targetX, duration, onArrived, destroyOnComplete));
     }
 
-    private IEnumerator WalkToDoorCoroutine(float doorX, float duration, System.Action onArrived)
+    private IEnumerator WalkToDoorCoroutine(float targetX, float duration,
+                                             System.Action onArrived, bool destroyOnComplete)
     {
         var rect = GetComponent<RectTransform>();
         Vector2 start = rect.anchoredPosition;
-        Vector2 end = new Vector2(doorX, start.y);
+        Vector2 end = new Vector2(targetX, start.y);
 
         float elapsed = 0f;
         while (elapsed < duration)
@@ -63,35 +62,36 @@ public class WipeCustomerEntry : MonoBehaviour
         }
 
         rect.anchoredPosition = end;
-
-        // ★ ドア到着 → ゲーム内スポーンを通知してから消える
         onArrived?.Invoke();
-        Destroy(gameObject);
+
+        // ★ 修正：destroyOnCompleteがtrueのときだけDestroyする
+        if (destroyOnComplete)
+            Destroy(gameObject);
     }
 
-    // ───────────────────────────────────────────────
-    // ★ 旧・即時入店アニメーション。WalkToDoorに置き換えたためコメントアウト
-    // ───────────────────────────────────────────────
-    /*
-    public void PlayEnterAnimation(System.Action onComplete)
+    /// <summary>
+    /// 指定座標へアニメーション移動する汎用メソッド。
+    /// EnqueueCustomer時のキュー位置移動に使用。
+    /// </summary>
+    public void MoveToPosition(Vector2 targetPos, float duration)
     {
-        StartCoroutine(EnterCoroutine(onComplete));
+        StartCoroutine(MoveCoroutine(targetPos, duration));
     }
-    private System.Collections.IEnumerator EnterCoroutine(System.Action onComplete)
+
+    private IEnumerator MoveCoroutine(Vector2 targetPos, float duration)
     {
         var rect = GetComponent<RectTransform>();
         Vector2 start = rect.anchoredPosition;
-        Vector2 end = start + new Vector2(-80f, 0f);
-        float t = 0f;
-        float dur = 0.3f;
-        while (t < dur)
+        float elapsed = 0f;
+
+        while (elapsed < duration)
         {
-            t += Time.deltaTime;
-            rect.anchoredPosition = Vector2.Lerp(start, end, t / dur);
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            rect.anchoredPosition = Vector2.Lerp(start, targetPos, t);
             yield return null;
         }
-        onComplete?.Invoke();
-        Destroy(gameObject);
+
+        rect.anchoredPosition = targetPos;
     }
-    */
 }
