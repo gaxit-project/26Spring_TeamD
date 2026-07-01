@@ -144,38 +144,40 @@ public class CustomerManager : MonoBehaviour
         if (!(WipeCanvas.Instance?.HasWaiting ?? false)) return;
 
         Transform seat = GetEmptySeat();
-        if (seat == null) return; // ★ 自動呼び出しが頻発するため警告ログは出さない
+        if (seat == null) return;
 
         Transform spawnPoint = GetRandomSpawnPoint();
         if (spawnPoint == null) return;
 
+        // ★ 席を事前予約（歩いている間に他の処理で使われないようにする）
         reservedSeats.Add(seat);
 
-        WaitingCustomerData waitingData = WipeCanvas.Instance.DequeueCustomer();
-        if (waitingData == null) { reservedSeats.Remove(seat); return; }
-
-        GameObject obj = Instantiate(customerPrefab, spawnPoint.position, spawnPoint.rotation);
-        CustomerAI ai = obj.GetComponent<CustomerAI>();
-        if (ai == null) { reservedSeats.Remove(seat); return; }
-
-        ai.Initialize(waitingData.customerData, seat, waitingData.orders, waitingData.mood);
-        customerHUD?.RegisterCustomer(ai);
-
-        Debug.Log($"<color=cyan>[CustomerManager]</color> {seat.name} に入店");
-
-        ai.OnStateChanged += OnCustomerStateChanged;
-        ai.OnStateChanged += (customerAI) =>
+        // ★ 変更：即座に入店させず、Wipe上を歩かせてからスポーンする
+        WipeCanvas.Instance.BeginAdmit(waitingData =>
         {
-            if (customerAI.State == CustomerAI.CustomerState.Leaving)
+            // ★ 歩き完了コールバック：ここで初めてゲーム内スポーン
+            if (waitingData == null) { reservedSeats.Remove(seat); return; }
+
+            GameObject obj = Instantiate(customerPrefab, spawnPoint.position, spawnPoint.rotation);
+            CustomerAI ai = obj.GetComponent<CustomerAI>();
+            if (ai == null) { reservedSeats.Remove(seat); return; }
+
+            ai.Initialize(waitingData.customerData, seat, waitingData.orders, waitingData.mood);
+            customerHUD?.RegisterCustomer(ai);
+
+            Debug.Log($"<color=cyan>[CustomerManager]</color> {seat.name} に入店");
+
+            ai.OnStateChanged += OnCustomerStateChanged;
+            ai.OnStateChanged += (customerAI) =>
             {
-                reservedSeats.Remove(seat);
-
-                // ★ 席が空いた直後に次の待機客を自動入店させる
-                TryAdmitFromWipe();
-            }
-        };
+                if (customerAI.State == CustomerAI.CustomerState.Leaving)
+                {
+                    reservedSeats.Remove(seat);
+                    TryAdmitFromWipe();
+                }
+            };
+        });
     }
-
     private void OnCustomerStateChanged(CustomerAI ai)
     {
         if (ai.State != CustomerAI.CustomerState.Leaving &&

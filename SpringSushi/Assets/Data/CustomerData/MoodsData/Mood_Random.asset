@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58630987709ba374dbe3939666f72ab7, type: 3}
   m_Name: Mood_Random
   m_EditorClassIdentifier: 
-  moodIcon: {fileID: 0}
+  moodIcon: {fileID: 21300000, guid: ffe405befd15590438fc8cecf30101c5, type: 3}
   moodType: 0
   fixedOrders: []
   orderCountMultiplier: 2
