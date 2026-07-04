@@ -7,6 +7,9 @@ public class SushiSpawner : MonoBehaviour
     public GameObject sushiBasePrefab;
     public List<SushiData> sushiDataList;
 
+    [Header("切り替え後の生成ディレイ（秒）")]
+    [SerializeField] private float selectionSwitchDelay = 0.5f;
+
     public int SelectedIndex { get; private set; } = 0;
     public SushiData SelectedSushi =>
         (sushiDataList != null && sushiDataList.Count > 0)
@@ -14,27 +17,26 @@ public class SushiSpawner : MonoBehaviour
 
     private readonly Dictionary<SushiData, float> cooldowns = new();
 
+    // ★ 追加：切り替え後の生成ディレイタイマー
+    private float selectionSwitchTimer = 0f;
+
     private LaneNode myNode;
     private SushiRegistry registry;
 
-    // ★ 追加：営業開始（スタート操作）まで生成を止めるフラグ
     public bool IsSpawningEnabled { get; private set; } = false;
 
     public void SetMasterNode(LaneNode master) => myNode = master;
 
-    // ★ 追加：InGameSequenceManagerなど外部から呼ぶ
     public void SetSpawningEnabled(bool enabled)
     {
         IsSpawningEnabled = enabled;
 
-        // ★ 生成開始時にクールダウンを全寿司リセットしておく
-        //    （開店前に裏で進んでいたタイマーが残らないようにする）
         if (enabled && sushiDataList != null)
         {
             foreach (var sushi in sushiDataList)
             {
                 if (sushi == null) continue;
-                cooldowns[sushi] = 0f; // 開店直後は即生成可能にする
+                cooldowns[sushi] = 0f;
             }
         }
     }
@@ -47,9 +49,15 @@ public class SushiSpawner : MonoBehaviour
 
     private void Update()
     {
-        // ★ 生成許可が出るまでは何もしない
         if (!IsSpawningEnabled) return;
         if (sushiDataList == null) return;
+
+        // ★ 切り替えディレイのカウントダウン
+        if (selectionSwitchTimer > 0f)
+        {
+            selectionSwitchTimer -= Time.deltaTime;
+            return; // ディレイ中は生成もクールダウン更新もしない
+        }
 
         foreach (var sushi in sushiDataList)
         {
@@ -68,6 +76,15 @@ public class SushiSpawner : MonoBehaviour
             SpawnSushi(selected);
             cooldowns[selected] = selected.spawnInterval;
         }
+    }
+
+    public void ShiftSelection(int direction)
+    {
+        if (sushiDataList == null || sushiDataList.Count == 0) return;
+        SelectedIndex = (SelectedIndex + direction + sushiDataList.Count) % sushiDataList.Count;
+
+        // ★ 切り替え後のディレイをセット
+        selectionSwitchTimer = selectionSwitchDelay;
     }
 
     /*
@@ -94,12 +111,6 @@ public class SushiSpawner : MonoBehaviour
         var sushi = SelectedSushi;
         if (sushi == null || sushi.spawnInterval <= 0f) return 0f;
         return GetCooldown(sushi) / sushi.spawnInterval;
-    }
-
-    public void ShiftSelection(int direction)
-    {
-        if (sushiDataList == null || sushiDataList.Count == 0) return;
-        SelectedIndex = (SelectedIndex + direction + sushiDataList.Count) % sushiDataList.Count;
     }
 
     private void SpawnSushi(SushiData data)

@@ -158,7 +158,7 @@ public class SushiMovement : MonoBehaviour
         arrivedFromSegment = null;
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if (other.CompareTag("Sushi"))
         {

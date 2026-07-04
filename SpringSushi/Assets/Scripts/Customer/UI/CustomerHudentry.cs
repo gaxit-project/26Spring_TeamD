@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -158,12 +159,15 @@ public class CustomerHUDEntry : MonoBehaviour
         vlg.childForceExpandWidth = false;
         vlg.childForceExpandHeight = false;
 
-        int count = batch.Count;
+        // ★ 未配膳の注文だけカウントしてアイコンサイズを計算
+        var pendingOrders = batch.Where(o => !o.isDelivered).ToList();
+        int count = pendingOrders.Count;
+
         float iconSize = count > 0
             ? Mathf.Max(minIconSize, baseIconSize / Mathf.Sqrt(count))
             : baseIconSize;
 
-        foreach (var order in batch)
+        foreach (var order in pendingOrders) // ★ isDelivered をスキップして未配膳のみ生成
         {
             var obj = Instantiate(orderImagePrefab, orderImageContainer.transform);
 
@@ -174,7 +178,7 @@ public class CustomerHUDEntry : MonoBehaviour
             if (img != null && order.sushiData != null)
             {
                 img.sprite = order.sushiData.sushiIcon;
-                img.color = order.isDelivered ? Color.gray : Color.white;
+                img.color = Color.white; // ★ 常にwhite（greyは不要）
             }
 
             var le = obj.GetComponent<LayoutElement>();
