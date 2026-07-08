@@ -53,5 +53,5 @@ MonoBehaviour:
   availableSushiList:
   - {fileID: 11400000, guid: 94d78b5c51e3d8f458e37e97418aaa10, type: 2}
   - {fileID: 11400000, guid: e835477af019fbf4a9f1da1f3428cf0f, type: 2}
-  - {fileID: 11400000, guid: b71f2291637e35b4ba7876ae02e1aff4, type: 2}
+  - {fileID: 11400000, guid: 998abb6c44e23ab4487778581c54bd49, type: 2}
   operationTime: 150
