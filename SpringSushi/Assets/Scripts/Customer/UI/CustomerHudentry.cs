@@ -7,7 +7,7 @@ public class CustomerHUDEntry : MonoBehaviour
 {
     [Header("UI参照")]
     public RectTransform root;
-    public VerticalLayoutGroup orderImageContainer;
+    public GridLayoutGroup orderImageContainer; // ★ VerticalLayoutGroup → GridLayoutGroup に変更
     public GameObject orderImagePrefab;
     public PatienceGaugeBubble patienceGauge;
     public Slider satisfiedSlider;
@@ -16,6 +16,8 @@ public class CustomerHUDEntry : MonoBehaviour
     public float baseIconSize = 48f;
     public float minIconSize = 20f;
     public float iconSpacing = 4f;
+    public int maxColumns = 2;
+    public Vector2 maxContainerSize = new Vector2(100f, 100f);
 
     private CustomerAI customer;
     private Camera mainCamera;
@@ -102,7 +104,7 @@ public class CustomerHUDEntry : MonoBehaviour
                 break;
 
             case CustomerAI.CustomerState.Angry:
-                root.gameObject.SetActive(false); // ★ false に変更
+                root.gameObject.SetActive(false);
                 break;
 
             case CustomerAI.CustomerState.Satisfied:
@@ -141,34 +143,42 @@ public class CustomerHUDEntry : MonoBehaviour
     private void UpdateOrderImages()
     {
         if (customer == null) return;
-        var batch = customer.OrderQueue.CurrentBatch;
+        if (orderImageContainer == null) return;
 
-        foreach (var img in orderImages) Destroy(img.gameObject);
+        var batch = customer.OrderQueue?.CurrentBatch;
+
+        foreach (var img in orderImages)
+            if (img != null) Destroy(img.gameObject);
         orderImages.Clear();
 
-        var hlg = orderImageContainer.GetComponent<HorizontalLayoutGroup>();
-        if (hlg != null) hlg.enabled = false;
+        var grid = orderImageContainer;
+        grid.childAlignment = TextAnchor.MiddleCenter;
+        grid.spacing = new Vector2(iconSpacing, iconSpacing);
 
-        var vlg = orderImageContainer.GetComponent<VerticalLayoutGroup>();
-        if (vlg == null) vlg = orderImageContainer.gameObject.AddComponent<VerticalLayoutGroup>();
-        vlg.enabled = true;
-        vlg.childAlignment = TextAnchor.MiddleCenter;
-        vlg.spacing = iconSpacing;
-        vlg.childControlWidth = true;
-        vlg.childControlHeight = true;
-        vlg.childForceExpandWidth = false;
-        vlg.childForceExpandHeight = false;
-
-        // ★ 未配膳の注文だけカウントしてアイコンサイズを計算
-        var pendingOrders = batch.Where(o => !o.isDelivered).ToList();
+        var pendingOrders = batch?.Where(o => !o.isDelivered).ToList() ?? new();
         int count = pendingOrders.Count;
 
-        float iconSize = count > 0
-            ? Mathf.Max(minIconSize, baseIconSize / Mathf.Sqrt(count))
-            : baseIconSize;
+        // ★ ここに追加
+        Debug.Log($"[HUD] pendingOrders={count}, batch null? {batch == null}");
 
-        foreach (var order in pendingOrders) // ★ isDelivered をスキップして未配膳のみ生成
+        int columns = count <= 1 ? 1 : Mathf.Min(maxColumns, count);
+        int rows = count > 0 ? Mathf.CeilToInt((float)count / columns) : 1;
+
+        float sizeByWidth = (maxContainerSize.x - (columns - 1) * iconSpacing) / columns;
+        float sizeByHeight = (maxContainerSize.y - (rows - 1) * iconSpacing) / rows;
+        float iconSize = Mathf.Clamp(Mathf.Min(baseIconSize, sizeByWidth, sizeByHeight), minIconSize, baseIconSize);
+
+        // ★ こちらも追加
+        Debug.Log($"[HUD] columns={columns}, rows={rows}, iconSize={iconSize}, maxContainerSize={maxContainerSize}");
+
+        grid.cellSize = new Vector2(iconSize, iconSize);
+        grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+        grid.constraintCount = columns;
+
+        foreach (var order in pendingOrders)
         {
+            if (orderImagePrefab == null) break;
+
             var obj = Instantiate(orderImagePrefab, orderImageContainer.transform);
 
             var objCanvas = obj.GetComponent<Canvas>();
@@ -178,7 +188,7 @@ public class CustomerHUDEntry : MonoBehaviour
             if (img != null && order.sushiData != null)
             {
                 img.sprite = order.sushiData.sushiIcon;
-                img.color = Color.white; // ★ 常にwhite（greyは不要）
+                img.color = Color.white;
             }
 
             var le = obj.GetComponent<LayoutElement>();
@@ -191,6 +201,5 @@ public class CustomerHUDEntry : MonoBehaviour
             orderImages.Add(img);
         }
     }
-
     private void DestroySelf() => Destroy(gameObject);
 }
