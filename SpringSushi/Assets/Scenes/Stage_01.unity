@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 0.8
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.14709611, g: 0.18321295, b: 0.24249004, a: 0.8}
+  m_IndirectSpecularColor: {r: 0.14709575, g: 0.18321246, b: 0.24248914, a: 0.8}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -13241,7 +13241,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u30DC\u30BF\u30F3\u3092\u62BC\u305B\uFF01"
+  m_text: "\u3044\u3056\u958B\u5E97\uFF01"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: fdb6386cfcd4e1745814bb4426878ecb, type: 2}
   m_sharedMaterial: {fileID: -5441376779964393107, guid: fdb6386cfcd4e1745814bb4426878ecb,
