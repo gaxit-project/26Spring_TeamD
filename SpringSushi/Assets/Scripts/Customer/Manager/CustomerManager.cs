@@ -165,13 +165,10 @@ public class CustomerManager : MonoBehaviour
         Transform spawnPoint = GetRandomSpawnPoint();
         if (spawnPoint == null) return;
 
-        // ★ 席を事前予約（歩いている間に他の処理で使われないようにする）
         reservedSeats.Add(seat);
 
-        // ★ 変更：即座に入店させず、Wipe上を歩かせてからスポーンする
         WipeCanvas.Instance.BeginAdmit(waitingData =>
         {
-            // ★ 歩き完了コールバック：ここで初めてゲーム内スポーン
             if (waitingData == null) { reservedSeats.Remove(seat); return; }
 
             GameObject obj = Instantiate(customerPrefab, spawnPoint.position, spawnPoint.rotation);
@@ -183,9 +180,10 @@ public class CustomerManager : MonoBehaviour
 
             Debug.Log($"<color=cyan>[CustomerManager]</color> {seat.name} に入店");
 
-            ai.OnStateChanged += OnCustomerStateChanged;
-            ai.OnStateChanged += (customerAI) =>
+            ai.OnChanged += OnCustomerChanged;
+            ai.OnChanged += (customerAI, type) =>
             {
+                if (type != CustomerAI.CustomerChangeType.State) return;
                 if (customerAI.State == CustomerAI.CustomerState.Leaving)
                 {
                     reservedSeats.Remove(seat);
@@ -194,17 +192,19 @@ public class CustomerManager : MonoBehaviour
             };
         });
     }
-    private void OnCustomerStateChanged(CustomerAI ai)
+
+    private void OnCustomerChanged(CustomerAI ai, CustomerAI.CustomerChangeType type)
     {
+        if (type != CustomerAI.CustomerChangeType.State) return;
         if (ai.State != CustomerAI.CustomerState.Leaving &&
             ai.State != CustomerAI.CustomerState.Satisfied) return;
 
-        ai.OnStateChanged -= OnCustomerStateChanged;
+        ai.OnChanged -= OnCustomerChanged;
         exitedCount++;
         Debug.Log($"<color=cyan>[CustomerManager]</color> 退場 {exitedCount}/{totalCustomerCount}");
         CheckStageClear();
     }
-
+  
     private void CheckStageClear()
     {
         if (spawnedCount >= totalCustomerCount && exitedCount >= totalCustomerCount)

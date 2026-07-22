@@ -10,7 +10,7 @@ public class CustomerHUD : MonoBehaviour
     [Header("参照")]
     [SerializeField] private Canvas hudCanvas;
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private GameObject hudEntryPrefab; // CustomerHUDEntryがついたPrefab
+    [SerializeField] private GameObject hudEntryPrefab;
 
     private readonly List<CustomerHUDEntry> entries = new();
 
@@ -29,19 +29,22 @@ public class CustomerHUD : MonoBehaviour
         var obj = Instantiate(hudEntryPrefab, hudCanvas.transform);
         var entry = obj.GetComponent<CustomerHUDEntry>();
         if (entry == null) return;
+
         entry.Initialize(customer, hudCanvas, mainCamera);
         entries.Add(entry);
 
-        customer.OnStateChanged += ai =>
+        customer.OnChanged += (ai, type) =>
         {
-            if (ai.State == CustomerAI.CustomerState.Leaving)
+            if (type == CustomerAI.CustomerChangeType.State &&
+                ai.State == CustomerAI.CustomerState.Leaving)
+            {
                 entries.Remove(entry);
-        };
+            }
 
-        // ★ 追加：怒り退場でコンボリセット
-        customer.OnAngryLeave += ai =>
-        {
-            ComboManager.Instance?.ResetCombo();
+            if (type == CustomerAI.CustomerChangeType.AngryLeave)
+            {
+                ComboManager.Instance?.ResetCombo();
+            }
         };
     }
 }

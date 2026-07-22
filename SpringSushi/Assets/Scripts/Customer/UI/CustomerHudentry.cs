@@ -7,7 +7,7 @@ public class CustomerHUDEntry : MonoBehaviour
 {
     [Header("UI参照")]
     public RectTransform root;
-    public GridLayoutGroup orderImageContainer; // ★ VerticalLayoutGroup → GridLayoutGroup に変更
+    public GridLayoutGroup orderImageContainer;
     public GameObject orderImagePrefab;
     public PatienceGaugeBubble patienceGauge;
     public Slider satisfiedSlider;
@@ -30,10 +30,7 @@ public class CustomerHUDEntry : MonoBehaviour
         hudCanvas = canvas;
         mainCamera = cam;
 
-        customer.OnStateChanged += OnStateChanged;
-        customer.OnOrderUpdated += OnOrderUpdated;
-        customer.OnPatienceChanged += OnPatienceChanged;
-        customer.OnOrderPhaseChanged += OnOrderPhaseChanged;
+        customer.OnChanged += HandleCustomerChanged;
 
         satisfiedSlider.value = 0f;
         patienceGauge.SetValue(1f);
@@ -44,10 +41,27 @@ public class CustomerHUDEntry : MonoBehaviour
     private void OnDestroy()
     {
         if (customer == null) return;
-        customer.OnStateChanged -= OnStateChanged;
-        customer.OnOrderUpdated -= OnOrderUpdated;
-        customer.OnPatienceChanged -= OnPatienceChanged;
-        customer.OnOrderPhaseChanged -= OnOrderPhaseChanged;
+        customer.OnChanged -= HandleCustomerChanged;
+    }
+
+    private void HandleCustomerChanged(CustomerAI ai, CustomerAI.CustomerChangeType type)
+    {
+        switch (type)
+        {
+            case CustomerAI.CustomerChangeType.State:
+                OnStateChanged(ai);
+                break;
+            case CustomerAI.CustomerChangeType.OrderPhase:
+                OnOrderPhaseChanged(ai);
+                break;
+            case CustomerAI.CustomerChangeType.Order:
+                OnOrderUpdated(ai);
+                break;
+            case CustomerAI.CustomerChangeType.Patience:
+                OnPatienceChanged(ai);
+                break;
+                // AngryLeave はこのHUDでは使わない(Stateの方でAngry非表示処理済み)
+        }
     }
 
     private void OnOrderPhaseChanged(CustomerAI ai)
@@ -158,18 +172,12 @@ public class CustomerHUDEntry : MonoBehaviour
         var pendingOrders = batch?.Where(o => !o.isDelivered).ToList() ?? new();
         int count = pendingOrders.Count;
 
-        // ★ ここに追加
-        Debug.Log($"[HUD] pendingOrders={count}, batch null? {batch == null}");
-
         int columns = count <= 1 ? 1 : Mathf.Min(maxColumns, count);
         int rows = count > 0 ? Mathf.CeilToInt((float)count / columns) : 1;
 
         float sizeByWidth = (maxContainerSize.x - (columns - 1) * iconSpacing) / columns;
         float sizeByHeight = (maxContainerSize.y - (rows - 1) * iconSpacing) / rows;
         float iconSize = Mathf.Clamp(Mathf.Min(baseIconSize, sizeByWidth, sizeByHeight), minIconSize, baseIconSize);
-
-        // ★ こちらも追加
-        Debug.Log($"[HUD] columns={columns}, rows={rows}, iconSize={iconSize}, maxContainerSize={maxContainerSize}");
 
         grid.cellSize = new Vector2(iconSize, iconSize);
         grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
@@ -201,5 +209,6 @@ public class CustomerHUDEntry : MonoBehaviour
             orderImages.Add(img);
         }
     }
+
     private void DestroySelf() => Destroy(gameObject);
 }

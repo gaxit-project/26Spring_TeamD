@@ -13,6 +13,14 @@ public class CustomerAI : MonoBehaviour
     public enum CustomerState { Spawned, Walking, Seated, Ordering, Eating, Satisfied, Angry, Leaving }
     public enum OrderPhase { None, Waiting, PartiallyServed, BatchComplete }
 
+    /// <summary>CustomerAIに何が起きたかを表す種類。購読側はこれで分岐する。</summary>
+    public enum CustomerChangeType { State, OrderPhase, Order, Patience, AngryLeave }
+
+    private const string SeatedTimerKey = "seated";
+    private const string AngryTimerKey = "angry";
+    private const string LeaveTimerKey = "leave";
+    private const string SatisfiedLeaveTimerKey = "satisfiedLeave";
+
     [Header("設定")]
     public float seatedWaitTime = 1.5f;
 
@@ -24,12 +32,10 @@ public class CustomerAI : MonoBehaviour
     private CustomerOrderFlowService orderFlow;
     private CustomerPresentation presentation;
     private CustomerPatienceController patienceController;
+    private CustomerActionTimer timer;
 
-    public event System.Action<CustomerAI> OnStateChanged;
-    public event System.Action<CustomerAI> OnOrderPhaseChanged;
-    public event System.Action<CustomerAI> OnOrderUpdated;
-    public event System.Action<CustomerAI> OnPatienceChanged;
-    public event System.Action<CustomerAI> OnAngryLeave;
+    /// <summary>状態・注文・我慢度など、このCustomerAIに関する変化を一括通知するイベント。</summary>
+    public event System.Action<CustomerAI, CustomerChangeType> OnChanged;
 
     public CustomerState State => stateMachine.State;
     public OrderPhase Phase => stateMachine.Phase;
@@ -45,18 +51,19 @@ public class CustomerAI : MonoBehaviour
         orderFlow = GetComponent<CustomerOrderFlowService>();
         presentation = GetComponent<CustomerPresentation>();
         patienceController = GetComponent<CustomerPatienceController>();
+        timer = new CustomerActionTimer(this);
 
         stateMachine = new CustomerStateMachine();
-        stateMachine.OnStateChanged += _ => OnStateChanged?.Invoke(this);
-        stateMachine.OnPhaseChanged += _ => OnOrderPhaseChanged?.Invoke(this);
+        stateMachine.OnStateChanged += _ => RaiseChanged(CustomerChangeType.State);
+        stateMachine.OnPhaseChanged += _ => RaiseChanged(CustomerChangeType.OrderPhase);
 
         movement.Bind(stateMachine);
         presentation.Bind(stateMachine);
         orderFlow.Bind(stateMachine);
 
-        orderFlow.OnOrderUpdated += () => OnOrderUpdated?.Invoke(this);
+        orderFlow.OnOrderUpdated += () => RaiseChanged(CustomerChangeType.Order);
         orderFlow.OnGiveUp += Leave;
-        orderFlow.OnAllSatisfied += () => Invoke(nameof(Leave), 0.5f);
+        orderFlow.OnAllSatisfied += () => timer.Schedule(SatisfiedLeaveTimerKey, 0.5f, Leave);
     }
 
     public void Initialize(CustomerData newData, Transform seat, List<SushiData> orders, CustomerMoodSO mood = null)
@@ -85,7 +92,7 @@ public class CustomerAI : MonoBehaviour
                 if (movement.HasArrivedAtSeat())
                 {
                     stateMachine.SetState(CustomerState.Seated);
-                    Invoke(nameof(StartNextBatch), seatedWaitTime);
+                    timer.Schedule(SeatedTimerKey, seatedWaitTime, StartNextBatch);
                 }
                 break;
 
@@ -99,21 +106,28 @@ public class CustomerAI : MonoBehaviour
 
     public bool TryDeliver(SushiData sushiData) => orderFlow.TryDeliver(sushiData);
 
-    public void NotifyPatienceChanged() => OnPatienceChanged?.Invoke(this);
+    public void NotifyPatienceChanged() => RaiseChanged(CustomerChangeType.Patience);
 
     public void NotifyAngry()
     {
-        stateMachine.SetState(CustomerState.Angry);
-        OnAngryLeave?.Invoke(this);
+        orderFlow.CancelTimers();
+
+        stateMachine.SetState(CustomerState.Angry); // ここでState変化が通知される
         presentation.PlayAngryVoice();
-        Invoke(nameof(Leave), data != null ? data.angryTime : 3f);
+        RaiseChanged(CustomerChangeType.AngryLeave); // 「怒って退店」専用の通知を追加で発火
+
+        timer.Schedule(AngryTimerKey, data != null ? data.angryTime : 3f, Leave);
     }
 
     public void Leave()
     {
         stateMachine.SetState(CustomerState.Leaving);
-        Invoke(nameof(DestroySelf), 1f);
+        timer.Schedule(LeaveTimerKey, 1f, DestroySelf);
     }
 
     private void DestroySelf() => Destroy(gameObject);
+
+    private void RaiseChanged(CustomerChangeType type) => OnChanged?.Invoke(this, type);
+
+    private void OnDestroy() => timer.CancelAll();
 }
