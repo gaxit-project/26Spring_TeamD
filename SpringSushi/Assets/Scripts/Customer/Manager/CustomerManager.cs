@@ -24,6 +24,7 @@ public class CustomerManager : MonoBehaviour
 
     private int totalCustomerCount;
     private float spawnInterval;
+    private int initialWaitingCustomerCount; // ★追加
     private List<CustomerData> customerVariations = new();
     private List<SushiData> availableSushiList = new();
 
@@ -54,12 +55,21 @@ public class CustomerManager : MonoBehaviour
         moodVariations = stageData.moodVariations;
         scheduledEntries = stageData.scheduledEntries;
 
+        // ★追加：総客数を超えないようclampしておく
+        initialWaitingCustomerCount = Mathf.Clamp(stageData.initialWaitingCustomerCount, 0, stageData.totalCustomerCount);
+
         spawnedCount = 0;
         exitedCount = 0;
         isRunning = true;
         reservedSeats.Clear();
 
         GameStateManager.Instance.OnStateChanged += OnGameStateChanged;
+
+        // ★追加：開店前に、あらかじめ並ぶ客をワイプに並べておく（入店はまださせない）
+        for (int i = 0; i < initialWaitingCustomerCount; i++)
+        {
+            EnqueueNextCustomer(tryAdmit: false);
+        }
     }
 
     private void OnGameStateChanged(GameStateManager.GameState prev, GameStateManager.GameState next)
@@ -69,6 +79,12 @@ public class CustomerManager : MonoBehaviour
 
         // ★ LT入力は保険として残す（押しても自動判定と同じ処理が走るだけ）
         SpawnerInputManager.OnAdmitCustomerPressed += HandleAdmitInput;
+
+        // ★追加：開店直後、あらかじめ並んでいた客を0秒で一斉入店させる
+        for (int i = 0; i < initialWaitingCustomerCount; i++)
+        {
+            TryAdmitFromWipe();
+        }
 
         StartCoroutine(CustomerEntryRoutine());
     }
@@ -91,9 +107,9 @@ public class CustomerManager : MonoBehaviour
 
     /// <summary>
     /// 待機列に客データを追加する。
-    /// ★ 追加直後に空席があれば自動で即入店を試みる。
+    /// ★ tryAdmitがtrueのときのみ、追加直後に空席があれば自動で即入店を試みる。
     /// </summary>
-    private void EnqueueNextCustomer()
+    private void EnqueueNextCustomer(bool tryAdmit = true) // ★引数追加
     {
         if (spawnedCount >= totalCustomerCount) return;
 
@@ -130,9 +146,9 @@ public class CustomerManager : MonoBehaviour
 
         Debug.Log($"<color=lime>[CustomerManager]</color> ワイプに追加（{spawnedCount}/{totalCustomerCount}）");
 
-        // ★ 追加直後に空席があれば即座に入店させる
-        //   （空席が無ければWipeに残って待機 → 後で席が空いた時に自動入店される）
-        TryAdmitFromWipe();
+        // ★変更：tryAdmitがtrueの時だけ即座に入店を試みる
+        if (tryAdmit)
+            TryAdmitFromWipe();
     }
 
     /// <summary>
