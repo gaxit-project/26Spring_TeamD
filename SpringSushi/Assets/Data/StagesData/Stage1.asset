@@ -51,6 +51,8 @@ MonoBehaviour:
     mood: {fileID: 11400000, guid: 6cfc63a0f9588d14baad0ef68ca2daf7, type: 2}
   - customerData: {fileID: 11400000, guid: e4b336163418abf4eb12ff9c64fba6d8, type: 2}
     mood: {fileID: 11400000, guid: 6cfc63a0f9588d14baad0ef68ca2daf7, type: 2}
+  - customerData: {fileID: 11400000, guid: e4b336163418abf4eb12ff9c64fba6d8, type: 2}
+    mood: {fileID: 11400000, guid: 6cfc63a0f9588d14baad0ef68ca2daf7, type: 2}
   availableSushiList:
   - {fileID: 11400000, guid: 94d78b5c51e3d8f458e37e97418aaa10, type: 2}
   - {fileID: 11400000, guid: e835477af019fbf4a9f1da1f3428cf0f, type: 2}
