@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e6122ee431c4e347973ac2b2055f88b, type: 3}
   m_Name: IrritatedMood
   m_EditorClassIdentifier: 
-  moodIcon: {fileID: 0}
+  moodIcon: {fileID: 21300000, guid: ec92806ee17afe645aac2482720301b4, type: 3}
   patienceMultiplier: 0.5

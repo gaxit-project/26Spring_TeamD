@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08f20776feebd854fa7bfa2079aa7fd6, type: 3}
   m_Name: EggSpecificSushi
   m_EditorClassIdentifier: 
-  moodIcon: {fileID: 0}
-  fixedOrders: []
+  moodIcon: {fileID: 21300000, guid: 099c93645e22ad7408c379c7a335576f, type: 3}
+  fixedOrders:
+  - {fileID: 11400000, guid: 94d78b5c51e3d8f458e37e97418aaa10, type: 2}

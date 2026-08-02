@@ -11,8 +11,9 @@ public class StageDataSO : ScriptableObject
     [Tooltip("このステージで来店する総客数")]
     public int totalCustomerCount = 10;
 
-    [Tooltip("客のスポーン間隔（秒）")]
-    public float spawnInterval = 5f;
+    [Header("来店スケジュール")]
+    [Tooltip("開店後の来店スケジュール。波(wave)ごとに人数と間隔を直接定義する。countを2以上にするとその波は同時入店になる")]
+    public List<CustomerArrivalWave> arrivalWaves = new();
 
     [Tooltip("★追加：開店前からワイプに並んでいる客の人数。開店した瞬間（0秒）に全員入店する")]
     [Min(0)]
@@ -33,6 +34,7 @@ public class StageDataSO : ScriptableObject
     [Header("営業時間設定")]
     [Tooltip("営業時間（秒）")]
     public float operationTime = 60f;
+
 }
 
 [System.Serializable]

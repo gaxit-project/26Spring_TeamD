@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10770d825cae97a4b987fb5a74103e35, type: 3}
   m_Name: HungryMood
   m_EditorClassIdentifier: 
-  moodIcon: {fileID: 0}
+  moodIcon: {fileID: 21300000, guid: 678140fd1cdf6ca4f875ef81cb1fbcf0, type: 3}
   orderCountMultiplier: 2

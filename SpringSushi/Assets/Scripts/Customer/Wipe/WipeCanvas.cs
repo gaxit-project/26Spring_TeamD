@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,22 +19,30 @@ public class WipeCanvas : MonoBehaviour
     [SerializeField] private Sprite defaultCustomerSprite;
 
     [Header("並び設定")]
-    [Tooltip("客同士の間隔（px）")]
-    [SerializeField] private float spacing = 55f;
+    [Tooltip("客同士の間隔（px）。待機列の並び・グループ移動時の間隔の両方に使う")]
+    [SerializeField] private float spacing = 50f;
     [Tooltip("一番右の客の生成X座標（起点）")]
     [SerializeField] private float startX = -240f;
     [Tooltip("客のY座標")]
     [SerializeField] private float posY = -60f;
+    [Tooltip("待機列の再整列(詰め直し)にかかる時間（秒）")]
+    [SerializeField] private float realignDuration = 0.3f;
 
-    [Header("入店設定")]
+    [Header("入店設定（単独入店用）")]
     [Tooltip("Wipe上のドアX座標（左側）。ここに到着したら実際に入店する")]
     [SerializeField] private float doorX = -480f;
     [Tooltip("Wipe上をドアまで歩く時間（秒）。Inspectorから変更可能")]
     [SerializeField] private float walkDuration = 1.5f;
-    [Tooltip("★ 追加：入店アニメーションの終点X座標（ドアの向こう側・画面外）")]
+    [Tooltip("入店アニメーションの終点X座標（ドアの向こう側・画面外）")]
     [SerializeField] private float exitX = -480f;
-    [Tooltip("★ 追加：入店アニメーション（doorX → exitX）の時間（秒）")]
+    [Tooltip("単独入店時、ドア直前から画面外まで抜ける短い演出時間（秒）")]
     [SerializeField] private float enterDuration = 0.3f;
+
+    [Header("グループ入店設定")]
+    [Tooltip("グループ入店時、ドア通過(退場)を1人ずつずらす間隔（秒）。例：1にすると1番目退場の1秒後に2番目が退場する")]
+    [SerializeField] private float groupExitStagger = 1f;
+    [Tooltip("グループ入店時、ドア前からexitXまで実際に歩くのにかかる時間（秒）。enterDurationとは別に管理し、必ず視認できる速度で歩かせる")]
+    [SerializeField] private float groupExitWalkDuration = 0.8f;
 
     private readonly List<WipeCustomerEntry> queue = new();
 
@@ -47,67 +56,54 @@ public class WipeCanvas : MonoBehaviour
     }
 
     /// <summary>
-    /// 待機列に客を追加する。
-    /// ★ 新規客はstartXに出現してからキュー位置へアニメーション移動する。
+    /// 待機列に客を1人追加する。
     /// </summary>
     public void EnqueueCustomer(WaitingCustomerData data)
     {
-        var obj = Instantiate(wipeCustomerEntryPrefab, customerContainer);
-        var entry = obj.GetComponent<WipeCustomerEntry>();
-        entry.Initialize(data, defaultCustomerSprite);
-
-        // ★ まずstartX（右端）に出現させる
-        var rect = obj.GetComponent<RectTransform>();
-        rect.anchoredPosition = new Vector2(startX, posY);
-
-        queue.Add(entry);
-
-        // ★ キュー位置（doorX起点）へアニメーションで移動
-        RefreshPositionsAnimated(entry);
+        EnqueueCustomerBatch(new List<WaitingCustomerData> { data });
     }
 
     /// <summary>
-    /// 待機列の位置を整列し直す。
-    /// ★ doorXを起点にする（ドア前から並ぶ）。
+    /// 待機列に客をまとめて追加する。
+    /// 同じ波(wave)の客は、生成した瞬間からspacing間隔で離れた位置に配置することで、
+    /// 同一フレームで複数生成しても出発点で重なって見えないようにする。
+    /// 全員追加し終えた後、1回だけキュー位置への整列アニメーションをかける。
+    /// </summary>
+    public void EnqueueCustomerBatch(List<WaitingCustomerData> dataList)
+    {
+        if (dataList == null || dataList.Count == 0) return;
+
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            var obj = Instantiate(wipeCustomerEntryPrefab, customerContainer);
+            var entry = obj.GetComponent<WipeCustomerEntry>();
+            entry.Initialize(dataList[i], defaultCustomerSprite);
+
+            var rect = obj.GetComponent<RectTransform>();
+            rect.anchoredPosition = new Vector2(startX + i * spacing, posY);
+
+            queue.Add(entry);
+        }
+
+        RefreshPositions();
+    }
+
+    /// <summary>
+    /// 待機列の位置を整列し直す。doorXを起点にする（ドア前から並ぶ）。
+    /// 既存客もアニメーションで動かすことで、テレポートによる重なりを防ぐ。
     /// </summary>
     private void RefreshPositions()
     {
         for (int i = 0; i < queue.Count; i++)
         {
-            var rect = queue[i].GetComponent<RectTransform>();
-            // i=0（先頭）がdoorX、iが増えるほど右（startX方向）へずれる
-            float x = doorX + (i * spacing);
-            rect.anchoredPosition = new Vector2(x, posY);
-        }
-    }
-
-    /// <summary>
-    /// ★ 追加：新規客だけ現在位置からキュー位置へアニメーション移動させる。
-    /// 他の客はRefreshPositionsで即座に整列し直す。
-    /// </summary>
-    private void RefreshPositionsAnimated(WipeCustomerEntry newEntry)
-    {
-        for (int i = 0; i < queue.Count; i++)
-        {
             float targetX = doorX + (i * spacing);
             var entry = queue[i];
-
-            if (entry == newEntry)
-            {
-                // 新規客だけアニメーションで移動（startX → キュー位置）
-                entry.MoveToPosition(new Vector2(targetX, posY), walkDuration * 0.5f);
-            }
-            else
-            {
-                // 既存客は即座に整列（押し出し等が起きた場合も対応）
-                var rect = entry.GetComponent<RectTransform>();
-                rect.anchoredPosition = new Vector2(targetX, posY);
-            }
+            entry.MoveToPosition(new Vector2(targetX, posY), realignDuration);
         }
     }
 
     /// <summary>
-    /// ★ 変更：先頭の客をドアまで歩かせ、到着後にonArrivedを呼ぶ。
+    /// 先頭の客をドアまで歩かせ、到着後にonArrivedを呼ぶ。
     /// 「歩き中」の客は走行中フラグで管理し、二重呼び出しを防ぐ。
     /// </summary>
     public void BeginAdmit(System.Action<WaitingCustomerData> onArrived)
@@ -130,7 +126,6 @@ public class WipeCanvas : MonoBehaviour
 
         if (alreadyAtDoor)
         {
-            // doorX → exitX（destroyOnComplete=true で最後にDestroy）
             entry.WalkToDoor(exitX, enterDuration, () =>
             {
                 walkingEntries.Remove(entry);
@@ -139,33 +134,85 @@ public class WipeCanvas : MonoBehaviour
         }
         else
         {
-            // ★ 1段目：destroyOnComplete=false でオブジェクトを生かしたまま到着
             entry.WalkToDoor(doorX, walkDuration, () =>
             {
-                // ★ 2段目：到着後にexitXへ移動してからDestroy
                 entry.WalkToDoor(exitX, enterDuration, () =>
                 {
                     walkingEntries.Remove(entry);
                     onArrived?.Invoke(data);
                 }, destroyOnComplete: true);
-            }, destroyOnComplete: false); // ← ここが修正の核心
+            }, destroyOnComplete: false);
         }
     }
+
+    /// <summary>
+    /// 先頭からcount人を、隊列(spacing間隔)を保ったまま同時にドア前まで歩かせ、
+    /// その後1人ずつgroupExitStaggerだけ間を空けてドアを通過・退場させる。
+    /// 退場時の移動はgroupExitWalkDuration(必ず視認できる速さ)を使い、
+    /// enterDuration(単独入店用の一瞬の演出値)には依存しない。
+    /// onArrivedCallbacksは待機列の先頭側から順に対応する(callbacks[0]が一番手前の客)。
+    /// </summary>
+    public void BeginAdmitBurst(int count, List<System.Action<WaitingCustomerData>> onArrivedCallbacks)
+    {
+        int actualCount = Mathf.Min(count, queue.Count, onArrivedCallbacks.Count);
+        if (actualCount <= 0) return;
+
+        var entries = new List<WipeCustomerEntry>();
+        for (int i = 0; i < actualCount; i++)
+            entries.Add(queue[i]);
+
+        foreach (var entry in entries)
+        {
+            queue.Remove(entry);
+            walkingEntries.Add(entry);
+        }
+
+        RefreshPositions();
+
+        for (int i = 0; i < entries.Count; i++)
+        {
+            var entry = entries[i];
+            var data = entry.WaitingData;
+            var callback = onArrivedCallbacks[i];
+
+            float lineupX = doorX + (i * spacing);
+            float exitTargetX = exitX + (i * spacing);
+            float exitDelay = i * groupExitStagger;
+
+            var rect = entry.GetComponent<RectTransform>();
+            bool alreadyAtLineup = Mathf.Abs(rect.anchoredPosition.x - lineupX) < spacing * 0.5f;
+
+            if (alreadyAtLineup)
+            {
+                StartCoroutine(ExitAfterDelay(entry, data, callback, exitTargetX, exitDelay));
+            }
+            else
+            {
+                entry.WalkToDoor(lineupX, walkDuration, () =>
+                {
+                    StartCoroutine(ExitAfterDelay(entry, data, callback, exitTargetX, exitDelay));
+                }, destroyOnComplete: false);
+            }
+        }
+    }
+
+    /// <summary>
+    /// delay秒待ってから、groupExitWalkDurationをかけてドアを通過・退場する(フェーズ2)。
+    /// targetXはこの客専用の目的地(隊列オフセットを保った位置)。
+    /// </summary>
+    private IEnumerator ExitAfterDelay(WipeCustomerEntry entry, WaitingCustomerData data,
+                                        System.Action<WaitingCustomerData> callback, float targetX, float delay)
+    {
+        if (delay > 0f)
+            yield return new WaitForSeconds(delay);
+
+        entry.WalkToDoor(targetX, groupExitWalkDuration, () =>
+        {
+            walkingEntries.Remove(entry);
+            callback?.Invoke(data);
+        }, destroyOnComplete: true);
+    }
+
     public int WaitingCount => queue.Count;
     public bool HasWaiting => queue.Count > 0;
-    // ───────────────────────────────────────────────
-    // ★ 旧・即時デキュー。BeginAdmitに置き換えたためコメントアウト
-    // ───────────────────────────────────────────────
-    /*
-    public WaitingCustomerData DequeueCustomer()
-    {
-        if (queue.Count == 0) return null;
-        var entry = queue[0];
-        queue.RemoveAt(0);
-        var data = entry.WaitingData;
-        entry.PlayEnterAnimation(() => RefreshPositions());
-        RefreshPositions();
-        return data;
-    }
-    */
 }

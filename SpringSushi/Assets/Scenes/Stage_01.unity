@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 0.8
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.14709575, g: 0.18321246, b: 0.24248914, a: 0.8}
+  m_IndirectSpecularColor: {r: 0.14709611, g: 0.18321295, b: 0.24249004, a: 0.8}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -17714,10 +17714,12 @@ MonoBehaviour:
   spacing: 55
   startX: -240
   posY: -840
+  realignDuration: 0.3
   doorX: -480
   walkDuration: 1.5
   exitX: -480
   enterDuration: 0.3
+  groupExitStagger: 1
 --- !u!114 &2071813525
 MonoBehaviour:
   m_ObjectHideFlags: 0
