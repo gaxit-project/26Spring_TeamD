@@ -9,11 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58630987709ba374dbe3939666f72ab7, type: 3}
-  m_Name: Mood_Irritated
+  m_Script: {fileID: 11500000, guid: 08f20776feebd854fa7bfa2079aa7fd6, type: 3}
+  m_Name: EggSpecificSushi
   m_EditorClassIdentifier: 
-  moodIcon: {fileID: 21300000, guid: ec92806ee17afe645aac2482720301b4, type: 3}
-  moodType: 3
+  moodIcon: {fileID: 0}
   fixedOrders: []
-  orderCountMultiplier: 1
-  patienceMultiplier: 0.4

@@ -9,11 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58630987709ba374dbe3939666f72ab7, type: 3}
-  m_Name: Mood_Random
+  m_Script: {fileID: 11500000, guid: 2e6122ee431c4e347973ac2b2055f88b, type: 3}
+  m_Name: IrritatedMood
   m_EditorClassIdentifier: 
-  moodIcon: {fileID: 21300000, guid: ffe405befd15590438fc8cecf30101c5, type: 3}
-  moodType: 0
-  fixedOrders: []
-  orderCountMultiplier: 2
+  moodIcon: {fileID: 0}
   patienceMultiplier: 0.5
