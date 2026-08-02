@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-[RequireComponent(typeof(CustomerOrderController))]
 [RequireComponent(typeof(CustomerPatienceController))]
 [RequireComponent(typeof(CustomerMovementController))]
 [RequireComponent(typeof(CustomerOrderFlowService))]

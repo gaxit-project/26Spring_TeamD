@@ -3,9 +3,9 @@ using UnityEngine;
 
 /// <summary>
 /// 注文バッチの開始・配達受付・食事終了までの進行フローを制御する。
-/// 実データ操作はCustomerOrderControllerに、我慢度はCustomerPatienceControllerに委譲する。
+/// 注文キューの実データ(CustomerOrderQueue)はこのクラスが直接保持する。
+/// 我慢度はCustomerPatienceControllerに委譲する。
 /// </summary>
-[RequireComponent(typeof(CustomerOrderController))]
 [RequireComponent(typeof(CustomerPatienceController))]
 public class CustomerOrderFlowService : MonoBehaviour
 {
@@ -15,7 +15,9 @@ public class CustomerOrderFlowService : MonoBehaviour
     private int batchSize;
     private CustomerData data;
 
-    private CustomerOrderController orderController;
+    private readonly CustomerOrderQueue orderQueue = new();
+    private int batchCount = 0;
+
     private CustomerPatienceController patienceController;
     private CustomerStateMachine stateMachine;
     private CustomerActionTimer timer;
@@ -24,12 +26,11 @@ public class CustomerOrderFlowService : MonoBehaviour
     public event System.Action OnAllSatisfied; // 全注文完了→退店してよい合図
     public event System.Action OnGiveUp;        // バッチ上限/完売→退店の合図
 
-    public CustomerOrderQueue OrderQueue => orderController.OrderQueue;
-    public int BatchCount => orderController.BatchCount;
+    public CustomerOrderQueue OrderQueue => orderQueue;
+    public int BatchCount => batchCount;
 
     private void Awake()
     {
-        orderController = GetComponent<CustomerOrderController>();
         patienceController = GetComponent<CustomerPatienceController>();
         timer = new CustomerActionTimer(this);
     }
@@ -42,7 +43,8 @@ public class CustomerOrderFlowService : MonoBehaviour
         maxOrderBatches = data.maxOrderBatches;
         batchSize = Random.Range(data.batchSizeMin, data.batchSizeMax + 1);
 
-        orderController.Initialize(orders);
+        batchCount = 0;
+        orderQueue.Initialize(orders);
         patienceController.Initialize(data, owner, mood);
     }
 
@@ -54,14 +56,15 @@ public class CustomerOrderFlowService : MonoBehaviour
 
     public void StartNextBatch()
     {
-        if (orderController.OrderQueue.IsAllDelivered || orderController.BatchCount >= maxOrderBatches)
+        if (orderQueue.IsAllDelivered || batchCount >= maxOrderBatches)
         {
             OnGiveUp?.Invoke();
             return;
         }
 
-        orderController.PullNextBatch(batchSize);
-        patienceController.ResetPatience(orderController.BatchCount);
+        batchCount++;
+        orderQueue.PullNextBatch(batchSize);
+        patienceController.ResetPatience(batchCount);
 
         stateMachine.SetState(CustomerAI.CustomerState.Ordering);
         stateMachine.SetPhase(CustomerAI.OrderPhase.Waiting);
@@ -71,11 +74,11 @@ public class CustomerOrderFlowService : MonoBehaviour
     public bool TryDeliver(SushiData sushiData)
     {
         if (stateMachine.State != CustomerAI.CustomerState.Ordering) return false;
-        if (!orderController.TryDeliver(sushiData)) return false;
+        if (!orderQueue.TryDeliver(sushiData)) return false;
 
         OnOrderUpdated?.Invoke();
 
-        if (orderController.OrderQueue.IsBatchComplete)
+        if (orderQueue.IsBatchComplete)
         {
             stateMachine.SetPhase(CustomerAI.OrderPhase.BatchComplete);
             stateMachine.SetState(CustomerAI.CustomerState.Eating);
@@ -91,11 +94,9 @@ public class CustomerOrderFlowService : MonoBehaviour
         return true;
     }
 
-    // 同じキー(EatingTimerKey)への予約は上書きされるため、
-    // 「本当にEating状態か」を再チェックするガード節は不要になった。
     private void FinishPartialEating()
     {
-        patienceController.ResetPatience(orderController.BatchCount);
+        patienceController.ResetPatience(batchCount);
         stateMachine.SetPhase(CustomerAI.OrderPhase.Waiting);
         stateMachine.SetState(CustomerAI.CustomerState.Ordering);
         OnOrderUpdated?.Invoke();
@@ -103,7 +104,7 @@ public class CustomerOrderFlowService : MonoBehaviour
 
     private void FinishEating()
     {
-        if (orderController.OrderQueue.IsAllDelivered)
+        if (orderQueue.IsAllDelivered)
         {
             stateMachine.SetState(CustomerAI.CustomerState.Satisfied);
             OnAllSatisfied?.Invoke();

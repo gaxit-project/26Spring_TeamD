@@ -72,20 +72,20 @@ MonoBehaviour:
   - key: customer_angry
     clip: {fileID: 8300000, guid: e875e7886d4ae0f4c807bb96d7f84786, type: 3}
     category: 1
-    volumeMultiplier: 3
+    volumeMultiplier: 1
   - key: customer_order
     clip: {fileID: 8300000, guid: 89bb1c55047483a45afc57567a24f7e2, type: 3}
     category: 1
-    volumeMultiplier: 3
+    volumeMultiplier: 1
   - key: customer_angry_2
     clip: {fileID: 8300000, guid: 94fd37f999d179d4d8972c3f8bde4a67, type: 3}
     category: 1
-    volumeMultiplier: 3
+    volumeMultiplier: 1
   - key: customer_angry_order
     clip: {fileID: 8300000, guid: 49eb500e77ff4e0478c03c659cf9753b, type: 3}
     category: 1
-    volumeMultiplier: 3
+    volumeMultiplier: 1
   - key: entry_voice
     clip: {fileID: 8300000, guid: c31d637bb2ff7834ead7f21e09bd7502, type: 3}
     category: 1
-    volumeMultiplier: 3
+    volumeMultiplier: 1

@@ -21,7 +21,7 @@ public class WipeCustomerEntry : MonoBehaviour
         if (customerIcon != null)
             customerIcon.sprite = defaultCustomerSprite;
 
-        bool isRandom = data.mood == null || data.mood.moodType == CustomerMoodSO.MoodType.Random;
+        bool isRandom = data.mood == null || !data.mood.ShowIndicator;
         if (moodIcon != null)
         {
             moodIcon.sprite = isRandom ? null : data.mood.moodIcon;

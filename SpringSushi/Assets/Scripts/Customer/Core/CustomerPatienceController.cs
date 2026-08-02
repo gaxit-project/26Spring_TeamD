@@ -2,6 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Patienceの減少とAngry判定を担当する。
+/// 気分による我慢時間の補正はCustomerMoodSO側(Strategy)に委譲する。
 /// </summary>
 public class CustomerPatienceController : MonoBehaviour
 {
@@ -9,23 +10,19 @@ public class CustomerPatienceController : MonoBehaviour
     private float maxPatience;
     private float basePatienceTime;
     private float patienceDecayRate;
-    private float currentMultiplier = 1f; // ★ 追加: 気分による倍率を保持する
+    private CustomerMoodSO mood;
     private CustomerAI owner;
 
     public float PatienceRate => maxPatience > 0 ? currentPatience / maxPatience : 0f;
 
-    public void Initialize(CustomerData data, CustomerAI ai, CustomerMoodSO mood = null)
+    public void Initialize(CustomerData data, CustomerAI ai, CustomerMoodSO moodSO = null)
     {
         basePatienceTime = data.basePatienceTime;
         patienceDecayRate = data.patienceDecayRate;
         owner = ai;
+        mood = moodSO;
 
-        // ★ Irritated なら Patience を短くする倍率を決定
-        currentMultiplier = (mood != null && mood.moodType == CustomerMoodSO.MoodType.Irritated)
-            ? mood.patienceMultiplier
-            : 1f;
-
-        maxPatience = basePatienceTime * currentMultiplier;
+        maxPatience = mood != null ? mood.ModifyPatience(basePatienceTime) : basePatienceTime;
         currentPatience = maxPatience;
     }
 
@@ -34,13 +31,13 @@ public class CustomerPatienceController : MonoBehaviour
     /// </summary>
     public void ResetPatience(int batchCount)
     {
-        // ★ 修正: 2回目以降の注文リセット時にも、currentMultiplier（怒り倍率）をしっかり掛ける
-        maxPatience = basePatienceTime * Mathf.Pow(patienceDecayRate, batchCount - 1) * currentMultiplier;
+        float decayed = basePatienceTime * Mathf.Pow(patienceDecayRate, batchCount - 1);
+        maxPatience = mood != null ? mood.ModifyPatience(decayed) : decayed;
         currentPatience = maxPatience;
     }
 
     /// <summary>
-    /// CustomerAI.Update() から毎フレーム呼ばれる。
+    /// CustomerOrderFlowService.Tick() から毎フレーム呼ばれる。
     /// </summary>
     public void Tick(float deltaTime)
     {

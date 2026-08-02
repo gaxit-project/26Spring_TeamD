@@ -33,18 +33,22 @@ public class CustomerHUD : MonoBehaviour
         entry.Initialize(customer, hudCanvas, mainCamera);
         entries.Add(entry);
 
-        customer.OnChanged += (ai, type) =>
+        // ローカル関数として保持することで、後で確実に購読解除できるようにする
+        void HandleChanged(CustomerAI ai, CustomerAI.CustomerChangeType type)
         {
             if (type == CustomerAI.CustomerChangeType.State &&
                 ai.State == CustomerAI.CustomerState.Leaving)
             {
                 entries.Remove(entry);
+                customer.OnChanged -= HandleChanged;
             }
 
             if (type == CustomerAI.CustomerChangeType.AngryLeave)
             {
                 ComboManager.Instance?.ResetCombo();
             }
-        };
+        }
+
+        customer.OnChanged += HandleChanged;
     }
 }
