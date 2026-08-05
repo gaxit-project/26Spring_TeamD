@@ -41,7 +41,7 @@ MonoBehaviour:
     delay: 7
   - count: 1
     delay: 7
-  initialWaitingCustomerCount: 1
+  initialWaitingCustomerCount: 0
   customerVariations:
   - {fileID: 11400000, guid: c23e309f0c956c14e8f86e74d6be7acb, type: 2}
   - {fileID: 11400000, guid: e4b336163418abf4eb12ff9c64fba6d8, type: 2}
@@ -52,7 +52,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 67efd577edeabfd459b7d2acbff23b73, type: 2}
   scheduledEntries:
   - customerData: {fileID: 11400000, guid: c23e309f0c956c14e8f86e74d6be7acb, type: 2}
-    mood: {fileID: 11400000, guid: f2a3866ef2c69f54ab4084afd1296c08, type: 2}
+    mood: {fileID: 11400000, guid: 67efd577edeabfd459b7d2acbff23b73, type: 2}
   - customerData: {fileID: 11400000, guid: c23e309f0c956c14e8f86e74d6be7acb, type: 2}
     mood: {fileID: 11400000, guid: 67efd577edeabfd459b7d2acbff23b73, type: 2}
   - customerData: {fileID: 11400000, guid: c23e309f0c956c14e8f86e74d6be7acb, type: 2}

@@ -94,14 +94,18 @@ public class WipeCanvas : MonoBehaviour
     /// </summary>
     private void RefreshPositions()
     {
+        float speed = realignDuration > 0f ? spacing / realignDuration : 0f;
+
         for (int i = 0; i < queue.Count; i++)
         {
             float targetX = doorX + (i * spacing);
             var entry = queue[i];
-            entry.MoveToPosition(new Vector2(targetX, posY), realignDuration);
+            var rect = entry.GetComponent<RectTransform>();
+            float distance = Mathf.Abs(rect.anchoredPosition.x - targetX);
+            float duration = speed > 0f ? distance / speed : 0f;
+            entry.MoveToPosition(new Vector2(targetX, posY), duration);
         }
     }
-
     /// <summary>
     /// 先頭の客をドアまで歩かせ、到着後にonArrivedを呼ぶ。
     /// 「歩き中」の客は走行中フラグで管理し、二重呼び出しを防ぐ。
