@@ -95,12 +95,28 @@ public class WipeCustomerEntry : MonoBehaviour
         currentMoveCoroutine = null;
     }
 
-    // ★追加：どちらの移動でも必ずここを経由させることで、
-    //   「前の移動が終わっていないのに新しい移動が始まる」二重実行を防ぐ
+    /// <summary>
+    /// どの移動でも必ずここを経由させることで、
+    /// 「前の移動が終わっていないのに新しい移動が始まる」二重実行を防ぐ。
+    /// </summary>
     private void StartManagedMove(IEnumerator routine)
     {
         if (currentMoveCoroutine != null)
             StopCoroutine(currentMoveCoroutine);
         currentMoveCoroutine = StartCoroutine(routine);
+    }
+
+    /// <summary>
+    /// 現在実行中の内部移動コルーチン(MoveToPosition/WalkToDoor由来)を強制的に停止する。
+    /// GroupWalkRoutineのように外部から直接RectTransformを操作する場合、
+    /// 内部コルーチンと座標を取り合わないよう、操作前に必ずこれを呼ぶ。
+    /// </summary>
+    public void StopManagedMove()
+    {
+        if (currentMoveCoroutine != null)
+        {
+            StopCoroutine(currentMoveCoroutine);
+            currentMoveCoroutine = null;
+        }
     }
 }

@@ -17714,12 +17714,10 @@ MonoBehaviour:
   spacing: 55
   startX: -240
   posY: -840
-  realignDuration: 0.3
+  customerWalkSpeed: 150
   doorX: -480
-  walkDuration: 1.5
   exitX: -480
-  enterDuration: 0.3
-  groupExitStagger: 1
+  enterDuration: 0.1
 --- !u!114 &2071813525
 MonoBehaviour:
   m_ObjectHideFlags: 0

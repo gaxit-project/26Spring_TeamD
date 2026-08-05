@@ -15,7 +15,7 @@ MonoBehaviour:
   stageName: "\u30B9\u30C6\u30FC\u30B81"
   totalCustomerCount: 12
   arrivalWaves:
-  - count: 2
+  - count: 3
     delay: 0
   - count: 1
     delay: 7

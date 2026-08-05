@@ -19,30 +19,25 @@ public class WipeCanvas : MonoBehaviour
     [SerializeField] private Sprite defaultCustomerSprite;
 
     [Header("並び設定")]
-    [Tooltip("客同士の間隔（px）。待機列の並び・グループ移動時の間隔の両方に使う")]
+    [Tooltip("客同士の間隔（px）")]
     [SerializeField] private float spacing = 50f;
     [Tooltip("一番右の客の生成X座標（起点）")]
     [SerializeField] private float startX = -240f;
     [Tooltip("客のY座標")]
     [SerializeField] private float posY = -60f;
-    [Tooltip("待機列の再整列(詰め直し)にかかる時間（秒）")]
-    [SerializeField] private float realignDuration = 0.3f;
 
-    [Header("入店設定（単独入店用）")]
+    [Header("移動速度設定（共通）")]
+    [Tooltip("客が歩く速度（px/秒）。待機列の整列・単独入店・グループ入店、" +
+             "すべてこの1つの値で速度を統一する")]
+    [SerializeField] private float customerWalkSpeed = 200f;
+
+    [Header("入店設定")]
     [Tooltip("Wipe上のドアX座標（左側）。ここに到着したら実際に入店する")]
     [SerializeField] private float doorX = -480f;
-    [Tooltip("Wipe上をドアまで歩く時間（秒）。Inspectorから変更可能")]
-    [SerializeField] private float walkDuration = 1.5f;
     [Tooltip("入店アニメーションの終点X座標（ドアの向こう側・画面外）")]
     [SerializeField] private float exitX = -480f;
-    [Tooltip("単独入店時、ドア直前から画面外まで抜ける短い演出時間（秒）")]
-    [SerializeField] private float enterDuration = 0.3f;
-
-    [Header("グループ入店設定")]
-    [Tooltip("グループ入店時、ドア通過(退場)を1人ずつずらす間隔（秒）。例：1にすると1番目退場の1秒後に2番目が退場する")]
-    [SerializeField] private float groupExitStagger = 1f;
-    [Tooltip("グループ入店時、ドア前からexitXまで実際に歩くのにかかる時間（秒）。enterDurationとは別に管理し、必ず視認できる速度で歩かせる")]
-    [SerializeField] private float groupExitWalkDuration = 0.8f;
+    [Tooltip("ドア直前から画面外まで抜ける短い演出時間（秒）。これは距離に関係ない一瞬のポップ演出")]
+    [SerializeField] private float enterDuration = 1.0f;
 
     private readonly List<WipeCustomerEntry> queue = new();
 
@@ -90,25 +85,25 @@ public class WipeCanvas : MonoBehaviour
 
     /// <summary>
     /// 待機列の位置を整列し直す。doorXを起点にする（ドア前から並ぶ）。
-    /// 既存客もアニメーションで動かすことで、テレポートによる重なりを防ぐ。
+    /// customerWalkSpeedを使い、距離÷速度で移動時間を計算する。
     /// </summary>
     private void RefreshPositions()
     {
-        float speed = realignDuration > 0f ? spacing / realignDuration : 0f;
-
         for (int i = 0; i < queue.Count; i++)
         {
             float targetX = doorX + (i * spacing);
             var entry = queue[i];
             var rect = entry.GetComponent<RectTransform>();
             float distance = Mathf.Abs(rect.anchoredPosition.x - targetX);
-            float duration = speed > 0f ? distance / speed : 0f;
+            float duration = customerWalkSpeed > 0f ? distance / customerWalkSpeed : 0f;
             entry.MoveToPosition(new Vector2(targetX, posY), duration);
         }
     }
+
     /// <summary>
     /// 先頭の客をドアまで歩かせ、到着後にonArrivedを呼ぶ。
-    /// 「歩き中」の客は走行中フラグで管理し、二重呼び出しを防ぐ。
+    /// customerWalkSpeedを使い、距離÷速度で移動時間を計算するため、
+    /// 待機列のどの位置にいてもグループ入店時と同じ速度で歩く。
     /// </summary>
     public void BeginAdmit(System.Action<WaitingCustomerData> onArrived)
     {
@@ -124,36 +119,24 @@ public class WipeCanvas : MonoBehaviour
         RefreshPositions();
 
         var rect = entry.GetComponent<RectTransform>();
-        float currentX = rect.anchoredPosition.x;
+        float distance = Mathf.Abs(rect.anchoredPosition.x - doorX);
+        float duration = customerWalkSpeed > 0f ? distance / customerWalkSpeed : 0f;
 
-        bool alreadyAtDoor = Mathf.Abs(currentX - doorX) < spacing * 0.5f;
-
-        if (alreadyAtDoor)
+        entry.WalkToDoor(doorX, duration, () =>
         {
             entry.WalkToDoor(exitX, enterDuration, () =>
             {
                 walkingEntries.Remove(entry);
                 onArrived?.Invoke(data);
             }, destroyOnComplete: true);
-        }
-        else
-        {
-            entry.WalkToDoor(doorX, walkDuration, () =>
-            {
-                entry.WalkToDoor(exitX, enterDuration, () =>
-                {
-                    walkingEntries.Remove(entry);
-                    onArrived?.Invoke(data);
-                }, destroyOnComplete: true);
-            }, destroyOnComplete: false);
-        }
+        }, destroyOnComplete: false);
     }
 
     /// <summary>
-    /// 先頭からcount人を、隊列(spacing間隔)を保ったまま同時にドア前まで歩かせ、
-    /// その後1人ずつgroupExitStaggerだけ間を空けてドアを通過・退場させる。
-    /// 退場時の移動はgroupExitWalkDuration(必ず視認できる速さ)を使い、
-    /// enterDuration(単独入店用の一瞬の演出値)には依存しない。
+    /// 先頭からcount人を、隊列(spacing間隔)を保ったまま毎フレーム同じ歩幅で
+    /// ドアへ向かって進める。Lerp補間ではなく「全員が同じ速度で同時に歩く」
+    /// 方式にすることで、数学的に間隔が常に一定に保たれ、重なりが起こらない。
+    /// ドア(doorX)に到達した客から、その場でexitXへ抜けて退場する。
     /// onArrivedCallbacksは待機列の先頭側から順に対応する(callbacks[0]が一番手前の客)。
     /// </summary>
     public void BeginAdmitBurst(int count, List<System.Action<WaitingCustomerData>> onArrivedCallbacks)
@@ -173,48 +156,54 @@ public class WipeCanvas : MonoBehaviour
 
         RefreshPositions();
 
+        // 内部コルーチン(MoveToPosition等)を止めてから手動移動(GroupWalkRoutine)に切り替える。
+        // 位置の強制スナップは行わない(生成直後のstartX→doorXへの入場演出を壊さないため)。
+        foreach (var entry in entries)
+            entry.StopManagedMove();
+
+        StartCoroutine(GroupWalkRoutine(entries, onArrivedCallbacks));
+    }
+    /// <summary>
+    /// グループ全員を毎フレーム同じ距離だけ進める(定速直線運動)。
+    /// ドア(doorX)を越えた客から順に取り除き、exitXへの短いポップ演出を経て退場させる。
+    /// 全員が全く同じ歩幅で動くため、間隔(spacing)は開始から終了まで常に一定であり、
+    /// 重なりが原理的に発生しない。
+    /// </summary>
+    private IEnumerator GroupWalkRoutine(List<WipeCustomerEntry> entries,
+                                      List<System.Action<WaitingCustomerData>> callbacks)
+    {
+        var pending = new List<(WipeCustomerEntry entry, WaitingCustomerData data, System.Action<WaitingCustomerData> callback)>();
         for (int i = 0; i < entries.Count; i++)
         {
-            var entry = entries[i];
-            var data = entry.WaitingData;
-            var callback = onArrivedCallbacks[i];
-
-            float lineupX = doorX + (i * spacing);
-            float exitTargetX = exitX + (i * spacing);
-            float exitDelay = i * groupExitStagger;
-
-            var rect = entry.GetComponent<RectTransform>();
-            bool alreadyAtLineup = Mathf.Abs(rect.anchoredPosition.x - lineupX) < spacing * 0.5f;
-
-            if (alreadyAtLineup)
-            {
-                StartCoroutine(ExitAfterDelay(entry, data, callback, exitTargetX, exitDelay));
-            }
-            else
-            {
-                entry.WalkToDoor(lineupX, walkDuration, () =>
-                {
-                    StartCoroutine(ExitAfterDelay(entry, data, callback, exitTargetX, exitDelay));
-                }, destroyOnComplete: false);
-            }
+            pending.Add((entries[i], entries[i].WaitingData, callbacks[i]));
         }
-    }
 
-    /// <summary>
-    /// delay秒待ってから、groupExitWalkDurationをかけてドアを通過・退場する(フェーズ2)。
-    /// targetXはこの客専用の目的地(隊列オフセットを保った位置)。
-    /// </summary>
-    private IEnumerator ExitAfterDelay(WipeCustomerEntry entry, WaitingCustomerData data,
-                                        System.Action<WaitingCustomerData> callback, float targetX, float delay)
-    {
-        if (delay > 0f)
-            yield return new WaitForSeconds(delay);
-
-        entry.WalkToDoor(targetX, groupExitWalkDuration, () =>
+        while (pending.Count > 0 && customerWalkSpeed > 0f)
         {
-            walkingEntries.Remove(entry);
-            callback?.Invoke(data);
-        }, destroyOnComplete: true);
+            float step = customerWalkSpeed * Time.deltaTime;
+
+            for (int i = pending.Count - 1; i >= 0; i--)
+            {
+                var (entry, data, callback) = pending[i];
+                if (entry == null) { pending.RemoveAt(i); continue; }
+
+                var rect = entry.GetComponent<RectTransform>();
+                float newX = rect.anchoredPosition.x - step;
+                rect.anchoredPosition = new Vector2(newX, rect.anchoredPosition.y);
+
+                if (newX <= doorX)
+                {
+                    pending.RemoveAt(i);
+                    entry.WalkToDoor(exitX, enterDuration, () =>
+                    {
+                        walkingEntries.Remove(entry);
+                        callback?.Invoke(data);
+                    }, destroyOnComplete: true);
+                }
+            }
+
+            yield return null;
+        }
     }
 
     public int WaitingCount => queue.Count;

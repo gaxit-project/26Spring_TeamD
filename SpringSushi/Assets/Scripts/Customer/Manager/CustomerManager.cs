@@ -52,10 +52,6 @@ public class CustomerManager : MonoBehaviour
 
         GameStateManager.Instance.OnStateChanged += OnGameStateChanged;
 
-        /*for (int i = 0; i < initialWaitingCustomerCount; i++)
-        {
-            spawnScheduler.PrefillCustomer();
-        }*/
         spawnScheduler.PrefillCustomers(initialWaitingCustomerCount);
     }
 
@@ -66,7 +62,7 @@ public class CustomerManager : MonoBehaviour
 
         SpawnerInputManager.OnAdmitCustomerPressed += HandleAdmitInput;
 
-        // 開店前に並べておいたN人をまとめて雪崩式に入店させる
+        // 開店前に並べておいたN人を、隊列を保ったまま歩かせて入店させる
         TryAdmitBurstFromWipe(initialWaitingCustomerCount);
 
         spawnScheduler.BeginRunning();
@@ -107,7 +103,7 @@ public class CustomerManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 待機列の先頭からcount人を、まとめて雪崩式に入店させる(バースト入店)。
+    /// 待機列の先頭からcount人を、隊列を保ったまま同時に歩かせて入店させる(バースト入店)。
     /// 開店直後や、波(wave)のcountが2以上のタイミングで使う。
     /// 空席・待機客が足りない場合は、可能な人数分だけ入店させる。
     /// </summary>
