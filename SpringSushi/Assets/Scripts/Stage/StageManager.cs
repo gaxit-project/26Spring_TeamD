@@ -53,8 +53,25 @@ public class StageManager : MonoBehaviour
 
     public int GetTotalStageCount() => stageOrder.Count;
 
+    /// <summary>シーン名(ロード先)を返す。SceneController.LoadSceneAsyncに渡す用。</summary>
     public string GetStageNameAt(int index)
         => (index >= 0 && index < stageOrder.Count) ? stageOrder[index] : "";
+
+    /// <summary>
+    /// プレイヤーに表示するステージ名を返す。StageDataSO.stageNameを参照する。
+    /// StageDataSOが未設定、またはstageNameが空の場合は、シーン名(GetStageNameAt)にフォールバックする。
+    /// </summary>
+    public string GetStageDisplayNameAt(int index)
+    {
+        if (index >= 0 && index < stageDatas.Count)
+        {
+            var data = stageDatas[index];
+            if (data != null && !string.IsNullOrEmpty(data.stageName))
+                return data.stageName;
+        }
+
+        return GetStageNameAt(index);
+    }
 
     public void StartFirstStage()
     {

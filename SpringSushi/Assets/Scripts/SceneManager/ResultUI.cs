@@ -151,7 +151,7 @@ public class ResultUI : MonoBehaviour
         LockSoundOnEventSystem();
         if (ScoreManager.Instance != null) ScoreManager.Instance.ResetScore();
         GameStateManager.Instance.EnterReady();
-        StageManager.Instance.RetryFromBeginning();
+        StageManager.Instance.RetryCurrentStage();
     }
 
     public void OnReturnToTitle()
