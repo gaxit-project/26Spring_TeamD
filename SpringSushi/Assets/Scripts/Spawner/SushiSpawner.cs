@@ -85,20 +85,17 @@ public class SushiSpawner : MonoBehaviour
 
         // ★ 切り替え後のディレイをセット
         selectionSwitchTimer = selectionSwitchDelay;
-    }
 
-    /*
-    public bool CanManualSpawn => SelectedSushi != null && GetCooldown(SelectedSushi) <= 0f;
-
-    public bool TryManualSpawn()
-    {
-        if (!CanManualSpawn) return false;
-        SushiData sushi = SelectedSushi;
-        SpawnSushi(sushi);
-        cooldowns[sushi] = sushi.spawnInterval;
-        return true;
+        // 切り替え先の寿司も、最低selectionSwitchDelay秒は生成されないようにする。
+        // (選択されていない間にクールダウンが0まで進んでいた場合、
+        //  切り替え直後に間隔なく即生成されてしまうのを防ぐ)
+        var newlySelected = SelectedSushi;
+        if (newlySelected != null)
+        {
+            float currentCooldown = GetCooldown(newlySelected);
+            cooldowns[newlySelected] = Mathf.Max(currentCooldown, selectionSwitchDelay);
+        }
     }
-    */
 
     public float GetCooldown(SushiData sushi)
     {

@@ -17,4 +17,4 @@ MonoBehaviour:
   sushiModel: {fileID: 2447119893935742129, guid: 5ac405d6d7cc23241800ef5314493b98,
     type: 3}
   sushiIcon: {fileID: 21300000, guid: f258426eedd95174697ae0af117a9408, type: 3}
-  spawnInterval: 4
+  spawnInterval: 3

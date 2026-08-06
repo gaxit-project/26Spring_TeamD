@@ -20,7 +20,7 @@ MonoBehaviour:
   batchSizeMin: 1
   batchSizeMax: 2
   eatTime: 4
-  basePatienceTime: 25
-  patienceDecayRate: 0.9
+  basePatienceTime: 30
+  patienceDecayRate: 0.95
   angryTime: 3
   scoreMultiplier: 1
