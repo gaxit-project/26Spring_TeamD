@@ -79,9 +79,10 @@ public class CustomerOrderQueue
     }
 
     /// <summary>
-    /// 指定したSushiDataの注文を1件届ける。届けられたらtrueを返す。
+    /// 指定したSushiDataの注文を1件届ける。届けられたらtrueを返し、
+    /// deliveredOrderにその配達済みCustomerOrderを出力する。
     /// </summary>
-    public bool TryDeliver(SushiData sushiData)
+    public bool TryDeliver(SushiData sushiData, out CustomerOrder deliveredOrder)
     {
         foreach (var order in currentBatch)
         {
@@ -89,9 +90,11 @@ public class CustomerOrderQueue
             {
                 order.isDelivered = true;
                 deliveredCount++;
+                deliveredOrder = order;
                 return true;
             }
         }
+        deliveredOrder = null;
         return false;
     }
 }

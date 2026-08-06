@@ -7,6 +7,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(CustomerMovementController))]
 [RequireComponent(typeof(CustomerOrderFlowService))]
 [RequireComponent(typeof(CustomerPresentation))]
+[RequireComponent(typeof(CustomerEatingDisplay))]
 public class CustomerAI : MonoBehaviour
 {
     public enum CustomerState { Spawned, Walking, Seated, Ordering, Eating, Satisfied, Angry, Leaving }
@@ -31,6 +32,7 @@ public class CustomerAI : MonoBehaviour
     private CustomerOrderFlowService orderFlow;
     private CustomerPresentation presentation;
     private CustomerPatienceController patienceController;
+    private CustomerEatingDisplay eatingDisplay;
     private CustomerActionTimer timer;
 
     /// <summary>状態・注文・我慢度など、このCustomerAIに関する変化を一括通知するイベント。</summary>
@@ -50,6 +52,7 @@ public class CustomerAI : MonoBehaviour
         orderFlow = GetComponent<CustomerOrderFlowService>();
         presentation = GetComponent<CustomerPresentation>();
         patienceController = GetComponent<CustomerPatienceController>();
+        eatingDisplay = GetComponent<CustomerEatingDisplay>();
         timer = new CustomerActionTimer(this);
 
         stateMachine = new CustomerStateMachine();
@@ -59,16 +62,22 @@ public class CustomerAI : MonoBehaviour
         movement.Bind(stateMachine);
         presentation.Bind(stateMachine);
         orderFlow.Bind(stateMachine);
+        eatingDisplay.Bind(stateMachine);
 
         orderFlow.OnOrderUpdated += () => RaiseChanged(CustomerChangeType.Order);
         orderFlow.OnGiveUp += Leave;
         orderFlow.OnAllSatisfied += () => timer.Schedule(SatisfiedLeaveTimerKey, 0.5f, Leave);
+        orderFlow.OnBatchStarted += eatingDisplay.ClearForNewBatch;
+        orderFlow.OnItemServed += eatingDisplay.AddServedItem;
     }
 
     public void Initialize(CustomerData newData, Transform seat, List<SushiData> orders, CustomerMoodSO mood = null)
     {
         data = newData;
         targetSeat = seat;
+
+        var plateAnchor = seat.GetComponentInChildren<SeatPlateAnchor>();
+        eatingDisplay.SetPlateSlots(plateAnchor != null ? plateAnchor.plateSlots : null);
 
         if (data.customerPrefab != null)
         {

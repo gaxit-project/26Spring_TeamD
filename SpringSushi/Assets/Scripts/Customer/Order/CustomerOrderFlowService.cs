@@ -26,6 +26,12 @@ public class CustomerOrderFlowService : MonoBehaviour
     public event System.Action OnAllSatisfied; // 全注文完了→退店してよい合図
     public event System.Action OnGiveUp;        // バッチ上限/完売→退店の合図
 
+    /// <summary>新しいバッチの注文が始まった瞬間に発火する。机の上をリセットする合図。</summary>
+    public event System.Action OnBatchStarted;
+
+    /// <summary>寿司が1つ配達されるたびに発火する。机の上にその1皿を追加する合図。</summary>
+    public event System.Action<CustomerOrder> OnItemServed;
+
     public CustomerOrderQueue OrderQueue => orderQueue;
     public int BatchCount => batchCount;
 
@@ -69,26 +75,30 @@ public class CustomerOrderFlowService : MonoBehaviour
         stateMachine.SetState(CustomerAI.CustomerState.Ordering);
         stateMachine.SetPhase(CustomerAI.OrderPhase.Waiting);
         OnOrderUpdated?.Invoke();
+        OnBatchStarted?.Invoke(); // 新しいバッチが始まったので、机の上をリセットする
     }
 
     public bool TryDeliver(SushiData sushiData)
     {
         if (stateMachine.State != CustomerAI.CustomerState.Ordering) return false;
-        if (!orderQueue.TryDeliver(sushiData)) return false;
+        if (!orderQueue.TryDeliver(sushiData, out var deliveredOrder)) return false;
 
         OnOrderUpdated?.Invoke();
+        OnItemServed?.Invoke(deliveredOrder); // 配達された1皿を机に追加する
 
         if (orderQueue.IsBatchComplete)
         {
             stateMachine.SetPhase(CustomerAI.OrderPhase.BatchComplete);
             stateMachine.SetState(CustomerAI.CustomerState.Eating);
-            timer.Schedule(EatingTimerKey, data != null ? data.eatTime : 1.5f, FinishEating);
+            float duration = data != null ? data.eatTime : 1.5f;
+            timer.Schedule(EatingTimerKey, duration, FinishEating);
         }
         else
         {
             stateMachine.SetPhase(CustomerAI.OrderPhase.PartiallyServed);
             stateMachine.SetState(CustomerAI.CustomerState.Eating);
-            timer.Schedule(EatingTimerKey, data != null ? data.eatTime * 0.5f : 0.75f, FinishPartialEating);
+            float duration = data != null ? data.eatTime * 0.5f : 0.75f;
+            timer.Schedule(EatingTimerKey, duration, FinishPartialEating);
         }
 
         return true;
@@ -96,6 +106,7 @@ public class CustomerOrderFlowService : MonoBehaviour
 
     private void FinishPartialEating()
     {
+        // 同じバッチの続き(次の寿司を待つだけ)なので、机の上はクリアしない
         patienceController.ResetPatience(batchCount);
         stateMachine.SetPhase(CustomerAI.OrderPhase.Waiting);
         stateMachine.SetState(CustomerAI.CustomerState.Ordering);
@@ -111,7 +122,7 @@ public class CustomerOrderFlowService : MonoBehaviour
         }
         else
         {
-            StartNextBatch();
+            StartNextBatch(); // ここでOnBatchStartedが発火し、机の上がリセットされる
         }
     }
 
