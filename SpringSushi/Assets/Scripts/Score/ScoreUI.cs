@@ -128,6 +128,6 @@ public class ScoreUI : MonoBehaviour
     private void UpdateScoreText(int score)
     {
         if (scoreText != null)
-            scoreText.text = $"{score}‰~";
+            scoreText.text = $"{score:N0}‰~";
     }
 }
