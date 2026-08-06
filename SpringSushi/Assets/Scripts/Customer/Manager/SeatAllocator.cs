@@ -17,18 +17,31 @@ public class SeatAllocator
     public void Clear() => reservedSeats.Clear();
 
     /// <summary>
-    /// 空いている座席を1つ探し、見つかったその場で予約まで行う(取得と予約を分離しない)。
-    /// 見つからなければnullを返す。
+    /// originに最も近い、空いている座席を1つ探し、見つかったその場で予約まで行う
+    /// (取得と予約を分離しない)。見つからなければnullを返す。
     /// </summary>
-    public Transform TryReserveSeat()
+    public Transform TryReserveSeat(Vector3 origin)
     {
+        Transform nearest = null;
+        float nearestDistanceSqr = float.MaxValue;
+
         foreach (var seat in entryPoints)
         {
+            if (seat == null) continue;
             if (reservedSeats.Contains(seat)) continue;
-            reservedSeats.Add(seat);
-            return seat;
+
+            float distanceSqr = (seat.position - origin).sqrMagnitude;
+            if (distanceSqr < nearestDistanceSqr)
+            {
+                nearestDistanceSqr = distanceSqr;
+                nearest = seat;
+            }
         }
-        return null;
+
+        if (nearest != null)
+            reservedSeats.Add(nearest);
+
+        return nearest;
     }
 
     public void ReleaseSeat(Transform seat)

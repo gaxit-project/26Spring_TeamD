@@ -84,16 +84,17 @@ public class CustomerManager : MonoBehaviour
 
     /// <summary>
     /// 待機列の先頭を1人だけ入店させる。空席・待機客のいずれかが無い場合は何もしない。
+    /// スポーン地点をランダムに決め、その地点から最も近い空席に座らせる。
     /// </summary>
     public void TryAdmitFromWipe()
     {
         if (!(WipeCanvas.Instance?.HasWaiting ?? false)) return;
 
-        Transform seat = seatAllocator.TryReserveSeat();
-        if (seat == null) return;
-
         Transform spawnPoint = GetRandomSpawnPoint();
-        if (spawnPoint == null) { seatAllocator.ReleaseSeat(seat); return; }
+        if (spawnPoint == null) return;
+
+        Transform seat = seatAllocator.TryReserveSeat(spawnPoint.position);
+        if (seat == null) return;
 
         WipeCanvas.Instance.BeginAdmit(waitingData =>
         {
@@ -105,6 +106,7 @@ public class CustomerManager : MonoBehaviour
     /// <summary>
     /// 待機列の先頭からcount人を、隊列を保ったまま同時に歩かせて入店させる(バースト入店)。
     /// 開店直後や、波(wave)のcountが2以上のタイミングで使う。
+    /// それぞれのスポーン地点をランダムに決め、その地点から最も近い空席に座らせる。
     /// 空席・待機客が足りない場合は、可能な人数分だけ入店させる。
     /// </summary>
     public void TryAdmitBurstFromWipe(int count)
@@ -118,11 +120,11 @@ public class CustomerManager : MonoBehaviour
 
         for (int i = 0; i < available; i++)
         {
-            Transform seat = seatAllocator.TryReserveSeat();
-            if (seat == null) break; // 空席が尽きたらそこで打ち切る
-
             Transform spawnPoint = GetRandomSpawnPoint();
-            if (spawnPoint == null) { seatAllocator.ReleaseSeat(seat); break; }
+            if (spawnPoint == null) break;
+
+            Transform seat = seatAllocator.TryReserveSeat(spawnPoint.position);
+            if (seat == null) break; // 空席が尽きたらそこで打ち切る
 
             reserved.Add((seat, spawnPoint));
         }
