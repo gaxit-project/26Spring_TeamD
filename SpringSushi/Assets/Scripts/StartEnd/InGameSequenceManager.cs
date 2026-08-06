@@ -92,11 +92,15 @@ public class InGameSequenceManager : MonoBehaviour
             SoundPlayer.Instance.PlaySFX(SoundKeys.DoorOpen);
         }
 
-        statusText.text = "開店!!";
-        statusText.gameObject.SetActive(true);
         stageGoalUI?.HidePanel();
 
+        // 扉が完全に開ききるまで待ってから「開店!!」を表示する
         yield return doorAnim.Open();
+
+        statusText.text = "開店!!";
+        statusText.gameObject.SetActive(true);
+
+        yield return new WaitForSecondsRealtime(1f); // 表示時間。お好みで調整してください
 
         statusText.gameObject.SetActive(false);
 
@@ -140,10 +144,11 @@ public class InGameSequenceManager : MonoBehaviour
             SoundPlayer.Instance.PlaySFX(SoundKeys.DoorOpen);
         }
 
+        // 扉が完全に閉まりきるまで待ってから「閉店!!」を表示する
+        yield return doorAnim.Close();
+
         statusText.text = "閉店!!";
         statusText.gameObject.SetActive(true);
-
-        yield return doorAnim.Close();
 
         yield return new WaitForSecondsRealtime(2f);
 
