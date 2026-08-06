@@ -18,7 +18,6 @@ public class StageManager : MonoBehaviour
     [SerializeField] private List<StageDataSO> stageDatas = new List<StageDataSO>();
 
     private int currentStageIndex = 0;
-    private const string ClearKey = "ReachedStageIndex";
 
     /// <summary>現在ステージの売上目標データ</summary>
     public StageGoalData CurrentGoal { get; private set; }
@@ -28,31 +27,6 @@ public class StageManager : MonoBehaviour
 
     /// <summary>CurrentStageData を返すメソッド形式のアクセサ</summary>
     public StageDataSO GetCurrentStageData() => CurrentStageData;
-
-    // =========================================================
-    // Debug
-    // =========================================================
-    private bool debugForceUnlock = false;
-    public bool IsDebugForceUnlock => debugForceUnlock;
-
-    public void ToggleDebugUnlockAll()
-    {
-        debugForceUnlock = !debugForceUnlock;
-        Debug.Log($"[DEBUG] Force Unlock = {debugForceUnlock}");
-    }
-
-    // =========================================================
-    public int ReachedStageIndex
-    {
-        get => PlayerPrefs.GetInt(ClearKey, 0);
-        private set { PlayerPrefs.SetInt(ClearKey, value); PlayerPrefs.Save(); }
-    }
-
-    public bool IsStageUnlocked(int index)
-    {
-        if (debugForceUnlock) return true;
-        return index <= ReachedStageIndex;
-    }
 
     private void Awake()
     {
@@ -104,7 +78,6 @@ public class StageManager : MonoBehaviour
 
     public void SelectStage(int index)
     {
-        if (!IsStageUnlocked(index)) return;
         if (SceneController.Instance != null && SceneController.Instance.IsTransitioning) return;
         currentStageIndex = index;
         LoadCurrentStage();

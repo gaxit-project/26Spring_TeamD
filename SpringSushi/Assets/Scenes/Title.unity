@@ -1591,7 +1591,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &490676944
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1609,7 +1609,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -564, y: -332}
+  m_AnchoredPosition: {x: -564, y: -110}
   m_SizeDelta: {x: 480, y: 240}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &490676945
@@ -1627,8 +1627,8 @@ MonoBehaviour:
   m_Navigation:
     m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 821664315}
-    m_SelectOnDown: {fileID: 848918978}
+    m_SelectOnUp: {fileID: 2143501614}
+    m_SelectOnDown: {fileID: 746122819}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -1658,7 +1658,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1975617276}
         m_TargetAssemblyTypeName: TitleUI, Assembly-CSharp
-        m_MethodName: OnStartButton
+        m_MethodName: OnStageSelectButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2329,7 +2329,7 @@ MonoBehaviour:
   m_Navigation:
     m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 2143501614}
+    m_SelectOnUp: {fileID: 490676945}
     m_SelectOnDown: {fileID: 848918978}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
@@ -3949,7 +3949,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 10.953}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -513, y: 315}
+  m_AnchoredPosition: {x: -560, y: 329}
   m_SizeDelta: {x: 80, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1265925093
@@ -4055,10 +4055,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2143501613}
+  - {fileID: 490676944}
   - {fileID: 746122817}
   - {fileID: 848918977}
   - {fileID: 821664314}
-  - {fileID: 490676944}
   m_Father: {fileID: 1975617275}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -5394,12 +5394,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageOrder:
   - Stage_01
+  - Stage_02
   stageSprites:
-  - {fileID: 21300000, guid: f258426eedd95174697ae0af117a9408, type: 3}
+  - {fileID: 21300000, guid: 3a99159e072168349832213e635f3d24, type: 3}
+  - {fileID: 21300000, guid: e1f0eab79918ef04ea99afb99ebc6aae, type: 3}
   stageGoals:
   - {fileID: 11400000, guid: 40489985cca60d24c81bf7fde1700dce, type: 2}
+  - {fileID: 11400000, guid: 567171d995a25b541aac90685023ad60, type: 2}
   stageDatas:
   - {fileID: 11400000, guid: f7453dad9a5e2cd4492f10f6d49c9e2e, type: 2}
+  - {fileID: 11400000, guid: 4ddea8233e98b8242b665f1ae28db388, type: 2}
 --- !u!4 &1866519999
 Transform:
   m_ObjectHideFlags: 0
@@ -6151,7 +6155,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -564, y: -110}
+  m_AnchoredPosition: {x: -564, y: 55}
   m_SizeDelta: {x: 480, y: 240}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2143501614
@@ -6170,7 +6174,7 @@ MonoBehaviour:
     m_Mode: 4
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 746122819}
+    m_SelectOnDown: {fileID: 490676945}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
