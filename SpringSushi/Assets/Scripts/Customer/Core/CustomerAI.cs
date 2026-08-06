@@ -82,7 +82,7 @@ public class CustomerAI : MonoBehaviour
         if (data.customerPrefab != null)
         {
             var visual = Instantiate(data.customerPrefab, transform);
-            presentation.SetVisual(visual.GetComponentInChildren<CustomerAnimator>());
+            presentation.SetVisual(visual.GetComponentInChildren<CustomerAnimator>(), seat);
         }
 
         orderFlow.Setup(data, orders, mood, this);

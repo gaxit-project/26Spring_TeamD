@@ -18,6 +18,7 @@ public class CustomerAnimator : MonoBehaviour
 
     private Animator anim;
     private NavMeshAgent agent;
+    private Transform seatTransform;
 
     private void Awake()
     {
@@ -35,33 +36,21 @@ public class CustomerAnimator : MonoBehaviour
             anim.SetFloat(HashSpeed, agent.velocity.magnitude, 0.1f, Time.deltaTime);
     }
 
-    public void FaceNearestLane()
+    /// <summary>
+    /// 着席する座席(SeatAnchor)を設定する。着席時の向きは、
+    /// 自前でレーンを探して計算するのではなく、SeatBuilderが既に正しく計算・設定した
+    /// 実際の椅子モデル(anchorの子オブジェクト)の向きをそのまま採用する。
+    /// これにより、椅子の向き計算ロジックが1箇所(SeatBuilder)に一本化され、ズレが起きない。
+    /// </summary>
+    public void SetSeat(Transform seat) => seatTransform = seat;
+
+    private void FaceSeat()
     {
-        var segments = Object.FindObjectsByType<LaneSegment>(FindObjectsSortMode.None);
-        transform.rotation = CalcFacingRotation(transform.position, segments);
-    }
+        if (seatTransform == null) return;
 
-    private Quaternion CalcFacingRotation(Vector3 pos, LaneSegment[] segments)
-    {
-        if (segments == null || segments.Length == 0) return Quaternion.identity;
-
-        LaneSegment nearest = null;
-        float minDist = float.MaxValue;
-
-        foreach (var seg in segments)
-        {
-            if (seg.nodeA == null || seg.nodeB == null) continue;
-            Vector3 mid = (seg.nodeA.Position + seg.nodeB.Position) * 0.5f;
-            float dist = Vector3.Distance(pos, mid);
-            if (dist < minDist) { minDist = dist; nearest = seg; }
-        }
-
-        if (nearest == null) return Quaternion.identity;
-
-        Vector3 segDir = (nearest.nodeB.Position - nearest.nodeA.Position).normalized;
-        if (segDir == Vector3.zero) return Quaternion.identity;
-
-        return Quaternion.LookRotation(segDir, Vector3.up) * Quaternion.Euler(0f, 90f, 0f);
+        // SeatBuilderが生成した椅子(anchorの最初の子)の向きをそのまま使う
+        Transform chair = seatTransform.childCount > 0 ? seatTransform.GetChild(0) : seatTransform;
+        transform.rotation = chair.rotation * Quaternion.Euler(0f, -90f, 0f);
     }
 
     public void ApplyState(CustomerAI.CustomerState state)
@@ -75,7 +64,7 @@ public class CustomerAnimator : MonoBehaviour
 
             case CustomerAI.CustomerState.Seated:
                 anim.SetBool(HashIsSeated, true);
-                FaceNearestLane();
+                FaceSeat();
                 break;
 
             case CustomerAI.CustomerState.Ordering:
@@ -93,7 +82,7 @@ public class CustomerAnimator : MonoBehaviour
                 anim.SetTrigger(HashSatisfied);
                 break;
 
-            case CustomerAI.CustomerState.Angry:   // ★ 追加
+            case CustomerAI.CustomerState.Angry:
                 anim.SetBool(HashIsSeated, true);
                 anim.SetBool(HashIsAngry, true);
                 if (angryParticle != null) angryParticle.Play();
@@ -101,7 +90,7 @@ public class CustomerAnimator : MonoBehaviour
 
             case CustomerAI.CustomerState.Leaving:
                 anim.SetBool(HashIsLeaving, true);
-                if (angryParticle != null) angryParticle.Stop(); // ★ 退場時に停止
+                if (angryParticle != null) angryParticle.Stop();
                 break;
         }
     }

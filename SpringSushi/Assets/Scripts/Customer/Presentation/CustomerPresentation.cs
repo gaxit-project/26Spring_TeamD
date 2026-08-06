@@ -9,7 +9,15 @@ public class CustomerPresentation : MonoBehaviour
     private CustomerAnimator customerAnimator;
     private ICustomerSoundPlayer soundPlayer = new DefaultCustomerSoundPlayer();
 
-    public void SetVisual(CustomerAnimator animator) => customerAnimator = animator;
+    /// <summary>
+    /// 見た目(Animator)と、着席する座席を設定する。
+    /// 座席の情報はCustomerAnimator.SetSeatへそのまま渡し、着席時の向き計算に使わせる。
+    /// </summary>
+    public void SetVisual(CustomerAnimator animator, Transform seat)
+    {
+        customerAnimator = animator;
+        customerAnimator?.SetSeat(seat);
+    }
 
     /// <summary>テストや演出差し替え時に、サウンド再生の実装を差し替える。</summary>
     public void SetSoundPlayer(ICustomerSoundPlayer player) => soundPlayer = player;
