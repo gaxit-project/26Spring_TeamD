@@ -318,6 +318,17 @@ public partial class @Player: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""352c7f6e-0ebf-4727-b408-6124ecbaf8c6"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SushiShiftLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a7830832-eee4-4f7d-bce2-1bd2264243e6"",
                     ""path"": ""<Keyboard>/leftArrow"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -329,6 +340,17 @@ public partial class @Player: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""68cf4e58-c772-482d-b76b-68899d38e332"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SushiShiftRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""30e03a3d-54d5-4205-8742-aa060fcb2b4f"",
                     ""path"": ""<Keyboard>/rightArrow"",
                     ""interactions"": """",
                     ""processors"": """",
