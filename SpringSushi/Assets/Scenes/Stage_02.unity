@@ -16597,7 +16597,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb242decac5915f4cb5b4f5895e3b56e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sushiSwitchInterval: 0.3
   spawnerSwitchInterval: 0.4
   stickDeadzone: 0.5
 --- !u!114 &1357584642
@@ -26786,7 +26785,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 5
+  m_SortingOrder: -2
   m_TargetDisplay: 0
 --- !u!224 &2071813528
 RectTransform:
