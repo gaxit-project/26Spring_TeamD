@@ -125,6 +125,15 @@ public partial class @Player: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LaneSelectDecide"",
+                    ""type"": ""Button"",
+                    ""id"": ""2c6ebec6-5448-4b08-94be-adf8cacc1a18"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -369,6 +378,28 @@ public partial class @Player: IInputActionCollection2, IDisposable
                     ""action"": ""AdmitCustomer"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""90354407-00ac-464f-9fcf-8644e4a9e391"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LaneSelectDecide"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2e9681e4-4697-426d-9573-4f27a9d6b18c"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LaneSelectDecide"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -388,6 +419,7 @@ public partial class @Player: IInputActionCollection2, IDisposable
         m_GamePlay_SushiShiftLeft = m_GamePlay.FindAction("SushiShiftLeft", throwIfNotFound: true);
         m_GamePlay_SushiShiftRight = m_GamePlay.FindAction("SushiShiftRight", throwIfNotFound: true);
         m_GamePlay_AdmitCustomer = m_GamePlay.FindAction("AdmitCustomer", throwIfNotFound: true);
+        m_GamePlay_LaneSelectDecide = m_GamePlay.FindAction("LaneSelectDecide", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -460,6 +492,7 @@ public partial class @Player: IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_SushiShiftLeft;
     private readonly InputAction m_GamePlay_SushiShiftRight;
     private readonly InputAction m_GamePlay_AdmitCustomer;
+    private readonly InputAction m_GamePlay_LaneSelectDecide;
     public struct GamePlayActions
     {
         private @Player m_Wrapper;
@@ -475,6 +508,7 @@ public partial class @Player: IInputActionCollection2, IDisposable
         public InputAction @SushiShiftLeft => m_Wrapper.m_GamePlay_SushiShiftLeft;
         public InputAction @SushiShiftRight => m_Wrapper.m_GamePlay_SushiShiftRight;
         public InputAction @AdmitCustomer => m_Wrapper.m_GamePlay_AdmitCustomer;
+        public InputAction @LaneSelectDecide => m_Wrapper.m_GamePlay_LaneSelectDecide;
         public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -517,6 +551,9 @@ public partial class @Player: IInputActionCollection2, IDisposable
             @AdmitCustomer.started += instance.OnAdmitCustomer;
             @AdmitCustomer.performed += instance.OnAdmitCustomer;
             @AdmitCustomer.canceled += instance.OnAdmitCustomer;
+            @LaneSelectDecide.started += instance.OnLaneSelectDecide;
+            @LaneSelectDecide.performed += instance.OnLaneSelectDecide;
+            @LaneSelectDecide.canceled += instance.OnLaneSelectDecide;
         }
 
         private void UnregisterCallbacks(IGamePlayActions instance)
@@ -554,6 +591,9 @@ public partial class @Player: IInputActionCollection2, IDisposable
             @AdmitCustomer.started -= instance.OnAdmitCustomer;
             @AdmitCustomer.performed -= instance.OnAdmitCustomer;
             @AdmitCustomer.canceled -= instance.OnAdmitCustomer;
+            @LaneSelectDecide.started -= instance.OnLaneSelectDecide;
+            @LaneSelectDecide.performed -= instance.OnLaneSelectDecide;
+            @LaneSelectDecide.canceled -= instance.OnLaneSelectDecide;
         }
 
         public void RemoveCallbacks(IGamePlayActions instance)
@@ -584,5 +624,6 @@ public partial class @Player: IInputActionCollection2, IDisposable
         void OnSushiShiftLeft(InputAction.CallbackContext context);
         void OnSushiShiftRight(InputAction.CallbackContext context);
         void OnAdmitCustomer(InputAction.CallbackContext context);
+        void OnLaneSelectDecide(InputAction.CallbackContext context);
     }
 }

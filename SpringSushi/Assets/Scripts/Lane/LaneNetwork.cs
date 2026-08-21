@@ -17,34 +17,59 @@ public class LaneNetwork : MonoBehaviour
 
     private void OnEnable()
     {
-        LaneInputManager.OnLaneButtonPressed += OnInput;
+        LaneInputManager.OnLaneButtonPressed += ToggleLane;
     }
 
     private void OnDisable()
     {
-        LaneInputManager.OnLaneButtonPressed -= OnInput;
+        LaneInputManager.OnLaneButtonPressed -= ToggleLane;
     }
 
-    private void OnInput(LaneColor color)
+    /// <summary>
+    /// 指定した色のレーンの進行方向を反転させる。
+    /// ダイレクト方式(LaneInputManagerのボタン)・選択方式(LaneSelectorUI)の
+    /// どちらからも、この公開メソッドを直接呼び出す。
+    /// </summary>
+    public void ToggleLane(LaneColor color)
     {
-        bool state = stateController.Toggle(color);
+        Debug.Log($"[LaneNetwork] ToggleLane実行! 色={color}, 自分のInstanceID={GetInstanceID()}, セグメント数={segments?.Count ?? 0}");
 
-        // Segmentの方向切り替え
+        bool state = stateController.Toggle(color);
+        Debug.Log($"[LaneNetwork] StateController反転結果: state = {state}");
+
+        int updatedCount = 0;
         foreach (var seg in segments)
         {
             if (seg.laneColor != color) continue;
+
+            updatedCount++; // ← 該当する色のセグメントが見つかったらカウント
+
             seg.SetReversed(state);
             sushiRegistry.ForEachOnSegment(seg, s => s.SyncDirectionWithSegment());
         }
 
-        // Nodeの出口を次のインデックスへ進める
+        // ★ここに注目：実際に何個のセグメントの色が一致して反転したかを出力
+        Debug.Log($"[LaneNetwork] 実際に反転処理されたセグメント数 (matched): {updatedCount}");
+
         foreach (var node in nodes)
         {
             if (node.laneColor != color) continue;
             node.StepExit();
         }
 
-        // 停滞している寿司の再出発を試みる
         sushiRegistry.TryExitStuckAtNode(null);
+    }
+
+    /// <summary>
+    /// このステージ(シーン)に、指定した色のセグメントが実際に1つでも存在するかを返す。
+    /// LaneSelectorUIが、存在しない色のボタンを選択候補から除外するために使う。
+    /// </summary>
+    public bool HasLane(LaneColor color)
+    {
+        foreach (var seg in segments)
+        {
+            if (seg.laneColor == color) return true;
+        }
+        return false;
     }
 }
