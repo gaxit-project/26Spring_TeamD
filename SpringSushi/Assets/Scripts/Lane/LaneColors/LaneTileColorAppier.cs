@@ -1,25 +1,32 @@
-using UnityEngine;
-
+ï»¿using UnityEngine;
 /// <summary>
-/// LaneSegment‚ÌLaneColor‚ğQÆ‚µ‚ÄA
-/// Lane’¼‰º‚ÌCubeECylinder‚ÌMaterial‚ğ©“®İ’è‚·‚éƒRƒ“ƒ|[ƒlƒ“ƒgB
-/// LaneBase‚Í‘ÎÛŠOB
-///
-/// yHierarchy\¬z
-/// LaneSegment (LaneSegment.cs)
-///   „¤„Ÿ Tile_00 (LaneTileColorApplier.cs) © ‚±‚±‚ÉƒAƒ^ƒbƒ`
-///        „¥„Ÿ LaneBase  © ‘ÎÛŠO
-///        „¤„Ÿ Lane
-///             „¥„Ÿ Cube      © Material•ÏX‘ÎÛ
-///             „¤„Ÿ Cylinder  © Material•ÏX‘ÎÛ
+/// LaneSegmentã®LaneColorã‚’å‚ç…§ã—ã¦ã€
+/// æŒ‡å®šã—ãŸæ¡ä»¶ï¼ˆç›´ä¸‹ã€ã¾ãŸã¯ç‰¹å®šã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåï¼‰ã®Rendererã®Materialã‚’è‡ªå‹•è¨­å®šã™ã‚‹ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã€‚
+/// LaneBaseã¯å¯¾è±¡å¤–ã€‚
 /// </summary>
 public class LaneTileColorApplier : MonoBehaviour
 {
-    [Header("ƒpƒŒƒbƒg")]
+    public enum TargetMode
+    {
+        DirectChildrenUnderLane, // Laneç›´ä¸‹ã®ã™ã¹ã¦ã®Rendererã‚’å¯¾è±¡
+        MatchNames               // æŒ‡å®šã—ãŸåå‰ã«ä¸€è‡´ã™ã‚‹Rendererã‚’å¯¾è±¡ï¼ˆéšå±¤ãŒæ·±ãã¦ã‚‚OKï¼‰
+    }
+
+    [Header("ãƒ‘ãƒ¬ãƒƒãƒˆ")]
     [SerializeField] public LaneColorPalette palette;
 
-    [Header("LaneƒIƒuƒWƒFƒNƒg‚Ì–¼‘Oi‚±‚Ì’¼‰º‚ÌRenderer‚Ì‚İ‘ÎÛj")]
+    [Header("Laneã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åå‰")]
     [SerializeField] private string laneChildName = "Lane";
+
+    [Header("å¤‰æ›´å¯¾è±¡ã®æŒ‡å®šæ–¹æ³•")]
+    [SerializeField] private TargetMode targetMode = TargetMode.DirectChildrenUnderLane;
+
+    [Header("å¯¾è±¡ã®åå‰ãƒªã‚¹ãƒˆ (MatchNamesãƒ¢ãƒ¼ãƒ‰æ™‚ã®ã¿æœ‰åŠ¹)")]
+    [Tooltip("ã“ã“ã«ç™»éŒ²ã—ãŸåå‰ï¼ˆéƒ¨åˆ†ä¸€è‡´ã¾ãŸã¯å®Œå…¨ä¸€è‡´ï¼‰ã‚’æŒã¤ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®Materialã‚’å¤‰æ›´ã—ã¾ã™")]
+    [SerializeField] private string[] targetObjectNames = { "Cube", "Cylinder" };
+
+    [Tooltip("å®Œå…¨ä¸€è‡´ã®ã¿ã«ã™ã‚‹å ´åˆã¯ãƒã‚§ãƒƒã‚¯ï¼ˆã‚ªãƒ•ãªã‚‰éƒ¨åˆ†ä¸€è‡´ï¼‰")]
+    [SerializeField] private bool exactMatch = true;
 
     private LaneSegment segment;
 
@@ -28,7 +35,7 @@ public class LaneTileColorApplier : MonoBehaviour
         segment = GetComponentInParent<LaneSegment>();
         if (segment == null)
         {
-            UnityEngine.Debug.LogWarning($"[LaneTileColorApplier] {gameObject.name}: e‚ÉLaneSegment‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB");
+            UnityEngine.Debug.LogWarning($"[LaneTileColorApplier] {gameObject.name}: è¦ªã«LaneSegmentãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚");
             return;
         }
         ApplyColor(segment.laneColor);
@@ -38,32 +45,80 @@ public class LaneTileColorApplier : MonoBehaviour
     {
         if (palette == null)
         {
-            UnityEngine.Debug.LogWarning($"[LaneTileColorApplier] {gameObject.name}: LaneColorPalette‚ª–¢ƒAƒTƒCƒ“‚Å‚·B");
+            UnityEngine.Debug.LogWarning($"[LaneTileColorApplier] {gameObject.name}: LaneColorPaletteãŒæœªã‚¢ã‚µã‚¤ãƒ³ã§ã™ã€‚");
             return;
         }
 
         Material mat = palette.GetMaterial(color);
         if (mat == null)
         {
-            UnityEngine.Debug.LogWarning($"[LaneTileColorApplier] {gameObject.name}: LaneColor.{color} ‚É‘Î‰‚·‚éMaterial‚ªƒpƒŒƒbƒg‚É–¢“o˜^‚Å‚·B");
+            UnityEngine.Debug.LogWarning($"[LaneTileColorApplier] {gameObject.name}: LaneColor.{color} ã«å¯¾å¿œã™ã‚‹MaterialãŒãƒ‘ãƒ¬ãƒƒãƒˆã«æœªç™»éŒ²ã§ã™ã€‚");
             return;
         }
 
-        // "Lane"‚Æ‚¢‚¤–¼‘O‚ÌqTransform‚ğ’T‚·
+        // "Lane"ã¨ã„ã†åå‰ã®å­Transformã‚’æ¢ã™
         Transform laneTransform = FindChildByName(transform, laneChildName);
         if (laneTransform == null)
         {
-            UnityEngine.Debug.LogWarning($"[LaneTileColorApplier] {gameObject.name}: '{laneChildName}' ‚Æ‚¢‚¤–¼‘O‚Ìq‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB");
+            UnityEngine.Debug.LogWarning($"[LaneTileColorApplier] {gameObject.name}: '{laneChildName}' ã¨ã„ã†åå‰ã®å­ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚");
             return;
         }
 
-        // Lane’¼‰º‚ÌRenderer‚Ì‚İ‘ÎÛi‘·ˆÈ~‚ÍŠÜ‚Ü‚È‚¢j
-        foreach (Transform child in laneTransform)
+        // é¸æŠã•ã‚Œã¦ã„ã‚‹ãƒ¢ãƒ¼ãƒ‰ã«å¿œã˜ã¦è‰²ã‚’é©ç”¨
+        if (targetMode == TargetMode.DirectChildrenUnderLane)
         {
-            var rend = child.GetComponent<Renderer>();
-            if (rend != null)
-                rend.material = mat;
+            // Laneç›´ä¸‹ã®Rendererã®ã¿å¯¾è±¡ï¼ˆå­«ä»¥é™ã¯å«ã¾ãªã„ï¼‰
+            foreach (Transform child in laneTransform)
+            {
+                var rend = child.GetComponent<Renderer>();
+                if (rend != null)
+                    rend.material = mat;
+            }
         }
+        else if (targetMode == TargetMode.MatchNames)
+        {
+            // Laneã®å­å­«ã™ã¹ã¦ã‹ã‚‰ã€æŒ‡å®šã•ã‚ŒãŸåå‰ã«ä¸€è‡´ã™ã‚‹Rendererã‚’æ¢ã—ã¦é©ç”¨
+            ApplyColorRecursive(laneTransform, mat);
+        }
+    }
+
+    private void ApplyColorRecursive(Transform current, Material mat)
+    {
+        // è‡ªèº«ã®åå‰ãŒãƒªã‚¹ãƒˆã«å«ã¾ã‚Œã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
+        if (IsTargetNameMatch(current.name))
+        {
+            var rend = current.GetComponent<Renderer>();
+            if (rend != null)
+            {
+                rend.material = mat;
+            }
+        }
+
+        // å­éšå±¤ã‚’å†å¸°çš„ã«æ¢ç´¢
+        foreach (Transform child in current)
+        {
+            ApplyColorRecursive(child, mat);
+        }
+    }
+
+    private bool IsTargetNameMatch(string objName)
+    {
+        if (targetObjectNames == null || targetObjectNames.Length == 0) return false;
+
+        foreach (var targetName in targetObjectNames)
+        {
+            if (string.IsNullOrEmpty(targetName)) continue;
+
+            if (exactMatch)
+            {
+                if (objName == targetName) return true;
+            }
+            else
+            {
+                if (objName.Contains(targetName)) return true;
+            }
+        }
+        return false;
     }
 
     private Transform FindChildByName(Transform parent, string name)
@@ -99,12 +154,13 @@ public class LaneTileColorApplierEditor : UnityEditor.Editor
 
         var applier = (LaneTileColorApplier)target;
         GUI.backgroundColor = new Color(0.4f, 0.75f, 1f);
-        if (GUILayout.Button("? Editor‚ÅF‚ğ“K—p", GUILayout.Height(30)))
+        if (GUILayout.Button("ğŸ”„ Editorã§è‰²ã‚’é©ç”¨", GUILayout.Height(30)))
             applier.ApplyInEditor();
         GUI.backgroundColor = Color.white;
 
         UnityEditor.EditorGUILayout.HelpBox(
-            "Lane’¼‰ºiLaneBaseœ‚­j‚ÌRenderer‚Ì‚İMaterial‚ğ•ÏX‚µ‚Ü‚·B\nÀs‚ÍAwake()‚Å©“®“K—p‚³‚ê‚Ü‚·B",
+            "ãƒ»DirectChildrenUnderLane: Laneç›´ä¸‹ã®Rendererã®ã¿å¤‰æ›´\n" +
+            "ãƒ»MatchNames: æŒ‡å®šã—ãŸåå‰(è¤‡æ•°å¯)ã«ä¸€è‡´ã™ã‚‹å­å­«ã®Rendererã‚’å¤‰æ›´",
             UnityEditor.MessageType.Info
         );
     }
