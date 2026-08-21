@@ -831,7 +831,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &83579242
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3795,7 +3795,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &301409888
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8708,7 +8708,7 @@ PrefabInstance:
     - target: {fileID: 7904308973093206761, guid: 7e1607d8960bf9045b2f00fd41d1fe1a,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -11788,7 +11788,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &913621854
 RectTransform:
   m_ObjectHideFlags: 0
@@ -14102,7 +14102,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1156745897
 RectTransform:
   m_ObjectHideFlags: 0
@@ -21934,8 +21934,8 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 913621854}
   - {fileID: 1156745897}
+  - {fileID: 913621854}
   - {fileID: 83579242}
   - {fileID: 2022822556}
   - {fileID: 301409888}
@@ -26469,7 +26469,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2022822556
 RectTransform:
   m_ObjectHideFlags: 0
