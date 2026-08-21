@@ -16,9 +16,13 @@ public class LaneSelectorUI : MonoBehaviour
     [Header("ハイライト設定")]
     [SerializeField] private Color normalColor = Color.white;
     [SerializeField] private Color selectedColor = Color.red;
-    [SerializeField] private Color disabledColor = new Color(0.3f, 0.3f, 0.3f, 0.5f);
+
+    [Header("フェード点滅設定")]
+    [Tooltip("点滅の速さ（1往復にかかる時間や周期の調整）")]
+    [SerializeField] private float fadeSpeed = 3.0f;
 
     [Header("スティック選択設定")]
+    [Tooltip("スティックを倒し続けたとき選択が切り替わる間隔（秒）")]
     [SerializeField] private float switchInterval = 0.3f;
     [SerializeField] private float stickDeadzone = 0.5f;
 
@@ -29,12 +33,15 @@ public class LaneSelectorUI : MonoBehaviour
 
     private void Awake()
     {
-        // ★ buttonBackgrounds が未設定（手動アサイン忘れ、またはPrefab化対策）の場合、
-        //    自身のビルダーや子要素からImageを自動で集める
+        // LaneNetworkが未設定なら自動でシーン内から探す（Prefab対策）
+        if (laneNetwork == null)
+        {
+            laneNetwork = FindObjectOfType<LaneNetwork>();
+        }
+
+        // buttonBackgrounds が未設定の場合、子要素からImageを自動で集める
         if (buttonBackgrounds == null || buttonBackgrounds.Length != colorOrder.Length)
         {
-            // 例：このPrefabの子オブジェクトから順に Image を取得する
-            // （子オブジェクトの並び順が Red, Blue, Green, Yellow である前提）
             buttonBackgrounds = new Image[colorOrder.Length];
             for (int i = 0; i < colorOrder.Length; i++)
             {
@@ -48,22 +55,45 @@ public class LaneSelectorUI : MonoBehaviour
 
     private void OnEnable()
     {
-        // このUIが有効な間は、ダイレクト方式(X/Y/A/B)のレーン反転入力を無効化する
+        // ダイレクト方式を無効化
         LaneInputManager.DirectInputDisabled = true;
-        availabilityBuilt = false; // 有効化されるたびに再構築を試みる
+        // 選択方式のAボタン決定も許可状態にする
+        LaneSelectDecideInput.InputDisabled = false;
+        availabilityBuilt = false;
     }
 
     private void OnDisable()
     {
+        // ダイレクト方式を元に戻す
         LaneInputManager.DirectInputDisabled = false;
+        // 選択方式のAボタン決定も無効化する
+        LaneSelectDecideInput.InputDisabled = true;
     }
 
-    /// <summary>
-    /// このステージに実際に存在する色だけを選択可能とし、
-    /// 選択中インデックスも最初の選択可能な色に合わせる。
-    /// LaneNetwork.Awake()がまだ実行されていない場合は失敗するので、
-    /// Updateから毎フレーム再試行する。
-    /// </summary>
+    private void Update()
+    {
+        // ★ プレイ中（Playing）以外（ポーズ中やタイトル等）なら何もしない
+        if (GameStateManager.Instance == null || !GameStateManager.Instance.IsPlaying)
+        {
+            return;
+        }
+
+        // まだ利用可能フラグが立っていなければ構築を試みる
+        if (!availabilityBuilt)
+        {
+            BuildAvailability();
+        }
+
+        // availabilityBuilt が立っていれば、フェード点滅のため毎フレームハイライトを更新する
+        if (availabilityBuilt)
+        {
+            UpdateHighlight();
+        }
+
+        HandleStickSelection();
+        HandleDecideButton();
+    }
+
     private void BuildAvailability()
     {
         if (laneNetwork == null) return;
@@ -95,20 +125,6 @@ public class LaneSelectorUI : MonoBehaviour
         return -1;
     }
 
-    private void Update()
-    {
-        if (!availabilityBuilt)
-        {
-            BuildAvailability();
-            if (availabilityBuilt) UpdateHighlight();
-        }
-
-        Debug.Log($"[LaneSelectorUI] Update: availabilityBuilt={availabilityBuilt}"); // ← 一時追加
-
-        HandleStickSelection();
-        HandleDecideButton();
-    }
-
     private void HandleStickSelection()
     {
         if (!availabilityBuilt) return;
@@ -122,10 +138,13 @@ public class LaneSelectorUI : MonoBehaviour
             {
                 int dir = horizontal > 0 ? 1 : -1;
                 int nextIndex = FindNextAvailableIndex(selectedIndex, dir);
-                if (nextIndex >= 0) selectedIndex = nextIndex;
+                if (nextIndex >= 0)
+                {
+                    selectedIndex = nextIndex;
+                    UpdateHighlight(); // ← 選択が変わった瞬間にもハイライトを更新
+                }
 
                 switchTimer = switchInterval;
-                UpdateHighlight();
             }
         }
         else
@@ -151,7 +170,6 @@ public class LaneSelectorUI : MonoBehaviour
     {
         if (!availabilityBuilt) return;
 
-        // IsPressedの代わりに、新しく作った WasPressedThisFrame を使う
         if (LaneSelectDecideInput.WasPressedThisFrame)
         {
             Debug.Log($"[LaneSelectorUI] selectedIndex={selectedIndex}, color={colorOrder[selectedIndex]}, isAvailable={IsIndexAvailable(selectedIndex)}");
@@ -170,17 +188,30 @@ public class LaneSelectorUI : MonoBehaviour
     {
         if (buttonBackgrounds == null) return;
 
+        // Mathf.PingPong を使って 0.0 ～ 1.0 の間を滑らかに往復させる
+        float t = Mathf.PingPong(Time.time * fadeSpeed, 1f);
+
         for (int i = 0; i < buttonBackgrounds.Length; i++)
         {
             if (buttonBackgrounds[i] == null) continue;
 
             if (!IsIndexAvailable(i))
             {
-                buttonBackgrounds[i].color = disabledColor;
+                buttonBackgrounds[i].gameObject.SetActive(false);
             }
             else
             {
-                buttonBackgrounds[i].color = (i == selectedIndex) ? selectedColor : normalColor;
+                buttonBackgrounds[i].gameObject.SetActive(true);
+
+                if (i == selectedIndex)
+                {
+                    // normalColor と selectedColor の間を滑らかに補間（フェード）させる
+                    buttonBackgrounds[i].color = Color.Lerp(normalColor, selectedColor, t);
+                }
+                else
+                {
+                    buttonBackgrounds[i].color = normalColor;
+                }
             }
         }
     }

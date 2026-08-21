@@ -704,7 +704,7 @@ MonoBehaviour:
   - {fileID: 7753077086199454990}
   - {fileID: 1025267097189516879}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
-  selectedColor: {r: 1, g: 0.3820755, b: 0.3820755, a: 1}
-  disabledColor: {r: 1, g: 1, b: 1, a: 0.5}
+  selectedColor: {r: 1, g: 0.64705884, b: 0, a: 1}
+  fadeSpeed: 2
   switchInterval: 0.3
   stickDeadzone: 0.5
