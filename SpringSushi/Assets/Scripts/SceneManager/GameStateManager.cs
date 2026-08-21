@@ -22,21 +22,22 @@ public class GameStateManager : MonoBehaviour
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        Debug.Log($"[GameState] Initialized → {CurrentState}");
+        // ▼ 追加：ゲーム全体でFPSを60に固定する
+        Application.targetFrameRate = 60;
+        // VSyncが有効だとtargetFrameRateが無視されることがあるため0にする
+        QualitySettings.vSyncCount = 0;
     }
 
     public void SetState(GameState newState)
     {
         if (CurrentState == newState)
         {
-            Debug.Log($"[GameState] SetState無視（同じState）: {CurrentState}");
             return;
         }
 
         // Ready中はPauseへの遷移を禁止
         if (CurrentState == GameState.Ready && newState == GameState.Paused)
         {
-            Debug.LogWarning($"[GameState] ★ Ready中のPause試行をブロック (呼び出し元: {GetCallerInfo()})");
             return;
         }
 
