@@ -141,3 +141,7 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 6d4c2ee15d36446469ac4de22a7354a0, type: 3}
     category: 2
     volumeMultiplier: 0.25
+  - key: satisfied_voice
+    clip: {fileID: 8300000, guid: c5d57ad5105cf6b4a89551dcaae73dae, type: 3}
+    category: 1
+    volumeMultiplier: 3
