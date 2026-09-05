@@ -29,7 +29,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1404280596995102731}
   m_Father: {fileID: 4683643542787584440}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -100,12 +101,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6648436726144186193}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4683643542787584440}
+  m_Father: {fileID: 1618645805818739736}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -162,8 +163,9 @@ GameObject:
   - component: {fileID: 6219216970292560048}
   - component: {fileID: 773241325496090685}
   - component: {fileID: 3314175079455526563}
+  - component: {fileID: 206338566361212483}
   m_Layer: 5
-  m_Name: LaneSelectorPanel1
+  m_Name: LaneSelectorPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -182,13 +184,12 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1618645805818739736}
-  - {fileID: 1404280596995102731}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -609.85474, y: -445}
-  m_SizeDelta: {x: -1219.709, y: -890}
+  m_AnchoredPosition: {x: -29, y: -443}
+  m_SizeDelta: {x: -1719.1377, y: -890}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6219216970292560048
 CanvasRenderer:
@@ -241,11 +242,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laneNetwork: {fileID: 0}
+  colorButtonTracker: {fileID: 206338566361212483}
   colorOrder: 00000000
-  buttonBackgrounds:
-  - {fileID: 3955410045865699842}
-  normalColor: {r: 1, g: 1, b: 1, a: 1}
-  selectedColor: {r: 1, g: 0.3820755, b: 0.3820755, a: 1}
-  fadeSpeed: 2
-  switchInterval: 0.3
   stickDeadzone: 0.5
+  switchInterval: 0.3
+--- !u!114 &206338566361212483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7904308973093206761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea479a34ea63d26408d4deefdc4b8dee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  laneSelectorUI: {fileID: 3314175079455526563}
+  hudCanvas: {fileID: 0}
+  mainCamera: {fileID: 0}
+  buttons:
+  - color: 0
+    buttonImage: {fileID: 3955410045865699842}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  selectedColor: {r: 1, g: 0.84313726, b: 0, a: 1}
+  blinkSpeed: 2

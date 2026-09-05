@@ -1,30 +1,20 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class LaneSelectorUI : MonoBehaviour
 {
     [Header("参照")]
     [SerializeField] private LaneNetwork laneNetwork;
+    [SerializeField] private LaneColorButtonTracker colorButtonTracker;
 
-    [Header("ボタン表示順（左から右へ）")]
+    [Header("スティック選択のサイクル順（フォールバック用）")]
+    [Tooltip("画面座標が取得できない場合に使う、順送り選択の順番")]
     [SerializeField] private LaneColor[] colorOrder = { LaneColor.Red, LaneColor.Blue, LaneColor.Green, LaneColor.Yellow };
 
-    [Header("UI参照（自動取得する場合は空でも可）")]
-    [Tooltip("手動でアサインしない場合、子要素から自動で取得します")]
-    [SerializeField] private Image[] buttonBackgrounds;
-
-    [Header("ハイライト設定")]
-    [SerializeField] private Color normalColor = Color.white;
-    [SerializeField] private Color selectedColor = Color.red;
-
-    [Header("フェード点滅設定")]
-    [Tooltip("点滅の速さ（1往復にかかる時間や周期の調整）")]
-    [SerializeField] private float fadeSpeed = 3.0f;
-
     [Header("スティック選択設定")]
-    [Tooltip("スティックを倒し続けたとき選択が切り替わる間隔（秒）")]
-    [SerializeField] private float switchInterval = 0.3f;
+    [Tooltip("この入力量を下回る場合は無入力とみなす")]
     [SerializeField] private float stickDeadzone = 0.5f;
+    [Tooltip("同じ方向へ切り替わり続けないための、切り替え後の再入力までの間隔（秒）")]
+    [SerializeField] private float switchInterval = 0.3f;
 
     private int selectedIndex = 0;
     private float switchTimer = 0f;
@@ -33,7 +23,7 @@ public class LaneSelectorUI : MonoBehaviour
 
     /// <summary>
     /// 現在選択中のレーンの色。選択可能な色が1つもない場合はnull。
-    /// LaneGlowControllerが、発光させるべき色を判定するために参照する。
+    /// LaneGlowController・LaneColorButtonTrackerが、表示に反映するために参照する。
     /// </summary>
     public LaneColor? CurrentSelectedColor =>
         IsIndexAvailable(selectedIndex) ? colorOrder[selectedIndex] : (LaneColor?)null;
@@ -44,17 +34,9 @@ public class LaneSelectorUI : MonoBehaviour
         {
             laneNetwork = FindObjectOfType<LaneNetwork>();
         }
-
-        if (buttonBackgrounds == null || buttonBackgrounds.Length != colorOrder.Length)
+        if (colorButtonTracker == null)
         {
-            buttonBackgrounds = new Image[colorOrder.Length];
-            for (int i = 0; i < colorOrder.Length; i++)
-            {
-                if (transform.childCount > i)
-                {
-                    buttonBackgrounds[i] = transform.GetChild(i).GetComponent<Image>();
-                }
-            }
+            colorButtonTracker = FindObjectOfType<LaneColorButtonTracker>();
         }
     }
 
@@ -81,11 +63,6 @@ public class LaneSelectorUI : MonoBehaviour
         if (!availabilityBuilt)
         {
             BuildAvailability();
-        }
-
-        if (availabilityBuilt)
-        {
-            UpdateHighlight();
         }
 
         HandleStickSelection();
@@ -123,35 +100,86 @@ public class LaneSelectorUI : MonoBehaviour
         return -1;
     }
 
+    /// <summary>
+    /// 左スティックの入力ベクトル(X,Y両方)を使い、
+    /// 現在の選択位置から見て、スティックの向きに最も近い方向にある色へ切り替える。
+    /// 画面上の位置情報が取得できない場合は、colorOrderに沿った左右の順送りにフォールバックする。
+    /// </summary>
     private void HandleStickSelection()
     {
         if (!availabilityBuilt) return;
 
-        float horizontal = SpawnerInputManager.LeftStickValue.x;
-
-        if (Mathf.Abs(horizontal) > stickDeadzone)
-        {
-            switchTimer -= Time.deltaTime;
-            if (switchTimer <= 0f)
-            {
-                int dir = horizontal > 0 ? 1 : -1;
-                int nextIndex = FindNextAvailableIndex(selectedIndex, dir);
-                if (nextIndex >= 0)
-                {
-                    selectedIndex = nextIndex;
-                    UpdateHighlight();
-                }
-
-                switchTimer = switchInterval;
-            }
-        }
-        else
+        Vector2 stick = SpawnerInputManager.LeftStickValue;
+        if (stick.sqrMagnitude < stickDeadzone * stickDeadzone)
         {
             switchTimer = 0f;
+            return;
+        }
+
+        switchTimer -= Time.deltaTime;
+        if (switchTimer > 0f) return;
+
+        int nextIndex = FindNearestByDirection(stick);
+        if (nextIndex < 0)
+        {
+            // 画面座標が取得できない場合のフォールバック：X軸だけ見て順送り
+            int dir = stick.x > 0 ? 1 : -1;
+            nextIndex = FindNextAvailableIndexCyclic(selectedIndex, dir);
+        }
+
+        if (nextIndex >= 0 && nextIndex != selectedIndex)
+        {
+            selectedIndex = nextIndex;
+            switchTimer = switchInterval;
         }
     }
 
-    private int FindNextAvailableIndex(int start, int dir)
+    /// <summary>
+    /// 現在選択中の色の画面座標を基準に、stickDir方向に最も近い他の色を探す。
+    /// Unityのスクリーン座標はY軸が上向き正、スティックのYも上向き正のため、そのまま使える。
+    /// </summary>
+    private int FindNearestByDirection(Vector2 stickDir)
+    {
+        if (colorButtonTracker == null) return -1;
+        if (!colorButtonTracker.TryGetScreenPosition(colorOrder[selectedIndex], out Vector2 currentPos))
+            return -1;
+
+        stickDir = stickDir.normalized;
+
+        int bestIndex = -1;
+        float bestScore = -2f; // 内積の最小値(-1)より小さい初期値
+
+        for (int i = 0; i < colorOrder.Length; i++)
+        {
+            if (i == selectedIndex) continue;
+            if (!IsIndexAvailable(i)) continue;
+
+            if (!colorButtonTracker.TryGetScreenPosition(colorOrder[i], out Vector2 candidatePos))
+                continue;
+
+            Vector2 toCandidate = candidatePos - currentPos;
+            if (toCandidate.sqrMagnitude < 0.0001f) continue; // 同じ位置ならスキップ
+
+            Vector2 dirToCandidate = toCandidate.normalized;
+
+            // スティックの向きと、候補への方向の近さを内積で評価する(1に近いほど同じ向き)
+            float score = Vector2.Dot(stickDir, dirToCandidate);
+
+            // 真逆?直角に近い候補は選ばせない(意図しない方向へ飛ぶのを防ぐ)
+            if (score < 0.3f) continue;
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestIndex = i;
+            }
+        }
+
+        return bestIndex;
+    }
+
+    /// <summary>フォールバック用：colorOrderに沿った単純な順送り。</summary>
+    private int FindNextAvailableIndexCyclic(int start, int dir)
     {
         if (isAvailable == null || isAvailable.Length == 0) return start;
 
@@ -174,36 +202,6 @@ public class LaneSelectorUI : MonoBehaviour
             {
                 LaneColor color = colorOrder[selectedIndex];
                 laneNetwork.ToggleLane(color);
-            }
-        }
-    }
-
-    private void UpdateHighlight()
-    {
-        if (buttonBackgrounds == null) return;
-
-        float t = Mathf.PingPong(Time.time * fadeSpeed, 1f);
-
-        for (int i = 0; i < buttonBackgrounds.Length; i++)
-        {
-            if (buttonBackgrounds[i] == null) continue;
-
-            if (!IsIndexAvailable(i))
-            {
-                buttonBackgrounds[i].gameObject.SetActive(false);
-            }
-            else
-            {
-                buttonBackgrounds[i].gameObject.SetActive(true);
-
-                if (i == selectedIndex)
-                {
-                    buttonBackgrounds[i].color = Color.Lerp(normalColor, selectedColor, t);
-                }
-                else
-                {
-                    buttonBackgrounds[i].color = normalColor;
-                }
             }
         }
     }

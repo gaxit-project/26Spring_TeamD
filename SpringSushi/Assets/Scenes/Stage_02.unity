@@ -8756,15 +8756,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6509394641463248339, guid: 7e1607d8960bf9045b2f00fd41d1fe1a,
+        type: 3}
+      propertyPath: hudCanvas
+      value: 
+      objectReference: {fileID: 1402564090}
+    - target: {fileID: 6509394641463248339, guid: 7e1607d8960bf9045b2f00fd41d1fe1a,
+        type: 3}
+      propertyPath: mainCamera
+      value: 
+      objectReference: {fileID: 759727118}
     - target: {fileID: 7904308973093206761, guid: 7e1607d8960bf9045b2f00fd41d1fe1a,
         type: 3}
       propertyPath: m_Name
       value: LaneSelectorPanel4
-      objectReference: {fileID: 0}
-    - target: {fileID: 7904308973093206761, guid: 7e1607d8960bf9045b2f00fd41d1fe1a,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
