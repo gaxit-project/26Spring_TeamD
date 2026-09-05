@@ -5623,9 +5623,9 @@ MonoBehaviour:
   - Stage_02
   - Stage_03
   stageSprites:
-  - {fileID: 21300000, guid: 3a99159e072168349832213e635f3d24, type: 3}
-  - {fileID: 21300000, guid: 3a99159e072168349832213e635f3d24, type: 3}
-  - {fileID: 21300000, guid: e1f0eab79918ef04ea99afb99ebc6aae, type: 3}
+  - {fileID: 21300000, guid: 6e5168e7b14afd64b91f8e7abfaa90cd, type: 3}
+  - {fileID: 21300000, guid: a3fd57b3bbaec4946a59820cb7ceabdf, type: 3}
+  - {fileID: 21300000, guid: a8cb66da47d65b4479675759f8f59e70, type: 3}
   stageGoals:
   - {fileID: 11400000, guid: 40489985cca60d24c81bf7fde1700dce, type: 2}
   - {fileID: 11400000, guid: 567171d995a25b541aac90685023ad60, type: 2}
