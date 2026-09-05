@@ -222,16 +222,29 @@ public class SushiMovement : MonoBehaviour
             {
                 isCollisionHandled = true;
 
-                // 先にコンボを加算（8コンボ目ならここでフィーバーへ突入）
+                // 1. 先にコンボを加算（8コンボ目ならここでフィーバーへ突入）
                 ComboManager.Instance?.IncrementCombo();
 
-                // フィーバー倍率を適用したスコアを加算
-                int earnedScore = FeverManager.Instance != null
+                bool isFever = FeverManager.Instance != null && FeverManager.Instance.IsFever;
+
+                // 2. フィーバー倍率を適用したスコアを加算
+                int earnedScore = isFever
                     ? FeverManager.Instance.GetEarnedScore(data.price)
                     : data.price;
 
                 ScoreManager.Instance?.AddScore(earnedScore);
-                PricePopupManager.Instance?.ShowPopup(earnedScore, transform.position);
+
+                // ★ 3. フィーバー中は "+○○×2.0円"、通常時は "+○○円" で表示
+                if (isFever && FeverManager.Instance != null)
+                {
+                    float mult = FeverManager.Instance.ScoreMultiplier;
+                    string feverText = $"+{data.price}×{mult:0.0}円"; // 例: +100×2.0円
+                    PricePopupManager.Instance?.ShowPopup(feverText, transform.position);
+                }
+                else
+                {
+                    PricePopupManager.Instance?.ShowPopup(data.price, transform.position);
+                }
 
                 SushiDestroy();
             }
