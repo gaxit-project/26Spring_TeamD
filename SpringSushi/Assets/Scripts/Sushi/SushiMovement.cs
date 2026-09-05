@@ -6,7 +6,17 @@ public class SushiMovement : MonoBehaviour
     public SushiData data;
 
     [Header("Settings")]
-    public float moveSpeed = 1.0f;
+    [Tooltip("通常時の移動速度")]
+    [SerializeField] private float normalSpeed = 4.0f; // ★ 通常速度 4
+
+    [Tooltip("フィーバー時の移動速度")]
+    [SerializeField] private float feverSpeed = 6.0f;  // ★ フィーバー時速度 6
+
+    /// <summary>
+    /// 現在適用される移動速度（フィーバー中なら自動でfeverSpeedになる）
+    /// </summary>
+    public float CurrentMoveSpeed =>
+        (FeverManager.Instance != null && FeverManager.Instance.IsFever) ? feverSpeed : normalSpeed;
 
     [Header("振動設定")]
     public float wobbleAmplitude = 0.15f;
@@ -25,7 +35,7 @@ public class SushiMovement : MonoBehaviour
     private Vector3 wobbleAxis;
     private float wobbleTime = 0f;
 
-    // ★ 衝突処理済みフラグ（二重発火防止）
+    // 衝突処理済みフラグ（二重発火防止）
     private bool isCollisionHandled = false;
 
     public void Initialize(SushiData data, LaneSegment seg, LaneNode spawnNode, SushiRegistry registry)
@@ -73,7 +83,9 @@ public class SushiMovement : MonoBehaviour
         if (totalDist <= 0.001f) return;
 
         float directionFactor = movingTowardsNodeB ? 1f : -1f;
-        progress += (moveSpeed / totalDist) * Time.deltaTime * directionFactor;
+
+        // ★ moveSpeed の代わりに CurrentMoveSpeed (4 または 6) を使用
+        progress += (CurrentMoveSpeed / totalDist) * Time.deltaTime * directionFactor;
         float t = Mathf.Clamp01(progress);
         transform.position = Vector3.Lerp(currentSegment.nodeA.Position, currentSegment.nodeB.Position, t);
 
@@ -111,7 +123,6 @@ public class SushiMovement : MonoBehaviour
     }
 
     // --- 停滞処理 ---
-
     private void EnterStuck(LaneNode node, LaneSegment from)
     {
         isStuck = true;
@@ -160,31 +171,37 @@ public class SushiMovement : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
+        // ----------------------------------------------------
+        // 寿司同士の衝突
+        // ----------------------------------------------------
         if (other.CompareTag("Sushi"))
         {
             var otherSushi = other.GetComponent<SushiMovement>();
             if (otherSushi == null) return;
 
-            // ★ どちらか一方がすでに処理済みなら何もしない
             if (isCollisionHandled || otherSushi.isCollisionHandled) return;
-
-            // ★ インスタンスIDが大きい方だけがスコア計算・Destroyを担当する
-            //    これにより A→B と B→A の二重発火を1回に抑える
             if (gameObject.GetInstanceID() < otherSushi.gameObject.GetInstanceID()) return;
 
-            // 両方に処理済みフラグを立てる
             isCollisionHandled = true;
             otherSushi.isCollisionHandled = true;
 
-            int lossAmount = data.price + otherSushi.data.price;
+            bool isFever = FeverManager.Instance != null && FeverManager.Instance.IsFever;
 
-            ScoreManager.Instance?.SubtractScore(lossAmount);
+            // ★ フィーバー中でない場合のみ、スコア減算と赤字ポップアップを行う
+            // （SubtractScore を呼ばないため、ScoreDownの減算SEも鳴りません）
+            if (!isFever)
+            {
+                int lossAmount = data.price + otherSushi.data.price;
+                ScoreManager.Instance?.SubtractScore(lossAmount);
+
+                Vector3 popupPos = (transform.position + otherSushi.transform.position) * 0.5f;
+                PricePopupManager.Instance?.ShowPopup(-lossAmount, popupPos);
+            }
+
+            // 失敗によるコンボリセット（フィーバー中もコンボ数は途切れる仕様のため呼び出し）
             ComboManager.Instance?.ResetCombo();
 
-            // ポップアップは衝突した2点の中間に1つだけ表示
-            Vector3 popupPos = (transform.position + otherSushi.transform.position) * 0.5f;
-            PricePopupManager.Instance?.ShowPopup(-lossAmount, popupPos);
-
+            // 皿の割れる音
             if (SoundPlayer.Instance != null)
                 SoundPlayer.Instance.PlaySFX(SoundKeys.PlateBreak);
 
@@ -193,6 +210,9 @@ public class SushiMovement : MonoBehaviour
             return;
         }
 
+        // ----------------------------------------------------
+        // お客さんへの提供
+        // ----------------------------------------------------
         if (other.CompareTag("Customer"))
         {
             if (isCollisionHandled) return;
@@ -202,10 +222,10 @@ public class SushiMovement : MonoBehaviour
             {
                 isCollisionHandled = true;
 
-                // ★ 1. 先にコンボを加算（ここで10コンボ目なら即座にフィーバー開始）
+                // 先にコンボを加算（8コンボ目ならここでフィーバーへ突入）
                 ComboManager.Instance?.IncrementCombo();
 
-                // ★ 2. フィーバー倍率を適用した金額を算出（加点時のみ）
+                // フィーバー倍率を適用したスコアを加算
                 int earnedScore = FeverManager.Instance != null
                     ? FeverManager.Instance.GetEarnedScore(data.price)
                     : data.price;
