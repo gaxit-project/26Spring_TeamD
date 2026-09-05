@@ -1703,8 +1703,8 @@ MonoBehaviour:
   - {fileID: 99052706}
   - {fileID: 1304626122}
   connectedSegments: []
-  selectFlame: {fileID: 1676886034}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1001 &145704003
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2331,12 +2331,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 213272429}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &213272431 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 213272429}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &215053339
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2410,12 +2404,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &215053340 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 215053339}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &218244118
 GameObject:
   m_ObjectHideFlags: 0
@@ -2752,8 +2740,8 @@ MonoBehaviour:
   - {fileID: 2003834581}
   - {fileID: 1592906179}
   connectedSegments: []
-  selectFlame: {fileID: 614584742}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1 &228995319
 GameObject:
   m_ObjectHideFlags: 0
@@ -2981,8 +2969,8 @@ MonoBehaviour:
   - {fileID: 365403824}
   - {fileID: 761100690}
   connectedSegments: []
-  selectFlame: {fileID: 918804565}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!4 &233643685 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7838594091761718613, guid: c480cc4fafd03dc4bb96135f6efaa7e3,
@@ -3529,6 +3517,108 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1298602180}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &269184792
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 269184796}
+  - component: {fileID: 269184795}
+  - component: {fileID: 269184794}
+  - component: {fileID: 269184793}
+  m_Layer: 5
+  m_Name: FeverCanvas
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &269184793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 269184792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!114 &269184794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 269184792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_UiScaleMode: 1
+  m_ReferencePixelsPerUnit: 100
+  m_ScaleFactor: 1
+  m_ReferenceResolution: {x: 1980, y: 1080}
+  m_ScreenMatchMode: 0
+  m_MatchWidthOrHeight: 1
+  m_PhysicalUnit: 3
+  m_FallbackScreenDPI: 96
+  m_DefaultSpriteDPI: 96
+  m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
+--- !u!223 &269184795
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 269184792}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 0
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: -3
+  m_TargetDisplay: 0
+--- !u!224 &269184796
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 269184792}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 372584947}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0, y: 0}
 --- !u!1001 &270400571
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3784,8 +3874,8 @@ MonoBehaviour:
   - {fileID: 235466394}
   - {fileID: 2042188051}
   connectedSegments: []
-  selectFlame: {fileID: 643071851}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1 &293854364
 GameObject:
   m_ObjectHideFlags: 0
@@ -3934,12 +4024,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &297325214 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 297325213}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &297767898
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4476,12 +4560,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &332247423 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 332247422}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &346900656
 GameObject:
   m_ObjectHideFlags: 0
@@ -5162,6 +5240,81 @@ Transform:
   - {fileID: 97324691}
   m_Father: {fileID: 1609612475}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &372584946
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 372584947}
+  - component: {fileID: 372584949}
+  - component: {fileID: 372584948}
+  m_Layer: 5
+  m_Name: FeverImage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &372584947
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 372584946}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 269184796}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1980, y: 1080}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &372584948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 372584946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 5c8f72e61226cd341926da708ed7ba55, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &372584949
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 372584946}
+  m_CullTransparentMesh: 1
 --- !u!1 &389661498
 GameObject:
   m_ObjectHideFlags: 0
@@ -5420,8 +5573,8 @@ MonoBehaviour:
   exitSegments:
   - {fileID: 1819786974}
   connectedSegments: []
-  selectFlame: {fileID: 213272431}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!4 &402601884 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8264522528220299145, guid: 36dc7981f49089a4db9ca763d4a9b585,
@@ -6534,8 +6687,8 @@ MonoBehaviour:
   - {fileID: 1304626122}
   - {fileID: 1088165218}
   connectedSegments: []
-  selectFlame: {fileID: 1068346358}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!4 &470885116 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8264522528220299145, guid: 36dc7981f49089a4db9ca763d4a9b585,
@@ -7217,8 +7370,8 @@ MonoBehaviour:
   - {fileID: 1955148290}
   - {fileID: 754748802}
   connectedSegments: []
-  selectFlame: {fileID: 1733288909}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1001 &524730816
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8249,12 +8402,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &614584742 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 614584741}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &615311092
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8653,12 +8800,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &643071851 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 643071850}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &644875003
 GameObject:
   m_ObjectHideFlags: 0
@@ -9475,8 +9616,8 @@ MonoBehaviour:
   - {fileID: 1592906179}
   - {fileID: 957970676}
   connectedSegments: []
-  selectFlame: {fileID: 2102070156}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1001 &693648759
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9734,8 +9875,8 @@ MonoBehaviour:
   - {fileID: 389661505}
   - {fileID: 2048543434}
   connectedSegments: []
-  selectFlame: {fileID: 1298602181}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1 &719739236
 GameObject:
   m_ObjectHideFlags: 0
@@ -10990,12 +11131,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &793874699 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 793874698}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &794937744
 GameObject:
   m_ObjectHideFlags: 0
@@ -11255,8 +11390,8 @@ MonoBehaviour:
   - {fileID: 1194837791}
   - {fileID: 692397811}
   connectedSegments: []
-  selectFlame: {fileID: 1810929182}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!114 &806497635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11364,8 +11499,8 @@ MonoBehaviour:
   - {fileID: 771131683}
   - {fileID: 1464987541}
   connectedSegments: []
-  selectFlame: {fileID: 793874699}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1001 &839450595
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11434,12 +11569,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &839450596 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 839450595}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &842182198
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11740,8 +11869,8 @@ MonoBehaviour:
   - {fileID: 1579463398}
   - {fileID: 235466394}
   connectedSegments: []
-  selectFlame: {fileID: 1055563958}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1001 &856940061
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12543,12 +12672,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &918804565 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 918804564}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &931660769
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13175,12 +13298,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &1006155032 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 1006155031}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1007450593
 GameObject:
   m_ObjectHideFlags: 0
@@ -13375,8 +13492,8 @@ MonoBehaviour:
   - {fileID: 426969578}
   - {fileID: 1495017577}
   connectedSegments: []
-  selectFlame: {fileID: 332247423}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!4 &1022785190 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7838594091761718613, guid: c480cc4fafd03dc4bb96135f6efaa7e3,
@@ -13540,12 +13657,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &1029393626 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 1029393625}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1033088219
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13788,12 +13899,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &1055563958 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 1055563957}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1068346357
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13867,12 +13972,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &1068346358 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 1068346357}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1082194826
 GameObject:
   m_ObjectHideFlags: 0
@@ -14413,8 +14512,8 @@ MonoBehaviour:
   - {fileID: 2042188051}
   - {fileID: 1628712595}
   connectedSegments: []
-  selectFlame: {fileID: 1935332247}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1001 &1141324221
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14805,8 +14904,8 @@ MonoBehaviour:
   - {fileID: 1628712595}
   - {fileID: 2003834581}
   connectedSegments: []
-  selectFlame: {fileID: 839450596}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1 &1174815524
 GameObject:
   m_ObjectHideFlags: 0
@@ -15002,12 +15101,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &1175333214 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 1175333213}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1178943464
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15827,8 +15920,8 @@ MonoBehaviour:
   - {fileID: 644875010}
   - {fileID: 1280043161}
   connectedSegments: []
-  selectFlame: {fileID: 1778236262}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1 &1238505667
 GameObject:
   m_ObjectHideFlags: 0
@@ -16670,12 +16763,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &1298602181 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 1298602180}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1304626115
 GameObject:
   m_ObjectHideFlags: 0
@@ -19184,8 +19271,8 @@ MonoBehaviour:
   - {fileID: 420933413}
   - {fileID: 644875010}
   connectedSegments: []
-  selectFlame: {fileID: 1006155032}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1 &1442864345
 GameObject:
   m_ObjectHideFlags: 0
@@ -20004,8 +20091,8 @@ MonoBehaviour:
   - {fileID: 1579463398}
   - {fileID: 426969578}
   connectedSegments: []
-  selectFlame: {fileID: 1957052457}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1 &1464987534
 GameObject:
   m_ObjectHideFlags: 0
@@ -21127,12 +21214,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &1503414242 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 1503414241}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1512695594
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21578,8 +21659,8 @@ MonoBehaviour:
   - {fileID: 1455385445}
   - {fileID: 771131683}
   connectedSegments: []
-  selectFlame: {fileID: 215053340}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1 &1535686221
 GameObject:
   m_ObjectHideFlags: 0
@@ -22047,8 +22128,8 @@ MonoBehaviour:
   - {fileID: 1464987541}
   - {fileID: 365403824}
   connectedSegments: []
-  selectFlame: {fileID: 1947456913}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1001 &1554395914
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22310,8 +22391,8 @@ MonoBehaviour:
   - {fileID: 754748802}
   - {fileID: 99052706}
   connectedSegments: []
-  selectFlame: {fileID: 2088290777}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1 &1579463391
 GameObject:
   m_ObjectHideFlags: 0
@@ -23711,8 +23792,8 @@ MonoBehaviour:
   - {fileID: 520774241}
   - {fileID: 1455385445}
   connectedSegments: []
-  selectFlame: {fileID: 1175333214}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!4 &1650006811 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8264522528220299145, guid: 36dc7981f49089a4db9ca763d4a9b585,
@@ -23951,12 +24032,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &1676886034 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 1676886033}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1707551099
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24249,12 +24324,6 @@ PrefabInstance:
 --- !u!4 &1733288908 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8264522528220299145, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 1733288907}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1733288909 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
     type: 3}
   m_PrefabInstance: {fileID: 1733288907}
   m_PrefabAsset: {fileID: 0}
@@ -24647,12 +24716,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &1778236262 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 1778236261}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1791281862
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24894,12 +24957,6 @@ PrefabInstance:
 --- !u!4 &1810929181 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8264522528220299145, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 1810929180}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1810929182 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
     type: 3}
   m_PrefabInstance: {fileID: 1810929180}
   m_PrefabAsset: {fileID: 0}
@@ -25888,8 +25945,8 @@ MonoBehaviour:
   - {fileID: 1449536825}
   - {fileID: 1194837791}
   connectedSegments: []
-  selectFlame: {fileID: 1503414242}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1 &1892082366
 GameObject:
   m_ObjectHideFlags: 0
@@ -26306,12 +26363,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &1935332247 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 1935332246}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1937032381 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8264522528220299145, guid: 36dc7981f49089a4db9ca763d4a9b585,
@@ -26513,12 +26564,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &1947456913 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 1947456912}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1948620559
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26837,12 +26882,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &1957052457 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 1957052456}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1964527162
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27737,8 +27776,8 @@ MonoBehaviour:
   - {fileID: 1280043161}
   - {fileID: 389661505}
   connectedSegments: []
-  selectFlame: {fileID: 297325214}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1 &2048543427
 GameObject:
   m_ObjectHideFlags: 0
@@ -28146,8 +28185,8 @@ MonoBehaviour:
   - {fileID: 1449536825}
   - {fileID: 520774241}
   connectedSegments: []
-  selectFlame: {fileID: 1029393626}
-  redSelectFlame: {fileID: 0}
+  selectFlames: []
+  redSelectFlames: []
 --- !u!1001 &2088290776
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28221,12 +28260,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &2088290777 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 2088290776}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2088314948
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28575,12 +28608,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36dc7981f49089a4db9ca763d4a9b585, type: 3}
---- !u!1 &2102070156 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5469344331011545290, guid: 36dc7981f49089a4db9ca763d4a9b585,
-    type: 3}
-  m_PrefabInstance: {fileID: 2102070155}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2105556878 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8264522528220299145, guid: 36dc7981f49089a4db9ca763d4a9b585,
@@ -28941,6 +28968,7 @@ SceneRoots:
   - {fileID: 726665884}
   - {fileID: 66613438}
   - {fileID: 848440390}
+  - {fileID: 269184796}
   - {fileID: 1402564091}
   - {fileID: 1143948381}
   - {fileID: 1600079129}

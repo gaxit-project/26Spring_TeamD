@@ -201,9 +201,18 @@ public class SushiMovement : MonoBehaviour
             if (customer != null && customer.TryDeliver(data))
             {
                 isCollisionHandled = true;
-                ScoreManager.Instance?.AddScore(data.price);
-                PricePopupManager.Instance?.ShowPopup(data.price, transform.position);
-                ComboManager.Instance?.IncrementCombo(); // ★ 追加
+
+                // ★ 1. 先にコンボを加算（ここで10コンボ目なら即座にフィーバー開始）
+                ComboManager.Instance?.IncrementCombo();
+
+                // ★ 2. フィーバー倍率を適用した金額を算出（加点時のみ）
+                int earnedScore = FeverManager.Instance != null
+                    ? FeverManager.Instance.GetEarnedScore(data.price)
+                    : data.price;
+
+                ScoreManager.Instance?.AddScore(earnedScore);
+                PricePopupManager.Instance?.ShowPopup(earnedScore, transform.position);
+
                 SushiDestroy();
             }
         }

@@ -1,9 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Patienceの減少とAngry判定を担当する。
-/// 気分による我慢時間の補正はCustomerMoodSO側(Strategy)に委譲する。
-/// </summary>
 public class CustomerPatienceController : MonoBehaviour
 {
     private float currentPatience;
@@ -26,9 +22,6 @@ public class CustomerPatienceController : MonoBehaviour
         currentPatience = maxPatience;
     }
 
-    /// <summary>
-    /// バッチ開始時にPatienceをリセットする。
-    /// </summary>
     public void ResetPatience(int batchCount)
     {
         float decayed = basePatienceTime * Mathf.Pow(patienceDecayRate, batchCount - 1);
@@ -36,11 +29,14 @@ public class CustomerPatienceController : MonoBehaviour
         currentPatience = maxPatience;
     }
 
-    /// <summary>
-    /// CustomerOrderFlowService.Tick() から毎フレーム呼ばれる。
-    /// </summary>
     public void Tick(float deltaTime)
     {
+        // ★ フィーバーフェーズ中はお客さんの我慢度が減らない
+        if (FeverManager.Instance != null && FeverManager.Instance.IsFever)
+        {
+            return;
+        }
+
         currentPatience -= deltaTime;
         owner.NotifyPatienceChanged();
 
