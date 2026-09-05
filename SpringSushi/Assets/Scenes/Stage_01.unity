@@ -838,7 +838,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bb6bfa88458378b409c023a03c397aa1, type: 2}
+  - {fileID: 2100000, guid: bad2968aae9bd0f4a9a973c251dd0ddf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1055,6 +1055,7 @@ MonoBehaviour:
   nodeA: {fileID: 827136030}
   nodeB: {fileID: 1553162748}
   selectFlames: []
+  redSelectFlames: []
 --- !u!1001 &102320874
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1205,7 +1206,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bb6bfa88458378b409c023a03c397aa1, type: 2}
+  - {fileID: 2100000, guid: bad2968aae9bd0f4a9a973c251dd0ddf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1327,7 +1328,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bb6bfa88458378b409c023a03c397aa1, type: 2}
+  - {fileID: 2100000, guid: bad2968aae9bd0f4a9a973c251dd0ddf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1518,6 +1519,7 @@ MonoBehaviour:
   - {fileID: 1495017577}
   connectedSegments: []
   selectFlame: {fileID: 1089457258}
+  redSelectFlame: {fileID: 0}
 --- !u!1001 &122149699
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2348,6 +2350,7 @@ MonoBehaviour:
   - {fileID: 1304626122}
   connectedSegments: []
   selectFlame: {fileID: 918559514}
+  redSelectFlame: {fileID: 0}
 --- !u!1 &236891331
 GameObject:
   m_ObjectHideFlags: 0
@@ -3223,6 +3226,7 @@ MonoBehaviour:
   nodeA: {fileID: 1533522874}
   nodeB: {fileID: 827136030}
   selectFlames: []
+  redSelectFlames: []
 --- !u!1 &368654130
 GameObject:
   m_ObjectHideFlags: 0
@@ -3386,6 +3390,7 @@ MonoBehaviour:
   - {fileID: 1819786974}
   connectedSegments: []
   selectFlame: {fileID: 549602451}
+  redSelectFlame: {fileID: 0}
 --- !u!4 &400430033 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7838594091761718613, guid: c480cc4fafd03dc4bb96135f6efaa7e3,
@@ -3768,6 +3773,7 @@ MonoBehaviour:
   nodeA: {fileID: 1020324480}
   nodeB: {fileID: 464040891}
   selectFlames: []
+  redSelectFlames: []
 --- !u!1001 &430546048
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4359,6 +4365,7 @@ MonoBehaviour:
   - {fileID: 426969578}
   connectedSegments: []
   selectFlame: {fileID: 1525871263}
+  redSelectFlame: {fileID: 0}
 --- !u!1 &477625755
 GameObject:
   m_ObjectHideFlags: 0
@@ -4852,6 +4859,7 @@ MonoBehaviour:
   - {fileID: 1955148290}
   connectedSegments: []
   selectFlame: {fileID: 1559311963}
+  redSelectFlame: {fileID: 0}
 --- !u!1001 &530996232
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7096,6 +7104,7 @@ MonoBehaviour:
   nodeA: {fileID: 118934308}
   nodeB: {fileID: 1574744032}
   selectFlames: []
+  redSelectFlames: []
 --- !u!1001 &756810665
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7481,6 +7490,7 @@ MonoBehaviour:
   nodeA: {fileID: 522956789}
   nodeB: {fileID: 1020324480}
   selectFlames: []
+  redSelectFlames: []
 --- !u!1 &789079208
 GameObject:
   m_ObjectHideFlags: 0
@@ -7657,6 +7667,7 @@ MonoBehaviour:
   - {fileID: 365403824}
   connectedSegments: []
   selectFlame: {fileID: 634907147}
+  redSelectFlame: {fileID: 0}
 --- !u!1001 &838413788
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8043,7 +8054,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bb6bfa88458378b409c023a03c397aa1, type: 2}
+  - {fileID: 2100000, guid: bad2968aae9bd0f4a9a973c251dd0ddf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -8357,7 +8368,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bb6bfa88458378b409c023a03c397aa1, type: 2}
+  - {fileID: 2100000, guid: bad2968aae9bd0f4a9a973c251dd0ddf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9386,6 +9397,7 @@ MonoBehaviour:
   - {fileID: 1088165218}
   connectedSegments: []
   selectFlame: {fileID: 1992361912}
+  redSelectFlame: {fileID: 0}
 --- !u!1001 &1038350516
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9840,6 +9852,7 @@ MonoBehaviour:
   nodeA: {fileID: 231967729}
   nodeB: {fileID: 1020324480}
   selectFlames: []
+  redSelectFlames: []
 --- !u!4 &1088702042 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7838594091761718613, guid: c480cc4fafd03dc4bb96135f6efaa7e3,
@@ -10893,7 +10906,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bb6bfa88458378b409c023a03c397aa1, type: 2}
+  - {fileID: 2100000, guid: bad2968aae9bd0f4a9a973c251dd0ddf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -11120,7 +11133,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bb6bfa88458378b409c023a03c397aa1, type: 2}
+  - {fileID: 2100000, guid: bad2968aae9bd0f4a9a973c251dd0ddf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -11687,6 +11700,7 @@ MonoBehaviour:
   nodeA: {fileID: 1553162748}
   nodeB: {fileID: 231967729}
   selectFlames: []
+  redSelectFlames: []
 --- !u!1001 &1309303293
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13290,6 +13304,7 @@ MonoBehaviour:
   nodeA: {fileID: 1020324480}
   nodeB: {fileID: 1533522874}
   selectFlames: []
+  redSelectFlames: []
 --- !u!1 &1478156079
 GameObject:
   m_ObjectHideFlags: 0
@@ -13595,6 +13610,7 @@ MonoBehaviour:
   nodeA: {fileID: 464040891}
   nodeB: {fileID: 118934308}
   selectFlames: []
+  redSelectFlames: []
 --- !u!1 &1502032150
 GameObject:
   m_ObjectHideFlags: 0
@@ -13671,7 +13687,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bb6bfa88458378b409c023a03c397aa1, type: 2}
+  - {fileID: 2100000, guid: bad2968aae9bd0f4a9a973c251dd0ddf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -14156,6 +14172,7 @@ MonoBehaviour:
   - {fileID: 1464987541}
   connectedSegments: []
   selectFlame: {fileID: 1348498232}
+  redSelectFlame: {fileID: 0}
 --- !u!1 &1535837090
 GameObject:
   m_ObjectHideFlags: 0
@@ -14340,6 +14357,7 @@ MonoBehaviour:
   - {fileID: 99052706}
   connectedSegments: []
   selectFlame: {fileID: 1675010153}
+  redSelectFlame: {fileID: 0}
 --- !u!1001 &1559311961
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14489,6 +14507,7 @@ MonoBehaviour:
   - {fileID: 754748802}
   connectedSegments: []
   selectFlame: {fileID: 122149701}
+  redSelectFlame: {fileID: 0}
 --- !u!1 &1584783801
 GameObject:
   m_ObjectHideFlags: 0
@@ -14589,6 +14608,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laneSelectorUI: {fileID: 5758667226747069433}
+  colorButtonTracker: {fileID: 0}
   blinkMode: 0
   blinkSpeed: 2
   minAlpha: 0.2
@@ -15876,7 +15896,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bb6bfa88458378b409c023a03c397aa1, type: 2}
+  - {fileID: 2100000, guid: bad2968aae9bd0f4a9a973c251dd0ddf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -16004,7 +16024,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bb6bfa88458378b409c023a03c397aa1, type: 2}
+  - {fileID: 2100000, guid: bad2968aae9bd0f4a9a973c251dd0ddf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -16513,6 +16533,7 @@ MonoBehaviour:
   nodeA: {fileID: 390863109}
   nodeB: {fileID: 1020324480}
   selectFlames: []
+  redSelectFlames: []
 --- !u!1 &1831836452
 GameObject:
   m_ObjectHideFlags: 0
@@ -17079,6 +17100,7 @@ MonoBehaviour:
   nodeA: {fileID: 1574744032}
   nodeB: {fileID: 522956789}
   selectFlames: []
+  redSelectFlames: []
 --- !u!1 &1965091502
 GameObject:
   m_ObjectHideFlags: 0
