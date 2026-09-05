@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a06810866b888bd41b81eb85dc403bb9, type: 3}
-  m_Name: Stage2
+  m_Name: Stage3
   m_EditorClassIdentifier: 
-  stageName: "\u30B9\u30C6\u30FC\u30B82"
+  stageName: "\u30B9\u30C6\u30FC\u30B83"
   totalCustomerCount: 12
   arrivalWaves:
-  - count: 3
+  - count: 4
     delay: 0
   - count: 1
     delay: 7

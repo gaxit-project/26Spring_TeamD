@@ -5621,15 +5621,19 @@ MonoBehaviour:
   stageOrder:
   - Stage_01
   - Stage_02
+  - Stage_03
   stageSprites:
+  - {fileID: 21300000, guid: 3a99159e072168349832213e635f3d24, type: 3}
   - {fileID: 21300000, guid: 3a99159e072168349832213e635f3d24, type: 3}
   - {fileID: 21300000, guid: e1f0eab79918ef04ea99afb99ebc6aae, type: 3}
   stageGoals:
   - {fileID: 11400000, guid: 40489985cca60d24c81bf7fde1700dce, type: 2}
   - {fileID: 11400000, guid: 567171d995a25b541aac90685023ad60, type: 2}
+  - {fileID: 11400000, guid: e6824b727ee29e144af2b848df7ce221, type: 2}
   stageDatas:
   - {fileID: 11400000, guid: f7453dad9a5e2cd4492f10f6d49c9e2e, type: 2}
-  - {fileID: 11400000, guid: 4ddea8233e98b8242b665f1ae28db388, type: 2}
+  - {fileID: 11400000, guid: ac2e48ba3ed6677469743291f625eab0, type: 2}
+  - {fileID: 11400000, guid: f59af9cb5a9aaa04caf2b17f1de807b4, type: 2}
 --- !u!4 &1866519999
 Transform:
   m_ObjectHideFlags: 0
