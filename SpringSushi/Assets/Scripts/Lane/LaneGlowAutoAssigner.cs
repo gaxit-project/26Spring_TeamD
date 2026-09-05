@@ -10,34 +10,35 @@ public class LaneGlowAutoAssigner : MonoBehaviour
 {
 #if UNITY_EDITOR
     private const string SegmentFlameName = "SegmentSelectFlame";
+    private const string RedSegmentFlameName = "RedSegmentSelectFlame";
     private const string NodeFlameName = "NodeSelectFlame";
+    private const string RedNodeFlameName = "RedNodeSelectFlame";
 
-    /// <summary>
-    /// シーン内の全LaneSegmentに対して、配下の全タイルのSegmentSelectFlameを検索して割り当てる
-    /// </summary>
     public static void AssignAllSegmentFlames()
     {
         var segments = FindObjectsByType<LaneSegment>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         int totalFlameCount = 0;
+        int totalRedCount = 0;
 
         foreach (var seg in segments)
         {
             var flames = new List<GameObject>();
-            FindAllDescendantsByName(seg.transform, SegmentFlameName, flames);
+            var redFlames = new List<GameObject>();
 
-            seg.EditorSetSelectFlames(flames);
+            FindAllDescendantsByName(seg.transform, SegmentFlameName, flames);
+            FindAllDescendantsByName(seg.transform, RedSegmentFlameName, redFlames);
+
+            seg.EditorSetSelectFlames(flames, redFlames);
             EditorUtility.SetDirty(seg);
             EditorSceneManager.MarkSceneDirty(seg.gameObject.scene);
 
             totalFlameCount += flames.Count;
+            totalRedCount += redFlames.Count;
         }
 
-        Debug.Log($"<color=green>[LaneGlowAutoAssigner]</color> Segment: {segments.Length}区間 (合計 {totalFlameCount}個のFlame) 割り当て完了");
+        Debug.Log($"<color=green>[LaneGlowAutoAssigner]</color> Segment: {segments.Length}区間 (通常: {totalFlameCount}個, 赤: {totalRedCount}個) 割り当て完了");
     }
 
-    /// <summary>
-    /// シーン内の全LaneNodeに対して、NodeSelectFlameを自動検索して割り当てる
-    /// </summary>
     public static void AssignAllNodeFlames()
     {
         var nodes = FindObjectsByType<LaneNode>(FindObjectsInactive.Include, FindObjectsSortMode.None);
@@ -46,12 +47,9 @@ public class LaneGlowAutoAssigner : MonoBehaviour
         foreach (var node in nodes)
         {
             var flame = FindSingleDescendantByName(node.transform, NodeFlameName);
-            if (flame == null) continue;
+            var redFlame = FindSingleDescendantByName(node.transform, RedNodeFlameName);
 
-            var so = new SerializedObject(node);
-            var prop = so.FindProperty("selectFlame");
-            prop.objectReferenceValue = flame.gameObject;
-            so.ApplyModifiedProperties();
+            node.EditorSetFlames(flame != null ? flame.gameObject : null, redFlame != null ? redFlame.gameObject : null);
 
             EditorUtility.SetDirty(node);
             EditorSceneManager.MarkSceneDirty(node.gameObject.scene);

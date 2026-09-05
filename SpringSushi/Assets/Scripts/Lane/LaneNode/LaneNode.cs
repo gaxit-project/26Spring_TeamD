@@ -15,6 +15,7 @@ public class LaneNode : MonoBehaviour
 
     [Header("選択中エフェクト")]
     [SerializeField] private GameObject selectFlame;
+    [SerializeField] private GameObject redSelectFlame; // 追加: 赤色Flame
 
     private SpriteRenderer flameRenderer;
     private int currentExitIndex = 0;
@@ -26,6 +27,11 @@ public class LaneNode : MonoBehaviour
     private void Awake()
     {
         CacheRenderer();
+        if (redSelectFlame == null && selectFlame != null && selectFlame.transform.parent != null)
+        {
+            var redTransform = selectFlame.transform.parent.Find("RedNodeSelectFlame");
+            if (redTransform != null) redSelectFlame = redTransform.gameObject;
+        }
     }
 
     private void CacheRenderer()
@@ -65,6 +71,17 @@ public class LaneNode : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 赤色Flame（決定時の一瞬の強調）の表示・非表示
+    /// </summary>
+    public void SetRedGlow(bool visible)
+    {
+        if (redSelectFlame != null)
+        {
+            redSelectFlame.SetActive(visible);
+        }
+    }
+
     public void UpdateBlink(float alpha, bool isHardVisible)
     {
         if (flameRenderer != null)
@@ -78,4 +95,12 @@ public class LaneNode : MonoBehaviour
             selectFlame.SetActive(isHardVisible);
         }
     }
+
+#if UNITY_EDITOR
+    public void EditorSetFlames(GameObject normalFlame, GameObject redFlame)
+    {
+        selectFlame = normalFlame;
+        redSelectFlame = redFlame;
+    }
+#endif
 }

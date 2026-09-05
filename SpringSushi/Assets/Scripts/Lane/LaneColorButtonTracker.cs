@@ -1,19 +1,16 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// 各色のレーン群の重心(ワールド座標)を把握し、LaneSelectorUIのスティック方向判定に提供する。
-/// ボタン画像自体の位置はEditor上で配置したまま固定し、このスクリプトでは動かさない。
-/// 行うのは、ステージに存在しない色のボタンの非表示化と、選択中の色のハイライト(点滅)のみ。
-/// </summary>
 public class LaneColorButtonTracker : MonoBehaviour
 {
     [System.Serializable]
     public class ColorButtonEntry
     {
         public LaneColor color;
-        public Image buttonImage; // 表示/非表示・色変更の対象(位置は固定のまま)
+        public Image buttonImage;
+        [System.NonSerialized] public float pressFlashTimer;
     }
 
     [Header("参照")]
@@ -26,17 +23,21 @@ public class LaneColorButtonTracker : MonoBehaviour
     [Header("見た目設定")]
     [SerializeField] private Color normalColor = Color.white;
     [SerializeField] private Color selectedColor = new Color(1f, 0.85f, 0.2f);
+    [Tooltip("決定ボタンを押した瞬間に一瞬表示する色")]
+    [SerializeField] private Color pressColor = Color.red;
     [Tooltip("選択中ボタンの点滅速度")]
     [SerializeField] private float blinkSpeed = 3f;
-
-    // 色ごとの重心(ワールド座標)。ステージに存在しない色はエントリなし。
-    private readonly Dictionary<LaneColor, Vector3> colorCentroids = new();
+    [Tooltip("press色を表示し続ける時間（秒）")]
+    [SerializeField] private float pressFlashDuration = 0.15f;
 
     /// <summary>
-    /// 指定した色の、現在のスクリーン座標を取得する。
-    /// LaneSelectorUIが、スティックの向きとの角度比較に使う。
-    /// このステージに存在しない色の場合はfalseを返す。
+    /// 決定ボタンが押されてPressColor演出が開始された時に発火するイベント
+    /// (対象の色, 演出時間)
     /// </summary>
+    public event Action<LaneColor, float> OnPressFlashed;
+
+    private readonly Dictionary<LaneColor, Vector3> colorCentroids = new();
+
     public bool TryGetScreenPosition(LaneColor color, out Vector2 screenPos)
     {
         screenPos = Vector2.zero;
@@ -50,15 +51,27 @@ public class LaneColorButtonTracker : MonoBehaviour
         return true;
     }
 
+    public void FlashPress(LaneColor color)
+    {
+        foreach (var entry in buttons)
+        {
+            if (entry.color == color)
+            {
+                entry.pressFlashTimer = pressFlashDuration;
+                break;
+            }
+        }
+
+        // 赤Flame連動用にイベントを発火
+        OnPressFlashed?.Invoke(color, pressFlashDuration);
+    }
+
     private void Awake()
     {
         if (mainCamera == null) mainCamera = Camera.main;
         ComputeCentroids();
     }
 
-    /// <summary>
-    /// シーン内の全LaneNode/LaneSegmentを走査し、色ごとにワールド座標の重心を求める。
-    /// </summary>
     private void ComputeCentroids()
     {
         var sums = new Dictionary<LaneColor, Vector3>();
@@ -110,9 +123,15 @@ public class LaneColorButtonTracker : MonoBehaviour
 
             bool exists = colorCentroids.ContainsKey(entry.color);
 
-            // このステージに存在しない色のボタンは非表示にする(位置は変更しない)
             entry.buttonImage.gameObject.SetActive(exists);
             if (!exists) continue;
+
+            if (entry.pressFlashTimer > 0f)
+            {
+                entry.pressFlashTimer -= Time.deltaTime;
+                entry.buttonImage.color = pressColor;
+                continue;
+            }
 
             bool isSelected = selected.HasValue && selected.Value == entry.color;
             entry.buttonImage.color = isSelected

@@ -15,6 +15,9 @@ public class LaneSegment : MonoBehaviour
     [Tooltip("この区間に含まれるすべてのSegmentSelectFlame")]
     [SerializeField] private List<GameObject> selectFlames = new();
 
+    [Tooltip("この区間に含まれるすべてのRedSegmentSelectFlame")]
+    [SerializeField] private List<GameObject> redSelectFlames = new();
+
     // 毎フレームのGetComponent負荷を避けるためのキャッシュ
     private List<SpriteRenderer> flameRenderers = new();
 
@@ -29,7 +32,7 @@ public class LaneSegment : MonoBehaviour
 
     private void Awake()
     {
-        if (selectFlames == null || selectFlames.Count == 0)
+        if (selectFlames == null || selectFlames.Count == 0 || redSelectFlames == null || redSelectFlames.Count == 0)
         {
             CollectAllFlames();
         }
@@ -42,7 +45,9 @@ public class LaneSegment : MonoBehaviour
     public void CollectAllFlames()
     {
         selectFlames.Clear();
+        redSelectFlames.Clear();
         FindFlamesRecursive(transform, "SegmentSelectFlame", selectFlames);
+        FindFlamesRecursive(transform, "RedSegmentSelectFlame", redSelectFlames);
         CacheRenderers();
     }
 
@@ -98,6 +103,23 @@ public class LaneSegment : MonoBehaviour
     }
 
     /// <summary>
+    /// 赤色Flame（決定時の一瞬の強調）の表示/非表示
+    /// </summary>
+    public void SetRedGlow(bool visible)
+    {
+        if (redSelectFlames == null || redSelectFlames.Count == 0)
+        {
+            CollectAllFlames();
+        }
+
+        for (int i = 0; i < redSelectFlames.Count; i++)
+        {
+            if (redSelectFlames[i] != null)
+                redSelectFlames[i].SetActive(visible);
+        }
+    }
+
+    /// <summary>
     /// 選択中のレーン専用：点滅のアルファ値（透明度）を更新
     /// </summary>
     public void UpdateBlink(float alpha, bool isHardVisible)
@@ -119,9 +141,10 @@ public class LaneSegment : MonoBehaviour
     }
 
 #if UNITY_EDITOR
-    public void EditorSetSelectFlames(List<GameObject> flames)
+    public void EditorSetSelectFlames(List<GameObject> flames, List<GameObject> redFlames)
     {
         selectFlames = flames;
+        redSelectFlames = redFlames;
         CacheRenderers();
     }
 #endif

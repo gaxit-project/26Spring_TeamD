@@ -206,6 +206,9 @@ public class LaneSelectorUI : MonoBehaviour
                 LaneColor color = colorOrder[selectedIndex];
                 laneNetwork.ToggleLane(color);
 
+                if (colorButtonTracker != null)
+                    colorButtonTracker.FlashPress(color);
+
                 if (SoundPlayer.Instance != null)
                     SoundPlayer.Instance.PlaySFX(SoundKeys.LaneDecide);
             }
