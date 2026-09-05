@@ -45,6 +45,7 @@ public static class SoundKeys
     public const string CustomerAngry2 = "customer_angry_2";
     public const string CustomerAngryOrder = "customer_angry_order";
     public const string EntryVoice = "entry_voice";
+    public const string CustomerSatisfied = "satisfied_voice"; // Åö í«â¡
 
     // --- BGM ---
     public const string BgmTitle = "bgm_title";

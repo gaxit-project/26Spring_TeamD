@@ -13,7 +13,6 @@ public class CustomerAI : MonoBehaviour
     public enum CustomerState { Spawned, Walking, Seated, Ordering, Eating, Satisfied, Angry, Leaving }
     public enum OrderPhase { None, Waiting, PartiallyServed, BatchComplete }
 
-    /// <summary>CustomerAIに何が起きたかを表す種類。購読側はこれで分岐する。</summary>
     public enum CustomerChangeType { State, OrderPhase, Order, Patience, AngryLeave }
 
     private const string SeatedTimerKey = "seated";
@@ -35,7 +34,6 @@ public class CustomerAI : MonoBehaviour
     private CustomerEatingDisplay eatingDisplay;
     private CustomerActionTimer timer;
 
-    /// <summary>状態・注文・我慢度など、このCustomerAIに関する変化を一括通知するイベント。</summary>
     public event System.Action<CustomerAI, CustomerChangeType> OnChanged;
 
     public CustomerState State => stateMachine.State;
@@ -66,7 +64,10 @@ public class CustomerAI : MonoBehaviour
 
         orderFlow.OnOrderUpdated += () => RaiseChanged(CustomerChangeType.Order);
         orderFlow.OnGiveUp += Leave;
-        orderFlow.OnAllSatisfied += () => timer.Schedule(SatisfiedLeaveTimerKey, 0.5f, Leave);
+
+        // ★ 変更: 専用メソッドを登録
+        orderFlow.OnAllSatisfied += HandleAllSatisfied;
+
         orderFlow.OnBatchStarted += eatingDisplay.ClearForNewBatch;
         orderFlow.OnItemServed += eatingDisplay.AddServedItem;
     }
@@ -116,13 +117,28 @@ public class CustomerAI : MonoBehaviour
 
     public void NotifyPatienceChanged() => RaiseChanged(CustomerChangeType.Patience);
 
+    /// <summary>
+    /// ★ 全ての注文が満足したときの処理
+    /// </summary>
+    private void HandleAllSatisfied()
+    {
+        // 状態をSatisfiedに変更（CustomerAnimatorのSatisfiedアニメーションと連動）
+        stateMachine.SetState(CustomerState.Satisfied);
+
+        // Presentation経由でボイスを再生
+        presentation.PlaySatisfiedVoice();
+
+        // 0.5秒後に退店
+        timer.Schedule(SatisfiedLeaveTimerKey, 0.5f, Leave);
+    }
+
     public void NotifyAngry()
     {
         orderFlow.CancelTimers();
 
-        stateMachine.SetState(CustomerState.Angry); // ここでState変化が通知される
+        stateMachine.SetState(CustomerState.Angry);
         presentation.PlayAngryVoice();
-        RaiseChanged(CustomerChangeType.AngryLeave); // 「怒って退店」専用の通知を追加で発火
+        RaiseChanged(CustomerChangeType.AngryLeave);
 
         timer.Schedule(AngryTimerKey, data != null ? data.angryTime : 3f, Leave);
     }
