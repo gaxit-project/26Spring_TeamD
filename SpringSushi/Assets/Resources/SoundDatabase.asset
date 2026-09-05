@@ -89,3 +89,11 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: c31d637bb2ff7834ead7f21e09bd7502, type: 3}
     category: 1
     volumeMultiplier: 0.5
+  - key: lane_cursor_move
+    clip: {fileID: 8300000, guid: 41b22259a359b294fbbdd22dacc02a8e, type: 3}
+    category: 0
+    volumeMultiplier: 3
+  - key: lane_decide
+    clip: {fileID: 8300000, guid: b2451b00abb029742a03d1987b0814b6, type: 3}
+    category: 0
+    volumeMultiplier: 3

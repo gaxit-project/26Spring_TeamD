@@ -9,6 +9,10 @@ public static class SoundKeys
     public const string ButtonPress = "ui_button_press";    // ボタンを押したときのポンッ
     public const string CursorMove = "ui_cursor_move";     // カーソル移動音
 
+    // --- レーン選択(選択方式) ---
+    public const string LaneCursorMove = "lane_cursor_move"; // スティックでレーン色を切り替えたときの音
+    public const string LaneDecide = "lane_decide";           // 決定ボタンでレーンを反転させたときの音
+
     // --- ゲーム開始演出 ---
     public const string OpenStore = "open_store";         // 開店音
     public const string CloseStore = "close_store";      //閉店音

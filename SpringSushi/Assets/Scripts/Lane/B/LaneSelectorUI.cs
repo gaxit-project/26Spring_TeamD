@@ -131,6 +131,9 @@ public class LaneSelectorUI : MonoBehaviour
         {
             selectedIndex = nextIndex;
             switchTimer = switchInterval;
+
+            if (SoundPlayer.Instance != null)
+                SoundPlayer.Instance.PlaySFX(SoundKeys.LaneCursorMove);
         }
     }
 
@@ -202,6 +205,9 @@ public class LaneSelectorUI : MonoBehaviour
             {
                 LaneColor color = colorOrder[selectedIndex];
                 laneNetwork.ToggleLane(color);
+
+                if (SoundPlayer.Instance != null)
+                    SoundPlayer.Instance.PlaySFX(SoundKeys.LaneDecide);
             }
         }
     }
