@@ -1,9 +1,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum GlowBlinkMode
+{
+    SmoothFade, // フワフワと呼吸するようにフェード点滅（おすすめ・UIと同調）
+    HardBlink   // パッパッとチカチカ切り替わる点滅
+}
+
 public class LaneGlowController : MonoBehaviour
 {
     [SerializeField] private LaneSelectorUI laneSelectorUI;
+
+    [Header("点滅アニメーション設定")]
+    [Tooltip("点滅のスタイルを選択")]
+    [SerializeField] private GlowBlinkMode blinkMode = GlowBlinkMode.SmoothFade;
+
+    [Tooltip("点滅の速さ（UIの fadeSpeed と同じ値にするとテンポが揃います）")]
+    [SerializeField] private float blinkSpeed = 3.0f;
+
+    [Range(0f, 1f)]
+    [Tooltip("フェード時の最小アルファ（0で完全に消える、0.2?0.3にすると上品に残る）")]
+    [SerializeField] private float minAlpha = 0.2f;
+
+    [Range(0f, 1f)]
+    [Tooltip("フェード時の最大アルファ")]
+    [SerializeField] private float maxAlpha = 1.0f;
 
     private List<LaneNode> allNodes = new();
     private List<LaneSegment> allSegments = new();
@@ -14,16 +35,11 @@ public class LaneGlowController : MonoBehaviour
     private void Awake()
     {
         if (laneSelectorUI == null)
-        {
             laneSelectorUI = FindObjectOfType<LaneSelectorUI>();
-        }
 
         RefreshTargets();
     }
 
-    /// <summary>
-    /// シーン上の全ノード・セグメントを再収集する（動的生成対応）
-    /// </summary>
     public void RefreshTargets()
     {
         allNodes = new List<LaneNode>(FindObjectsByType<LaneNode>(FindObjectsInactive.Include, FindObjectsSortMode.None));
@@ -44,7 +60,6 @@ public class LaneGlowController : MonoBehaviour
             return;
         }
 
-        // ステージが後から生成された場合、件数が0件なら自動で再取得を試みる
         if (allSegments.Count == 0 || allNodes.Count == 0)
         {
             RefreshTargets();
@@ -52,29 +67,65 @@ public class LaneGlowController : MonoBehaviour
 
         LaneColor? current = laneSelectorUI.CurrentSelectedColor;
 
+        // 1. 色が切り替わった瞬間に、対象色だけをActiveにし、それ以外を完全に消灯
         if (!isInitialized || current != lastAppliedColor)
         {
-            ApplyGlow(current);
+            SwitchActiveColor(current);
             lastAppliedColor = current;
             isInitialized = true;
         }
+
+        // 2. 選択中の色だけを毎フレーム点滅させる
+        if (current.HasValue)
+        {
+            AnimateSelectedColorBlink(current.Value);
+        }
     }
 
-    private void ApplyGlow(LaneColor? color)
+    private void SwitchActiveColor(LaneColor? activeColor)
     {
-        // 取得できている件数をログに出す
-        Debug.Log($"<color=yellow>[LaneGlowController]</color> 発光を更新: {(color.HasValue ? color.Value.ToString() : "なし")} (対象: Segment {allSegments.Count}件, Node {allNodes.Count}件)");
-
         foreach (var node in allNodes)
         {
             if (node == null) continue;
-            node.SetGlow(color.HasValue && node.laneColor == color.Value);
+            node.SetGlow(activeColor.HasValue && node.laneColor == activeColor.Value);
         }
 
         foreach (var seg in allSegments)
         {
             if (seg == null) continue;
-            seg.SetGlow(color.HasValue && seg.laneColor == color.Value);
+            seg.SetGlow(activeColor.HasValue && seg.laneColor == activeColor.Value);
+        }
+    }
+
+    private void AnimateSelectedColorBlink(LaneColor activeColor)
+    {
+        float alpha = 1f;
+        bool isHardVisible = true;
+
+        if (blinkMode == GlowBlinkMode.SmoothFade)
+        {
+            float t = Mathf.PingPong(Time.time * blinkSpeed, 1f);
+            alpha = Mathf.Lerp(minAlpha, maxAlpha, t);
+        }
+        else // HardBlink
+        {
+            isHardVisible = (Mathf.FloorToInt(Time.time * blinkSpeed) % 2) == 0;
+            alpha = isHardVisible ? maxAlpha : 0f;
+        }
+
+        // 選択されている色だけを更新（非選択のレーンには触らないので超軽量）
+        for (int i = 0; i < allSegments.Count; i++)
+        {
+            var seg = allSegments[i];
+            if (seg != null && seg.laneColor == activeColor)
+                seg.UpdateBlink(alpha, isHardVisible);
+        }
+
+        for (int i = 0; i < allNodes.Count; i++)
+        {
+            var node = allNodes[i];
+            if (node != null && node.laneColor == activeColor)
+                node.UpdateBlink(alpha, isHardVisible);
         }
     }
 

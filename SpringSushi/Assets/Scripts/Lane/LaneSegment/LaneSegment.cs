@@ -15,6 +15,9 @@ public class LaneSegment : MonoBehaviour
     [Tooltip("この区間に含まれるすべてのSegmentSelectFlame")]
     [SerializeField] private List<GameObject> selectFlames = new();
 
+    // 毎フレームのGetComponent負荷を避けるためのキャッシュ
+    private List<SpriteRenderer> flameRenderers = new();
+
     public bool IsReversed { get; private set; }
     public event Action<bool> OnReversedChanged;
 
@@ -26,20 +29,33 @@ public class LaneSegment : MonoBehaviour
 
     private void Awake()
     {
-        // インスペクター未割り当て、または動的生成された場合に備えて全タイルから自動収集
         if (selectFlames == null || selectFlames.Count == 0)
         {
             CollectAllFlames();
         }
+        else
+        {
+            CacheRenderers();
+        }
     }
 
-    /// <summary>
-    /// 子孫にあるすべての SegmentSelectFlame を再帰的に収集する
-    /// </summary>
     public void CollectAllFlames()
     {
         selectFlames.Clear();
         FindFlamesRecursive(transform, "SegmentSelectFlame", selectFlames);
+        CacheRenderers();
+    }
+
+    private void CacheRenderers()
+    {
+        flameRenderers.Clear();
+        for (int i = 0; i < selectFlames.Count; i++)
+        {
+            if (selectFlames[i] != null)
+                flameRenderers.Add(selectFlames[i].GetComponent<SpriteRenderer>());
+            else
+                flameRenderers.Add(null);
+        }
     }
 
     private void FindFlamesRecursive(Transform parent, string targetName, List<GameObject> results)
@@ -62,13 +78,10 @@ public class LaneSegment : MonoBehaviour
         OnReversedChanged?.Invoke(IsReversed);
     }
 
-    public void Reverse()
-    {
-        SetReversed(!IsReversed);
-    }
+    public void Reverse() => SetReversed(!IsReversed);
 
     /// <summary>
-    /// この区間に含まれる【すべてのタイル】のSegmentSelectFlameの表示/非表示を切り替える
+    /// 表示/非表示の切り替え（非選択色を完全にOFFにする）
     /// </summary>
     public void SetGlow(bool visible)
     {
@@ -80,19 +93,36 @@ public class LaneSegment : MonoBehaviour
         for (int i = 0; i < selectFlames.Count; i++)
         {
             if (selectFlames[i] != null)
-            {
                 selectFlames[i].SetActive(visible);
+        }
+    }
+
+    /// <summary>
+    /// 選択中のレーン専用：点滅のアルファ値（透明度）を更新
+    /// </summary>
+    public void UpdateBlink(float alpha, bool isHardVisible)
+    {
+        for (int i = 0; i < flameRenderers.Count; i++)
+        {
+            var sr = flameRenderers[i];
+            if (sr != null)
+            {
+                Color c = sr.color;
+                c.a = alpha;
+                sr.color = c;
+            }
+            else if (selectFlames[i] != null)
+            {
+                selectFlames[i].SetActive(isHardVisible);
             }
         }
     }
 
 #if UNITY_EDITOR
-    /// <summary>
-    /// Editor拡張用：リストを外部から一括設定
-    /// </summary>
     public void EditorSetSelectFlames(List<GameObject> flames)
     {
         selectFlames = flames;
+        CacheRenderers();
     }
 #endif
 }
