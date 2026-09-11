@@ -32,6 +32,12 @@ public class ResultUI : MonoBehaviour
 
     private void Start()
     {
+        // ★ 追加：ResultSceneがロードされた後に時間を動かし、状態をResultにする
+        if (GameStateManager.Instance != null)
+        {
+            GameStateManager.Instance.EnterResult();
+        }
+
         int score = ScoreManager.Instance != null ? ScoreManager.Instance.TotalScore : 0;
         int stars = StageManager.Instance?.CurrentGoal?.GetStarCount(score) ?? 0;
 

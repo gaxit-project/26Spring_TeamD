@@ -138,13 +138,17 @@ public class InGameSequenceManager : MonoBehaviour
         Debug.Log("[Sequence] ‰c‹ÆI—¹ ¨ •Â“X‰‰o");
         GameStateManager.Instance.PauseGame();
 
+        // š C³Fvar ‚ğŠO‚µ‚ÄÄ‘ã“ü‚µA’â~ˆ—‚ğÀs
+        spawners = FindObjectsByType<SushiSpawner>(FindObjectsSortMode.None);
+        foreach (var spawner in spawners)
+            spawner.SetSpawningEnabled(false);
+
         if (SoundPlayer.Instance != null)
         {
             SoundPlayer.Instance.PlaySFX(SoundKeys.CloseStore);
             SoundPlayer.Instance.PlaySFX(SoundKeys.DoorOpen);
         }
 
-        // ”à‚ªŠ®‘S‚É•Â‚Ü‚è‚«‚é‚Ü‚Å‘Ò‚Á‚Ä‚©‚çu•Â“X!!v‚ğ•\¦‚·‚é
         yield return doorAnim.Close();
 
         statusText.text = "•Â“X!!";
@@ -154,7 +158,10 @@ public class InGameSequenceManager : MonoBehaviour
 
         // --- 4. Result ‘JˆÚ ---
         Debug.Log("[Sequence] Result‘JˆÚ");
-        GameStateManager.Instance.EnterResult();
+
+        // š ‚±‚±‚Å‚Í‚Ü‚¾EnterResult(timeScale=1)‚ğŒÄ‚Î‚¸AResultScene‘¤(ResultUI)‚ÅŒÄ‚Ô
+        // GameStateManager.Instance.EnterResult(); 
+
         SceneController.Instance.LoadSceneAsync(resultSceneName);
     }
 }
