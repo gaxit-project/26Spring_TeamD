@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageName: "\u672C\u65E5\u306E\u76EE\u6A19"
   goalBronze: 5000
-  goalSilver: 10000
-  goalGold: 15000
+  goalSilver: 8000
+  goalGold: 12000
