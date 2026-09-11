@@ -51,6 +51,8 @@ public class ComboManager : MonoBehaviour
         {
             // フィーバー中は到達音（combo_8）を鳴らす
             PlayComboSound(targetFeverCount);
+            if (SoundPlayer.Instance != null)
+                SoundPlayer.Instance.PlaySFX(SoundKeys.Cheers);
             OnComboChanged?.Invoke(CurrentCombo, targetFeverCount, targetFeverCount);
         }
         else
@@ -63,6 +65,10 @@ public class ComboManager : MonoBehaviour
             // ★ 8回連続成功でフィーバー突入（8個目の寿司からフィーバー倍率適用）
             if (feverProgressCount >= targetFeverCount)
             {
+                if (SoundPlayer.Instance != null)
+                {
+                    SoundPlayer.Instance.PlaySFX(SoundKeys.Cheers);
+                }
                 feverProgressCount = 0; // フィーバー終了後の再カウント用にリセット
                 FeverManager.Instance?.StartFever();
             }

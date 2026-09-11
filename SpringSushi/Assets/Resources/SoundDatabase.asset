@@ -145,3 +145,11 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: c5d57ad5105cf6b4a89551dcaae73dae, type: 3}
     category: 1
     volumeMultiplier: 3
+  - key: sushi_dispose
+    clip: {fileID: 8300000, guid: b0ecbe813db2e094c956d3df3ab90eb3, type: 3}
+    category: 0
+    volumeMultiplier: 3
+  - key: cheers
+    clip: {fileID: 8300000, guid: 472ae7e0de7417140907ec4ae615630d, type: 3}
+    category: 0
+    volumeMultiplier: 3
