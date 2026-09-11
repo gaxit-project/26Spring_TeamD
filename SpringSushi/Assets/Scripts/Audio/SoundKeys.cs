@@ -23,6 +23,7 @@ public static class SoundKeys
     // --- スコア ---
     public const string ScoreUp = "score_up";
     public const string ScoreDown = "score_down";
+    public const string SushiDispose = "sushi_dispose"; // 寿司を廃棄したときの音（割れる音とは別）
 
     // --- コンボ音 (1?10) --- ★追加
     public const string Combo1 = "combo_1";

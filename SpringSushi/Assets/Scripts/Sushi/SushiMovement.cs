@@ -108,8 +108,16 @@ public class SushiMovement : MonoBehaviour
     private void SwitchToNextSegment()
     {
         LaneNode arrivalNode = movingTowardsNodeB ? currentSegment.nodeB : currentSegment.nodeA;
-        LaneSegment next = arrivalNode.GetNextSegment(currentSegment);
 
+        // このノードが廃棄スポットなら、次のレーンへ送らずここで処分する
+        var disposalSpot = arrivalNode.GetComponent<DisposalSpot>();
+        if (disposalSpot != null)
+        {
+            disposalSpot.Dispose(this);
+            return;
+        }
+
+        LaneSegment next = arrivalNode.GetNextSegment(currentSegment);
         if (next != null)
         {
             currentSegment = next;
