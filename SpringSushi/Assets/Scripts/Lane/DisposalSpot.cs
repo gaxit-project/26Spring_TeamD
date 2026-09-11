@@ -5,6 +5,7 @@ using UnityEngine;
 /// SushiSpawnerと同様、LaneNodeへの追加コンポーネントとして機能する。
 /// このノードに到達した寿司は、次のレーンへ送られる代わりに廃棄される。
 /// 廃棄すると、寿司価格の1/10を減点し、専用の廃棄音を鳴らす。
+/// ただし、フィーバー中は減点されない(SushiMovementの衝突処理と同じ扱い)。
 /// </summary>
 [RequireComponent(typeof(LaneNode))]
 public class DisposalSpot : MonoBehaviour
@@ -17,8 +18,13 @@ public class DisposalSpot : MonoBehaviour
     {
         if (sushi == null || sushi.data == null) return;
 
-        int lossAmount = Mathf.RoundToInt(sushi.data.price / 10f);
-        ScoreManager.Instance?.SubtractScore(lossAmount);
+        bool isFever = FeverManager.Instance != null && FeverManager.Instance.IsFever;
+
+        if (!isFever)
+        {
+            int lossAmount = Mathf.RoundToInt(sushi.data.price / 10f);
+            ScoreManager.Instance?.SubtractScore(lossAmount);
+        }
 
         if (SoundPlayer.Instance != null)
             SoundPlayer.Instance.PlaySFX(SoundKeys.SushiDispose);
