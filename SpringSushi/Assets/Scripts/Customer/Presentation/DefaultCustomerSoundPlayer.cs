@@ -18,4 +18,11 @@ public class DefaultCustomerSoundPlayer : ICustomerSoundPlayer
         var key = Random.Range(0, 2) == 0 ? SoundKeys.CustomerAngry : SoundKeys.CustomerAngry2;
         SoundPlayer.Instance.PlayVoice(key);
     }
+
+    // Åö í«â¡
+    public void PlaySatisfiedVoice()
+    {
+        if (SoundPlayer.Instance == null) return;
+        SoundPlayer.Instance.PlayVoice(SoundKeys.CustomerSatisfied);
+    }
 }

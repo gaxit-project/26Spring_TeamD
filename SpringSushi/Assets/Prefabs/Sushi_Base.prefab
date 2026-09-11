@@ -166,7 +166,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: e835477af019fbf4a9f1da1f3428cf0f, type: 2}
-  moveSpeed: 4
+  normalSpeed: 4
+  feverSpeed: 5
   wobbleAmplitude: 0.15
   wobbleFrequency: 8
   currentSegment: {fileID: 0}

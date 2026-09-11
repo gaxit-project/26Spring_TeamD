@@ -5,4 +5,5 @@ public interface ICustomerSoundPlayer
 {
     void PlaySpawnVoice();
     void PlayAngryVoice();
+    void PlaySatisfiedVoice(); // Åö í«â¡
 }

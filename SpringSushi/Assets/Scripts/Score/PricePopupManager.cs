@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
-using UnityEngine.Pool; // Unity標準のプール機能を使用
+using UnityEngine.Pool;
 
 /// <summary>
 /// 寿司が届いたときのポップアップUIを管理する。
@@ -24,8 +24,12 @@ public class PricePopupManager : MonoBehaviour
     [SerializeField] private float holdDuration = 0.5f;
     [SerializeField] private float fadeOutDuration = 0.4f;
     [SerializeField] private float riseDistance = 50f;
+
+    [Header("文字色設定")]
     [SerializeField] private Color positiveColor = Color.yellow;
     [SerializeField] private Color negativeColor = Color.red;
+    [Tooltip("フィーバー時など強調表示したい時の文字色（未指定時はpositiveColor）")]
+    [SerializeField] private Color feverColor = new Color(1f, 0.4f, 0.8f); // 鮮やかなマゼンタ/ピンク調
 
     // オブジェクトプールの定義
     private IObjectPool<GameObject> _pool;
@@ -43,10 +47,10 @@ public class PricePopupManager : MonoBehaviour
 
         // プールの初期化
         _pool = new ObjectPool<GameObject>(
-            createFunc: CreatePooledItem,      // 新しく作る時
-            actionOnGet: OnTakeFromPool,      // プールから出す時
-            actionOnRelease: OnReturnedToPool, // プールに戻す時
-            actionOnDestroy: OnDestroyPoolObject, // 最大サイズを超えて破棄される時
+            createFunc: CreatePooledItem,
+            actionOnGet: OnTakeFromPool,
+            actionOnRelease: OnReturnedToPool,
+            actionOnDestroy: OnDestroyPoolObject,
             collectionCheck: true,
             defaultCapacity: defaultCapacity,
             maxSize: maxSize
@@ -76,9 +80,26 @@ public class PricePopupManager : MonoBehaviour
     #endregion
 
     /// <summary>
-    /// 指定のワールド座標に価格ポップアップを表示する
+    /// 通常の価格ポップアップを表示する（+100円 / -50円 など）
     /// </summary>
     public void ShowPopup(int price, Vector3 worldPosition)
+    {
+        string text = price >= 0 ? $"+{price}円" : $"{price}円";
+        Color color = price >= 0 ? positiveColor : negativeColor;
+        ShowPopupInternal(text, color, worldPosition);
+    }
+
+    /// <summary>
+    /// ★ 追加: 任意の文字列を指定してポップアップを表示する（フィーバー時の「+100×2.0円」など）
+    /// </summary>
+    public void ShowPopup(string text, Vector3 worldPosition, Color? customColor = null)
+    {
+        // 色の指定がなければフィーバー用カラー（feverColor）を使用
+        Color color = customColor ?? feverColor;
+        ShowPopupInternal(text, color, worldPosition);
+    }
+
+    private void ShowPopupInternal(string text, Color color, Vector3 worldPosition)
     {
         if (popupPrefab == null || hudCanvas == null) return;
 
@@ -103,8 +124,8 @@ public class PricePopupManager : MonoBehaviour
         var tmp = obj.GetComponent<TextMeshProUGUI>();
         if (tmp != null)
         {
-            tmp.text = price >= 0 ? $"+{price}円" : $"{price}円";
-            tmp.color = price >= 0 ? positiveColor : negativeColor;
+            tmp.text = text;
+            tmp.color = color;
         }
 
         // アニメーション開始
@@ -113,7 +134,6 @@ public class PricePopupManager : MonoBehaviour
 
     private IEnumerator AnimatePopup(GameObject obj, RectTransform rect)
     {
-        // CanvasGroupを使って一括フェードさせる
         if (!obj.TryGetComponent<CanvasGroup>(out var canvasGroup))
         {
             canvasGroup = obj.AddComponent<CanvasGroup>();

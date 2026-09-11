@@ -97,3 +97,51 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: b2451b00abb029742a03d1987b0814b6, type: 3}
     category: 0
     volumeMultiplier: 3
+  - key: combo_1
+    clip: {fileID: 8300000, guid: e24eadbcdd87f1a44a66c46b2e54b85c, type: 3}
+    category: 0
+    volumeMultiplier: 3
+  - key: combo_2
+    clip: {fileID: 8300000, guid: 527b5f293fea2c24c94fda0f06c3126b, type: 3}
+    category: 0
+    volumeMultiplier: 3
+  - key: combo_3
+    clip: {fileID: 8300000, guid: 16df8c0677b61824daa822e1d329f693, type: 3}
+    category: 0
+    volumeMultiplier: 3
+  - key: combo_4
+    clip: {fileID: 8300000, guid: 0daf643b3adc2e34eb96789ebfe5ae63, type: 3}
+    category: 0
+    volumeMultiplier: 3
+  - key: combo_5
+    clip: {fileID: 8300000, guid: f0e0ca6b7c284d54c9172a36336aef85, type: 3}
+    category: 0
+    volumeMultiplier: 3
+  - key: combo_6
+    clip: {fileID: 8300000, guid: 3ffe7aad876994242aabe7d636a426f5, type: 3}
+    category: 0
+    volumeMultiplier: 3
+  - key: combo_7
+    clip: {fileID: 8300000, guid: c747baa50af5299439f52794cfc08c4e, type: 3}
+    category: 0
+    volumeMultiplier: 3
+  - key: combo_8
+    clip: {fileID: 8300000, guid: c267970f264e3134196b2feb81827719, type: 3}
+    category: 0
+    volumeMultiplier: 3
+  - key: combo_9
+    clip: {fileID: 8300000, guid: 70a342ea34e6d57488c3aaf8bc32c4c2, type: 3}
+    category: 0
+    volumeMultiplier: 3
+  - key: combo_10
+    clip: {fileID: 8300000, guid: c267970f264e3134196b2feb81827719, type: 3}
+    category: 0
+    volumeMultiplier: 3
+  - key: bgm_fever
+    clip: {fileID: 8300000, guid: 6d4c2ee15d36446469ac4de22a7354a0, type: 3}
+    category: 2
+    volumeMultiplier: 0.25
+  - key: satisfied_voice
+    clip: {fileID: 8300000, guid: c5d57ad5105cf6b4a89551dcaae73dae, type: 3}
+    category: 1
+    volumeMultiplier: 3

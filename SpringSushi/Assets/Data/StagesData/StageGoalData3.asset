@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: StageGoalData3
   m_EditorClassIdentifier: 
   stageName: "\u672C\u65E5\u306E\u76EE\u6A19"
-  goalBronze: 1500
-  goalSilver: 3000
-  goalGold: 10000
+  goalBronze: 5000
+  goalSilver: 10000
+  goalGold: 15000
